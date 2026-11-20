@@ -1,0 +1,43 @@
+[project]
+name = "slayer-zoom"
+version = "0.0.1"
+description = "A granularity slider for data answers: one question, an agent-built ladder from a single number to full analysis, on SLayer."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+authors = [{ name = "MotleyAI" }]
+dependencies = [
+    "fastapi>=0.115",
+    "pydantic>=2.9",
+    "uvicorn>=0.32",
+]
+
+[dependency-groups]
+dev = [
+    "basedpyright==1.40.2",
+    "httpx>=0.27",
+    "pytest>=8.3",
+    "ruff>=0.8",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/slayer_zoom"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 110
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.basedpyright]
+include = ["src", "tests"]
+pythonVersion = "3.12"
+typeCheckingMode = "standard"

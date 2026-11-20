@@ -1,0 +1,32 @@
+specification {
+  element system
+  element node
+  element bucket {
+    #virtual
+  }
+  tag legacy
+  tag virtual
+}
+model {
+  python = system 'Backend (Python)' {
+    api = node 'HTTP API' {
+      metadata {
+        package 'slayer_zoom.api'
+      }
+    }
+    core = node 'Ladder domain' {
+      metadata {
+        package 'slayer_zoom.core'
+      }
+    }
+
+    api -> core
+  }
+  typescript = system 'Web (TypeScript)' {
+    app = node 'App shell' {
+      metadata {
+        package 'src/app'
+      }
+    }
+  }
+}
