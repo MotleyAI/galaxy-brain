@@ -1,25 +1,35 @@
 ## ADDED Requirements
 
-### Requirement: Detail follows the answer's size
-The answer SHALL sit in a card whose bottom edge the reader drags, and the card's height SHALL set the answer's
-detail: a taller card shows the same text plus the words and panels of finer levels, and a given height SHALL always
-show the same text at a given width.
+### Requirement: Pull to unlock a depth
+The answer SHALL always show its current depth in full. Pulling the handle on its bottom edge down past a threshold
+SHALL unlock the next depth: its words are written into the text in place and each of its panels unfolds after the
+sentence that introduces it. Pulling up past the threshold SHALL fold the current depth away. A shorter pull SHALL
+change nothing. Pulling SHALL NOT call the server.
 
-#### Scenario: Growing the card
-- **WHEN** the reader drags the bottom edge of a one-sentence answer down
-- **THEN** the next level's words appear in place and fill the added room, and the card never shows less than before
+#### Scenario: Unlocking the next depth
+- **WHEN** the reader pulls the handle of a one-sentence answer down past the threshold
+- **THEN** the sentence for the next depth is written into the text and its chart unfolds, and the card grows to fit
 
-#### Scenario: A chart arrives
-- **WHEN** the edge reaches the end of a sentence that introduces a chart
-- **THEN** the text stops growing while the moving edge uncovers the chart
+#### Scenario: A short pull
+- **WHEN** the reader pulls less than the threshold and lets go
+- **THEN** the opened room springs back and the answer keeps its depth
 
-### Requirement: Jump to a level
-Each level name SHALL resize the card to show that level in full, and the resize handle SHALL be operable from the
-keyboard. Resizing SHALL NOT call the server.
+### Requirement: Expanding-brain cue
+The handle SHALL carry a brain that grows and glows brighter at each depth and whose ring fills as the reader pulls.
+Depth names SHALL NOT be listed under the answer; they SHALL be the handle's tooltip and accessible value, and the
+handle SHALL be operable from the keyboard.
 
-#### Scenario: Clicking a level name
-- **WHEN** the reader clicks "Mix"
-- **THEN** the card glides to the height of the Mix level, showing its text and panels in full
+#### Scenario: The deepest analysis
+- **WHEN** the reader unlocks the last depth
+- **THEN** the brain is at its largest and radiant, and pulling further only resists
+
+### Requirement: The page follows the answer
+When a pull reaches the bottom of the window the page SHALL scroll so the pull can continue, and while a new depth
+unfolds the page SHALL keep the handle on screen.
+
+#### Scenario: A long answer
+- **WHEN** the unlocked depth grows the answer past the bottom of the window
+- **THEN** the page scrolls with it and the handle stays visible
 
 ### Requirement: OpenUI components
 Panels and the card SHALL be drawn with OpenUI components, and only the panels and the resizable answer SHALL import

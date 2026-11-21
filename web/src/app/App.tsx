@@ -20,7 +20,7 @@ export function App() {
     <main>
       <header>
         <h1>slayer-zoom</h1>
-        <p>One question. Drag the answer open for more detail.</p>
+        <p>One question. Pull the answer down to think deeper.</p>
       </header>
       <form onSubmit={submit} className="ask">
         <input value={question} onChange={(e) => setQuestion(e.target.value)} aria-label="Question" />

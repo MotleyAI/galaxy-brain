@@ -1,191 +1,212 @@
 import "@openuidev/react-ui/styles/openui-defaults.css";
 import "@openuidev/react-ui/styles/shared.css";
 import "@openuidev/react-ui/styles/card.css";
-import "@openuidev/react-ui/styles/button.css";
 import "@openuidev/react-ui/styles/table.css";
 import "@openuidev/react-ui/styles/metricIndicator.css";
 import "@openuidev/react-ui/styles/charts.css";
 import "@openuidev/react-ui/styles/tooltipWrapper.css";
-import { Button } from "@openuidev/react-ui/parts/Button/Button";
 import { Card } from "@openuidev/react-ui/parts/Card/Card";
 import { ThemeProvider } from "@openuidev/react-ui/parts/ThemeProvider/ThemeProvider";
 import { useSystemThemeMode } from "@openuidev/react-ui/parts/ThemeProvider/useSystemThemeMode";
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { PanelView } from "../panels";
-import { lastPosition, useAnswer, type AnswerStore } from "../state";
-import { heightAt, monotone, positionAt, stops, type Point, type Stop } from "./fit";
+import { lastPosition, useAnswer, type AnswerStore, type Segment } from "../state";
+import { Brain } from "./Brain";
+import { charge, pulledDepth, stage, stretch, writingMs } from "./pull";
 import { reveal, withFallbacks, type Piece } from "./stretch";
 
-const GLIDE_MS = 450;
-const KEY_STEP = 32;
+const FOLD_MS = 280;
+const UNFOLD_MS = 900;
+const EDGE = 56;
+const SCROLL_STEP = 14;
+
+function wordsBetween(segments: Segment[], from: number, to: number): number {
+  return segments
+    .filter((s) => s.level > from && s.level <= to)
+    .reduce((sum, s) => sum + s.text.split(/\s+/).filter(Boolean).length, 0);
+}
 
 /**
- * The answer in a card the reader resizes. Dragging the bottom edge down gives the answer more room, and the text
- * grows to fill it: the next level's words appear in place, and each chart is uncovered by the edge right after the
- * sentence that introduces it.
+ * The answer at a depth the reader unlocks. It always shows its current depth in full. Pulling the handle down opens
+ * room while the brain charges; past the threshold the next depth writes itself into the text and its charts unfold.
+ * Pulling up folds a depth away. Near the bottom of the window the page scrolls, so the pull can go on.
  */
 export function ResizableAnswer({ store }: { store: AnswerStore }) {
   const state = useAnswer(store);
   const mode = useSystemThemeMode();
   const reachable = lastPosition(state);
   const segments = useMemo(() => withFallbacks(state.narration, state.levels), [state.narration, state.levels]);
-  const layout = useMemo(() => stops(segments, state.levels, reachable), [segments, state.levels, reachable]);
-  const [points, setPoints] = useState<Point[]>([]);
-  const [height, setHeight] = useState<number | null>(null);
-  const drag = useRef<{ y: number; h: number } | null>(null);
-  const frame = useRef(0);
-  const body = useRef<HTMLDivElement>(null);
+  const [depth, setDepth] = useState(0);
+  const [pull, setPull] = useState(0);
+  const depthRef = useRef(0);
+  const reachRef = useRef(reachable);
+  const drag = useRef<{ origin: number; clientY: number } | null>(null);
+  const writing = useRef(0);
+  const scrolling = useRef(0);
+  const handle = useRef<HTMLDivElement>(null);
+  const article = useRef<HTMLElement>(null);
+  const followUntil = useRef(0);
+  reachRef.current = reachable;
 
-  const measured = useCallback((next: Point[]) => {
-    setPoints((prev) => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next));
-  }, []);
+  const go = (next: number) => {
+    depthRef.current = next;
+    setDepth(next);
+  };
 
-  // A new level, new text or a new width re-measures the map; keep showing the same position.
+  // A new question starts again at the single number.
+  useEffect(() => go(0), [state.question]);
+
+  // Write the unlocked depth in word by word (or fold it away), keeping the handle on screen as the answer grows.
   useEffect(() => {
-    if (!drag.current && points.length) setHeight(heightAt(points, store.getState().position));
-  }, [points, store]);
-
-  const first = points[0]?.height ?? 0;
-  const last = points[points.length - 1]?.height ?? 0;
-  const shown = height ?? first;
-
-  const resize = (h: number) => {
-    const clamped = Math.min(Math.max(h, first), last);
-    setHeight(clamped);
-    store.slide(positionAt(points, clamped));
-  };
-  const glide = (target: number) => {
-    cancelAnimationFrame(frame.current);
-    const from = shown;
+    const from = store.getState().position;
+    const to = Math.min(depth, reachable);
+    if (from === to) return;
+    const grows = to > from;
+    const ms = grows ? writingMs(wordsBetween(segments, Math.floor(from), to)) : FOLD_MS;
     const start = performance.now();
+    followUntil.current = grows ? start + ms + UNFOLD_MS : 0;
     const step = (now: number) => {
-      const t = Math.min((now - start) / GLIDE_MS, 1);
-      resize(from + (target - from) * (1 - (1 - t) ** 3));
-      if (t < 1) frame.current = requestAnimationFrame(step);
+      const t = Math.min((now - start) / ms, 1);
+      store.slide(from + (to - from) * (grows ? t : 1 - (1 - t) ** 2));
+      if (t < 1) writing.current = requestAnimationFrame(step);
     };
-    frame.current = requestAnimationFrame(step);
-  };
-  const toLevel = (level: number) => glide(heightAt(points, level));
-  const onKey = (event: KeyboardEvent) => {
-    const moves: Record<string, () => void> = {
-      ArrowDown: () => resize(shown + KEY_STEP),
-      ArrowUp: () => resize(shown - KEY_STEP),
-      PageDown: () => toLevel(Math.min(Math.floor(state.position) + 1, reachable)),
-      PageUp: () => toLevel(Math.max(Math.ceil(state.position) - 1, 0)),
-      Home: () => toLevel(0),
-      End: () => toLevel(reachable),
-    };
-    const move = moves[event.key];
-    if (!move) return;
-    event.preventDefault();
-    cancelAnimationFrame(frame.current);
-    move();
-  };
+    cancelAnimationFrame(writing.current);
+    writing.current = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(writing.current);
+  }, [depth, reachable, segments, store]);
 
-  // Fade the bottom edge only while it cuts through the answer.
-  useLayoutEffect(() => {
-    const el = body.current;
-    const article = el?.querySelector(":scope > article.answer");
-    if (el && article instanceof HTMLElement) el.classList.toggle("clipped", article.offsetHeight > shown + 2);
-  });
+  // While a new depth writes itself in and its charts unfold, keep the handle on screen: the page scrolls with it.
+  useEffect(() => {
+    const el = article.current;
+    if (!el) return;
+    const observer = new ResizeObserver(() => {
+      const box = handle.current?.getBoundingClientRect();
+      if (!box || performance.now() > followUntil.current) return;
+      const over = box.bottom + 24 - window.innerHeight;
+      if (over > 0) window.scrollBy(0, over);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [state.levels.length > 0]);
+
+  const track = () => {
+    const current = drag.current;
+    if (!current) return;
+    const dy = current.clientY + window.scrollY - current.origin;
+    const next = pulledDepth(depthRef.current, dy, reachRef.current);
+    if (next !== depthRef.current) {
+      go(next);
+      current.origin = current.clientY + window.scrollY;
+      setPull(0);
+    } else {
+      setPull(dy);
+    }
+  };
+  // While the finger rests near an edge of the window, scroll the page so the pull can continue.
+  const edgeScroll = () => {
+    const current = drag.current;
+    if (!current) return;
+    if (current.clientY > window.innerHeight - EDGE) window.scrollBy(0, SCROLL_STEP);
+    else if (current.clientY < EDGE) window.scrollBy(0, -SCROLL_STEP);
+    track();
+    scrolling.current = requestAnimationFrame(edgeScroll);
+  };
+  const release = () => {
+    drag.current = null;
+    cancelAnimationFrame(scrolling.current);
+    setPull(0);
+  };
+  const onKey = (event: KeyboardEvent) => {
+    const moves: Record<string, number> = {
+      ArrowDown: depthRef.current + 1,
+      PageDown: depthRef.current + 1,
+      ArrowUp: depthRef.current - 1,
+      PageUp: depthRef.current - 1,
+      Home: 0,
+      End: reachRef.current,
+    };
+    const target = moves[event.key];
+    if (target === undefined) return;
+    event.preventDefault();
+    go(Math.max(0, Math.min(target, reachRef.current)));
+  };
 
   const building = state.status === "loading" || state.status === "streaming";
-  const total = state.expectedLevels ?? state.levels.length + (building ? 1 : 0);
+  const total = Math.max(state.expectedLevels ?? state.levels.length + (building ? 1 : 0), state.levels.length);
   const note = state.notes[state.notes.length - 1];
   if (state.levels.length === 0) return building ? <p className="progress">{note ?? "Starting…"}</p> : null;
-  const pieces = reveal(segments, state.levels, state.position);
+
+  const shown = Math.min(depth, reachable);
+  const current = state.levels[shown];
+  const next = state.levels[shown + 1];
+  const canUnlock = shown < reachable;
+  const room = stretch(pull, canUnlock);
+  const label = `Depth ${shown + 1} of ${total}: ${current?.title ?? ""}`;
+  const invite = canUnlock
+    ? `${charge(pull) > 0.85 ? "Almost there: keep pulling" : "Pull"} to unlock ${next?.title ?? "the next depth"}`
+    : shown + 1 < total
+      ? (note ?? "Thinking deeper…")
+      : "That is the deepest analysis";
 
   return (
     <ThemeProvider mode={mode}>
       <Card variant="card" width="full" className="answer-card">
-        <div ref={body} className="answer-body" style={points.length ? { height: shown } : undefined}>
-          <Measurer layout={layout} onMeasure={measured} />
-          <article className="answer">{blocks(pieces, true)}</article>
+        <article className="answer" ref={article}>{blocks(reveal(segments, state.levels, state.position))}</article>
+        <div className="pull-room" style={{ height: room }} aria-hidden>
+          {room > 24 && <span>{invite}</span>}
         </div>
         <div
-          className="resize-handle"
+          ref={handle}
+          className="pull-handle"
           role="slider"
           tabIndex={0}
-          aria-label="Answer detail: drag down for more"
-          aria-valuemin={0}
-          aria-valuemax={Math.max(total - 1, 0)}
-          aria-valuenow={Number(state.position.toFixed(2))}
-          aria-valuetext={state.levels[Math.round(state.position)]?.title}
+          title={`${label}. ${invite}.`}
+          aria-label="Depth of the answer: pull down to unlock more"
+          aria-valuemin={1}
+          aria-valuemax={total}
+          aria-valuenow={shown + 1}
+          aria-valuetext={label}
+          data-pulling={pull !== 0 || undefined}
           onKeyDown={onKey}
           onPointerDown={(event) => {
-            cancelAnimationFrame(frame.current);
-            event.currentTarget.setPointerCapture(event.pointerId);
-            drag.current = { y: event.clientY, h: shown };
+            if (event.currentTarget.hasPointerCapture?.(event.pointerId) === false) {
+              try {
+                event.currentTarget.setPointerCapture(event.pointerId);
+              } catch {
+                // A synthetic or already-released pointer: the pull still works while it stays on the handle.
+              }
+            }
+            drag.current = { origin: event.clientY + window.scrollY, clientY: event.clientY };
+            cancelAnimationFrame(scrolling.current);
+            scrolling.current = requestAnimationFrame(edgeScroll);
           }}
-          onPointerMove={(event) => drag.current && resize(drag.current.h + event.clientY - drag.current.y)}
-          onPointerUp={() => (drag.current = null)}
-          onPointerCancel={() => (drag.current = null)}
+          onPointerMove={(event) => {
+            if (!drag.current) return;
+            drag.current.clientY = event.clientY;
+            track();
+          }}
+          onPointerUp={release}
+          onPointerCancel={release}
         >
-          <span className="grip" />
-          {state.position === 0 && reachable > 0 && <span className="hint">Drag down for more detail</span>}
+          <Brain stage={stage(shown, total)} charge={charge(pull)} depth={shown} />
+          {shown === 0 && canUnlock && pull === 0 && <span className="hint">Pull down to think deeper</span>}
         </div>
-        <footer className="answer-foot">
-          <ol className="levels">
-            {Array.from({ length: total }, (_, i) => {
-              const level = state.levels[i];
-              return (
-                <li key={i}>
-                  <Button
-                    variant="tertiary"
-                    size="extra-small"
-                    disabled={!level || i > reachable}
-                    aria-current={Math.abs(state.position - i) < 0.5}
-                    onClick={() => toLevel(i)}
-                  >
-                    {level ? level.title : "…"}
-                  </Button>
-                </li>
-              );
-            })}
-          </ol>
-          {building && (
-            <p className="progress" aria-live="polite">
-              {note ?? "Building the answer…"}
-            </p>
-          )}
-        </footer>
+        {building && shown === reachable && pull === 0 && (
+          <p className="progress" aria-live="polite">
+            {note ?? "Thinking deeper…"}
+          </p>
+        )}
       </Card>
     </ThemeProvider>
   );
 }
 
-/** Renders every stop off-screen at the answer's width and reports their heights, so height maps to detail. */
-function Measurer({ layout, onMeasure }: { layout: Stop[]; onMeasure: (points: Point[]) => void }) {
-  const root = useRef<HTMLDivElement>(null);
-  useLayoutEffect(() => {
-    const el = root.current;
-    if (!el) return;
-    const measure = () => {
-      const heights = Array.from(el.children, (child) => (child as HTMLElement).offsetHeight);
-      onMeasure(monotone(layout.map((stop, i) => ({ position: stop.position, height: heights[i] ?? 0 }))));
-    };
-    measure();
-    const observer = new ResizeObserver(measure);
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [layout, onMeasure]);
-  return (
-    <div ref={root} className="measure" aria-hidden>
-      {layout.map((stop, i) => (
-        <article className="answer" key={i}>
-          {blocks(stop.pieces, false)}
-        </article>
-      ))}
-    </div>
-  );
-}
-
 /** The answer's paragraphs, with each panel right after the segment that introduces it. */
-function blocks(pieces: Piece[], live: boolean): ReactNode[] {
+function blocks(pieces: Piece[]): ReactNode[] {
   const result: ReactNode[] = [];
   let paragraph: Piece[] = [];
   const flush = () => {
-    if (paragraph.length) result.push(<Paragraph key={`p-${paragraph[0]!.segment.id}`} pieces={paragraph} live={live} />);
+    if (paragraph.length) result.push(<Paragraph key={`p-${paragraph[0]!.segment.id}`} pieces={paragraph} />);
     paragraph = [];
   };
   for (const piece of pieces) {
@@ -203,18 +224,16 @@ function blocks(pieces: Piece[], live: boolean): ReactNode[] {
   return result;
 }
 
-function Paragraph({ pieces, live }: { pieces: Piece[]; live: boolean }) {
+function Paragraph({ pieces }: { pieces: Piece[] }) {
   return (
     <p className="stretch">
       {pieces.map((piece) => (
         <span className={`segment level-${piece.segment.level}`} key={piece.segment.id}>
-          {live
-            ? piece.words.slice(0, piece.shown).map((word, i) => (
-                <span className="word" key={i}>
-                  {word}{" "}
-                </span>
-              ))
-            : `${piece.words.slice(0, piece.shown).join(" ")} `}
+          {piece.words.slice(0, piece.shown).map((word, i) => (
+            <span className="word" key={i}>
+              {word}{" "}
+            </span>
+          ))}
         </span>
       ))}
     </p>

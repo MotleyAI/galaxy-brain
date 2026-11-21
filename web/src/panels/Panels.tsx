@@ -28,7 +28,7 @@ function Bars({ data }: { data: PanelData }) {
   const rows = chartRows(data, (row) => labelOf(row, dims), measure);
   return (
     <figure className="chart">
-      <HorizontalBarChart data={rows} categoryKey="category" />
+      <HorizontalBarChart data={rows} categoryKey="category" height={rows.length * 60 + 80} />
       <figcaption>
         {data.rows.map((row, i) => (
           <span key={i}>

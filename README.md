@@ -2,9 +2,9 @@
 
 **One question, answered at the granularity you choose.**
 
-Ask a data question once. The answer comes in a box you can drag open. Closed, it is one sentence and one number.
-Each bit of room you give it adds detail: the split by store, then by product, then by segment, then trends, comparisons and drivers. The answer is
-the same at every size, only finer.
+Ask a data question once. The answer starts as one sentence and one number. Pull it down to unlock the next depth
+of analysis, and the brain on its handle grows: the split by store, then by product, then by segment, then trends, comparisons and drivers. The answer is
+the same at every depth, only finer.
 
 An agent builds the ladder. It explores the semantic layer and the business context, and decides which steps are worth
 showing for this question on this data. [SLayer](https://github.com/MotleyAI/slayer) makes each step cheap: every step
@@ -19,7 +19,7 @@ writes no new SQL for any step, and every number reconciles with the step before
 | 3 Segments | + new vs returning customers, monthly trend |
 | 4 Analysis | + year over year, month over month, share of total, biggest movers |
 
-> Status: prototype, milestones M2 (the ladder agent) and M3 (text that grows in place), and M4 in progress (a resizable answer drawn with [OpenUI](https://www.openui.com/)). See the [plan](docs/plan.md).
+> Status: prototype, milestones M2 (the ladder agent) and M3 (text that grows in place), and M4 in progress (pull to unlock each depth, drawn with [OpenUI](https://www.openui.com/)). See the [plan](docs/plan.md).
 
 ## Run it
 
@@ -32,7 +32,7 @@ uv run uvicorn --factory slayer_zoom.api:create_app --reload   # http://localhos
 cd web && npm install && npm run dev            # http://localhost:5173
 ```
 
-Ask "What is our revenue year to date?" and drag the answer's bottom edge down. By default the API replays the recorded traces in
+Ask "What is our revenue year to date?" and pull the handle under the answer down. By default the API replays the recorded traces in
 `src/slayer_zoom/traces/data/`, so it needs no database and no API key; `GET /questions` lists them.
 
 To let the agent answer new questions, run against the live SLayer Jaffle Shop demo database (built in `.slayer/`
@@ -46,9 +46,9 @@ The agent (`claude-opus-5-5` in the Anthropic SDK Tool Runner) reads the semanti
 `src/slayer_zoom/context/jaffle_shop.md`, profiles the dimensions it wants to split by, and submits levels one at a
 time; each level is validated, run and streamed as soon as it is accepted, with the agent's progress notes. As each level lands,
 a narrator (`claude-sonnet-5-5`) inserts a sentence or two into the answer's text, introducing each new chart;
-every figure it writes must appear in that level's rows. The answer's size sets its detail: as you drag the box
-taller, the next level's words appear in place to fill it, and the moving edge uncovers each chart right after the
-sentence that introduces it. The level names under the box resize it to a level. A recorded
+every figure it writes must appear in that level's rows. Each pull past the threshold unlocks the next depth: its
+sentences are written into the text in place and each chart unfolds after the sentence that introduces it. Pulling
+up folds a depth; near the bottom of the window the page scrolls with you. A recorded
 question still replays for free, from its recorded rows. To record a new trace:
 
 ```bash

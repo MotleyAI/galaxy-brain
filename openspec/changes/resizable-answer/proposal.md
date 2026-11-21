@@ -1,17 +1,17 @@
 ## Why
 
-The slider sat beside the answer: the reader operated a control to change a text somewhere else. Asking for more
-detail should feel like giving the answer more room. If the answer lives in a box the reader resizes, the text can
-grow to fill whatever space it is given, and the box's moving edge can uncover each new chart, so the moment new data
-appears is hidden in the gesture itself.
+The slider sat beside the answer: the reader operated a control to change a text somewhere else. Each depth of
+analysis should feel like unlocking a new, deeper answer: a deliberate pull on the answer itself, with a visible cue
+for how deep the reader has gone.
 
 ## What Changes
 
-- web `slider`: the range input is gone. The answer sits in an OpenUI card with a resize handle on its bottom edge.
-  The card's height maps to the answer's position through measured heights: every whole level and every moment a
-  segment completes is rendered off-screen at the card's width, once without its new panel and once with it. Between
-  stops the position is linear in height; across a panel's height the position holds while the edge uncovers it.
-  Level names in the card's footer grow or shrink the card to a level; the handle also works from the keyboard.
+- web `slider`: the range input is gone. The answer sits in an OpenUI card that always shows its current depth in
+  full. Pulling the handle on its bottom edge opens room while a brain on the handle charges; past a threshold the
+  next depth writes itself into the text and its charts unfold, and pulling up folds a depth. The brain grows and
+  glows brighter per depth and carries the depth names as tooltip and accessible value. Near the window's bottom the
+  page scrolls so the pull continues, and it follows the answer while a depth unfolds. Keyboard: arrows, Page
+  Up/Down, Home, End.
 - web `panels`: KPI, bar, line and table panels render with OpenUI components (`MetricIndicatorInline`,
   `HorizontalBarChart`, `LineChartCondensed`, `Table`). Values are formatted the same way; charts get the rows as
   SLayer returned them.
@@ -23,7 +23,8 @@ appears is hidden in the gesture itself.
 
 ## Impact
 
-- Architecture: the `slider` element is now "Resizable answer" (same id and package); its arc42 file describes the
-  card and a new enforced principle (a given height always shows the same text); the panels arc42 names OpenUI; a new
+- Architecture: the `slider` element is now "Resizable answer" (same id and package); its arc42 file describes
+  pull to unlock and a new enforced principle (each depth shows the same complete text; a pull moves one step past
+  its threshold); the panels arc42 names OpenUI; a new
   system principle 7 limits OpenUI imports to the panels and the resizable answer, enforced by a test.
 - No backend change: the same events drive the card.

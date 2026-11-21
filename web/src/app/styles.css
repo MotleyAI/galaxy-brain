@@ -64,29 +64,57 @@ header p { margin: 4px 0 24px; color: var(--muted); }
 .chart figcaption strong { color: var(--ink); font-variant-numeric: tabular-nums; }
 .empty { color: var(--muted); }
 
-.answer-card.answer-card { margin-top: 24px; padding: 0; gap: 0; overflow: hidden; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
-.answer-body { position: relative; overflow: hidden; }
-.answer-body.clipped { mask-image: linear-gradient(to bottom, #000 calc(100% - 40px), transparent); }
-.answer { padding: 22px 24px 8px; display: flow-root; }
-.measure { position: absolute; inset: 0 0 auto 0; visibility: hidden; pointer-events: none; }
+.answer-card.answer-card {
+  margin-top: 24px; padding: 0; gap: 0; overflow: visible; background: var(--surface);
+  border: 1px solid var(--line); border-radius: 14px;
+}
+.answer { padding: 22px 24px 4px; display: flow-root; }
 .stretch { font-size: 18px; line-height: 1.65; margin: 0 0 14px; max-width: 64ch; text-wrap: pretty; }
 .stretch .word { animation: word-in 260ms ease-out both; }
 @keyframes word-in { from { opacity: 0; filter: blur(2px); } }
 .stretch .segment.level-0 { font-weight: 550; }
-.inline-panel { margin: 4px 0 18px; }
+.inline-panel { margin: 4px 0 18px; animation: unfold 520ms cubic-bezier(.2,.7,.2,1) both; transform-origin: top; }
+@keyframes unfold { from { opacity: 0; transform: translateY(-6px) scaleY(.92); clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
 
-.resize-handle {
-  position: relative; display: flex; align-items: center; justify-content: center; gap: 10px;
-  height: 22px; cursor: ns-resize; touch-action: none; user-select: none; border-top: 1px solid var(--line);
+/* The room a pull opens under the answer, and the handle with the brain. */
+.pull-room {
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+  color: var(--muted); font-size: 13px; transition: height 260ms cubic-bezier(.3,1.4,.5,1);
+  background: repeating-linear-gradient(135deg, transparent 0 10px, var(--accent-soft) 10px 11px);
 }
-.resize-handle:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
-.grip { width: 44px; height: 5px; border-radius: 3px; background: var(--line); transition: background 150ms; }
-.resize-handle:hover .grip, .resize-handle:active .grip { background: var(--accent); }
+.pull-room:has(+ .pull-handle[data-pulling]) { transition: none; }
+.pull-handle {
+  position: relative; display: flex; align-items: center; justify-content: center;
+  min-height: 34px; padding-top: 4px; border-top: 1px solid var(--line); cursor: ns-resize; touch-action: none; user-select: none;
+}
+.pull-handle:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 0 0 14px 14px; }
 .hint { position: absolute; right: 16px; font-size: 12px; color: var(--muted); }
-.answer-foot { padding: 6px 16px 10px; }
-.levels { display: flex; flex-wrap: wrap; gap: 4px; list-style: none; margin: 0; padding: 0; }
-.levels button[aria-current="true"] { font-weight: 650; color: var(--ink); }
-.answer-foot .progress { margin: 6px 4px 0; }
+.answer-card .progress { margin: 0; padding: 0 16px 12px; text-align: center; }
+
+.brain-cue {
+  --glow: color-mix(in oklab, var(--accent) calc(var(--stage) * 100%), var(--muted));
+  --size: calc(44px + var(--stage) * 32px);
+  width: var(--size); height: var(--size); margin-bottom: calc(var(--size) * -0.38); overflow: visible;
+  transition: width 500ms cubic-bezier(.2,1.4,.4,1), height 500ms cubic-bezier(.2,1.4,.4,1), filter 400ms;
+  background: var(--surface); border-radius: 50%;
+  filter: drop-shadow(0 0 calc(2px + var(--stage) * 12px) color-mix(in oklab, var(--glow) calc(var(--stage) * 70%), transparent));
+}
+.brain-cue .ring-track { fill: var(--surface); stroke: var(--line); stroke-width: 2.5; }
+.brain-cue .ring { fill: none; stroke: var(--accent); stroke-width: 3; stroke-linecap: round; }
+.brain-cue .ring.folding { stroke: var(--muted); }
+.brain-cue .rays line { stroke: var(--glow); stroke-width: 1.6; stroke-linecap: round; opacity: calc(.35 + var(--stage) * .65); }
+.brain-cue .lobes {
+  fill: color-mix(in oklab, var(--glow) calc(15% + var(--stage) * 55%), var(--surface));
+  stroke: var(--glow); stroke-width: 1.6; stroke-linejoin: round;
+}
+.brain-cue .folds { fill: none; stroke: var(--glow); stroke-width: 1.3; stroke-linecap: round; opacity: .8; }
+.brain-cue .brain-body { animation: level-up 600ms cubic-bezier(.2,1.6,.4,1); transform-box: fill-box; transform-origin: center; }
+@keyframes level-up { 0% { opacity: .4; scale: .7; } 60% { scale: 1.18; } 100% { scale: 1; } }
+.brain-cue.radiant .rays { animation: radiate 6s linear infinite; transform-origin: center; }
+.brain-cue.radiant .lobes { fill: color-mix(in oklab, #ff7ad9 35%, var(--glow)); }
+@keyframes radiate { to { rotate: 360deg; } }
+.pull-handle:hover .brain-cue .ring-track, .pull-handle[data-pulling] .brain-cue .ring-track { stroke: var(--accent-soft); }
+
 @media (prefers-reduced-motion: reduce) {
-  .stretch .word { animation: none; }
+  .stretch .word, .inline-panel, .brain-cue .brain-body, .brain-cue.radiant .rays { animation: none; }
 }
