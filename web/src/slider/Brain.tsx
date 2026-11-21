@@ -27,6 +27,7 @@ export function Brain({ stage, charge, depth }: { stage: number; charge: number;
           return (
             <line
               key={i}
+              style={{ ["--i" as string]: i, ["--n" as string]: rays }}
               x1={Math.cos(angle) * 20}
               y1={Math.sin(angle) * 20}
               x2={Math.cos(angle) * 25}

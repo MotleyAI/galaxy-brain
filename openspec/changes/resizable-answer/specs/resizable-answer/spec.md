@@ -15,9 +15,10 @@ change nothing. Pulling SHALL NOT call the server.
 - **THEN** the opened room springs back and the answer keeps its depth
 
 ### Requirement: Expanding-brain cue
-The handle SHALL carry a brain that grows and glows brighter at each depth and whose ring fills as the reader pulls.
-Depth names SHALL NOT be listed under the answer; they SHALL be the handle's tooltip and accessible value, and the
-handle SHALL be operable from the keyboard.
+The handle SHALL carry a brain that grows and glows brighter at each depth, with rays shining out of it, and whose
+ring fills as the reader pulls. What the next depth holds SHALL stay hidden: the handle says only "Pull to expand"
+and its tooltip and accessible value give the depth number, never its name. The handle SHALL be operable from the
+keyboard.
 
 #### Scenario: The deepest analysis
 - **WHEN** the reader unlocks the last depth
@@ -45,21 +46,15 @@ with the new text marked until a few seconds after. Any scrolling of the reader'
 - **WHEN** the reader scrolls while the page is following or returning
 - **THEN** the tour stops and the page stays where the reader put it
 
-### Requirement: Overview of the analysis
-The card SHALL open with an outline of every depth. The narrator SHALL write, per depth, the question it answers, a
-headline of a few words and a summary of the whole answer so far, every figure of which appears in the rows of that
-depth or an earlier one; the summary is stored but not shown. The text SHALL only grow. Each depth's first sentence
-SHALL carry its question as a heading.
+### Requirement: Question headings
+The narrator SHALL write, per depth, the question it answers, a headline of a few words and a summary of the whole
+answer so far, every figure of which appears in the rows of that depth or an earlier one; the headline and summary
+are stored but not shown. The text SHALL only grow. Each depth's first sentence SHALL carry its question as a
+heading.
 
 #### Scenario: Unlocking a depth
 - **WHEN** the reader unlocks the Split depth of "What is our revenue year to date?"
-- **THEN** the outline marks Split as current with its headline, and the store sentence appears under the heading
-  "Which cafés bring in the revenue?"
-
-#### Scenario: Depths still to come
-- **WHEN** the reader is at depth 2 of 5
-- **THEN** the outline shows the headlines of depths 1 and 2 and the titles of depths 3 to 5, and clicking an
-  unlocked depth goes there
+- **THEN** the store sentence appears under the heading "Which cafés bring in the revenue?"
 
 #### Scenario: A made-up figure in a summary
 - **WHEN** a drafted summary states a figure that no row up to its depth rounds to

@@ -12,7 +12,7 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNod
 import { PanelView } from "../panels";
 import { lastPosition, useAnswer, type AnswerStore, type Digest, type Segment } from "../state";
 import { Brain } from "./Brain";
-import { depthStarts, firstChangeAnchor, outlineOf, type OutlineEntry } from "./digest";
+import { depthStarts, firstChangeAnchor } from "./digest";
 import { charge, glide, Pull, pulledDepth, returnMs, rewindMs, ScrollStreams, stage, stretch, THINK_MS, writingMs } from "./pull";
 import { reveal, withFallbacks, type Piece } from "./stretch";
 
@@ -273,24 +273,21 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
   if (state.levels.length === 0) return building ? <p className="progress">{note ?? "Starting…"}</p> : null;
 
   const shown = Math.min(depth, reachable);
-  const current = state.levels[shown];
-  const next = state.levels[shown + 1];
   const canUnlock = shown < reachable;
   const room = stretch(pull, canUnlock);
-  const label = `Depth ${shown + 1} of ${total}: ${current?.title ?? ""}`;
+  // Generic on purpose: the next depth stays a surprise, so nothing here names it or the agent's steps.
+  const label = `Depth ${shown + 1} of ${total}`;
   const invite = canUnlock
-    ? `${charge(pull) > 0.85 ? "Almost there: keep pulling" : "Pull"} to unlock ${next?.title ?? "the next depth"}`
+    ? charge(pull) > 0.85
+      ? "Keep pulling…"
+      : "Pull to expand"
     : shown + 1 < total
-      ? (note ?? "Thinking deeper…")
-      : "That is the deepest analysis";
+      ? "Thinking deeper…"
+      : "That's the full depth";
 
   return (
     <ThemeProvider mode={mode}>
       <Card variant="card" width="full" className="answer-card" ref={card}>
-        <Outline
-          entries={outlineOf(total, state.levels, state.digests, shown, reachable)}
-          onPick={(index) => go(Math.max(0, Math.min(index, reachRef.current)))}
-        />
         <article className="answer" ref={article}>{blocks(reveal(segments, state.levels, state.position), state.digests, fresh)}</article>
         <div className="pull-room" style={{ height: room }} aria-hidden>
           {room > 24 && <span>{invite}</span>}
@@ -331,33 +328,15 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
           onPointerCancel={release}
         >
           <Brain stage={stage(shown, total)} charge={charge(pull)} depth={shown} />
-          {shown === 0 && canUnlock && pull === 0 && <span className="hint">Pull down to think deeper</span>}
+          {shown === 0 && canUnlock && pull === 0 && <span className="hint">Pull to expand</span>}
         </div>
         {building && shown === reachable && pull === 0 && (
           <p className="progress" aria-live="polite">
-            {note ?? "Thinking deeper…"}
+            Thinking deeper…
           </p>
         )}
       </Card>
     </ThemeProvider>
-  );
-}
-
-/** The analysis at a glance: every depth, with what each unlocked one found and what is still to come. */
-function Outline({ entries, onPick }: { entries: OutlineEntry[]; onPick: (index: number) => void }) {
-  return (
-    <nav className="overview" aria-label="Depths of the analysis">
-      <ol className="outline">
-        {entries.map((entry) => (
-          <li key={entry.index} data-state={entry.state}>
-            <button type="button" disabled={!entry.reachable} onClick={() => onPick(entry.index)}>
-              <span className="dot" aria-hidden />
-              <span className="label">{entry.label}</span>
-            </button>
-          </li>
-        ))}
-      </ol>
-    </nav>
   );
 }
 

@@ -8,8 +8,8 @@ depth of analysis unlocks: new sentences are written into the text and their cha
 handle grows and glows brighter with each depth, from a plain outline at the single number to radiant at the deepest
 analysis. Pull up to fold a depth away.
 
-At the top of the answer, an outline lists every depth: what each unlocked one found, and what is still to come.
-Each depth's text opens with the question it answers. When a new depth unlocks, the page first goes to where its first new
+What the next depth holds stays a surprise: the handle only says "Pull to expand". Each depth's text opens with the
+question it answers. When a new depth unlocks, the page first goes to where its first new
 sentence lands, then follows the writing down as it appears, pauses at its end so you can see how much was added, then glides back to the top of the answer so you can read
 the fuller analysis through, with the new sentences highlighted. Each pull unlocks one depth; the next takes another
 deliberate pull. It is the same answer at every depth, only deeper, and every number reconciles with the depth
@@ -47,8 +47,8 @@ after the sentence that introduces it.
    - Every figure it writes must appear, as rounded, in that depth's result rows. If one doesn't, the narrator gets
      one retry, and then the sentence is dropped.
    - A chart the narrator skips still appears, introduced by its title.
-   - For each depth it also writes the question the depth answers, a headline for the outline and a summary of
-     the whole answer so far (stored, not shown yet). Their figures go through the same check, against every depth
+   - For each depth it also writes the question the depth answers, a headline and a summary of the whole answer
+     so far (both stored, not shown yet). Their figures go through the same check, against every depth
      up to this one.
 4. **The browser does the rest.** All depths arrive with the answer, so pulling never calls the server. The card and
    charts are drawn with [OpenUI](https://www.openui.com/) components.
@@ -101,7 +101,7 @@ uv run python -m slayer_zoom.api.record --narrate agent_revenue_ytd
 | `src/slayer_zoom/narrator` | The narrator and its figure check |
 | `src/slayer_zoom/core` | The shared contract: depths, panels, growing text, invariants |
 | `src/slayer_zoom/executor`, `traces`, `api` | Running queries, recording and replaying traces, the streaming API |
-| `web/src/slider` | The answer card: outline, pull to unlock, the brain, page scrolling |
+| `web/src/slider` | The answer card: pull to unlock, the brain, the tour of each new depth |
 | `web/src/panels`, `state` | OpenUI panels, and the answer state fed by the stream |
 
 The Python module keeps its original name, `slayer_zoom`.

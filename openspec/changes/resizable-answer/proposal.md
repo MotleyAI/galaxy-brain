@@ -9,14 +9,15 @@ for how deep the reader has gone.
 - web `slider`: the range input is gone. The answer sits in an OpenUI card that always shows its current depth in
   full. Pulling the handle on its bottom edge opens room while a brain on the handle charges; past a threshold the
   next depth writes itself into the text and its charts unfold, and pulling up folds a depth. The brain grows and
-  glows brighter per depth and carries the depth names as tooltip and accessible value. Near the window's bottom the
+  glows brighter per depth, with rays shining out; the handle only says "Pull to expand", so what the next depth holds
+  stays hidden. Near the window's bottom the
   page scrolls so the pull continues; once a depth unlocks, the page follows the new section down, pauses at its end and
   glides back to the start of the answer, marking the new text. A press unlocks at most one depth. Keyboard: arrows, Page
   Up/Down, Home, End.
 - Overview: per depth the narrator also writes a question heading, a short headline and a summary of the whole
   answer so far, grounded in the rows up to that depth and stored with the trace (`Digest` in `core`, `digests` in
-  traces and the `narration` event). The card opens with an outline of every depth; each depth's first sentence
-  carries its question. The summary is stored but not shown: it duplicated the text. The four stored answers were narrated again.
+  traces and the `narration` event). Each depth's first sentence carries its question. The summary pane and the outline
+  of depths were tried and removed; headlines and summaries stay stored. The four stored answers were narrated again.
 - web `panels`: KPI, bar, line and table panels render with OpenUI components (`MetricIndicatorInline`,
   `HorizontalBarChart`, `LineChartCondensed`, `Table`). Values are formatted the same way; charts get the rows as
   SLayer returned them.
