@@ -19,8 +19,7 @@ export function App() {
   return (
     <main>
       <header>
-        <h1>slayer-zoom</h1>
-        <p>One question. Pull the answer down to think deeper.</p>
+        <h1>Galaxy brain UX experiment by Motley</h1>
       </header>
       <form onSubmit={submit} className="ask">
         <input value={question} onChange={(e) => setQuestion(e.target.value)} aria-label="Question" />
