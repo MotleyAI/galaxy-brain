@@ -23,30 +23,31 @@ handle SHALL be operable from the keyboard.
 - **WHEN** the reader unlocks the last depth
 - **THEN** the brain is at its largest and radiant, and pulling further only resists
 
-### Requirement: The page follows the answer
-When a pull reaches the bottom of the window the page SHALL scroll so the pull can continue, and while a new depth
-unfolds the page SHALL keep the handle on screen.
+### Requirement: Read the fuller analysis from the top
+When a pull reaches the bottom of the window the page SHALL scroll so the pull can continue. Once a new depth
+unlocks, the page SHALL return to the start of the answer, and the text that depth added SHALL stay marked for a few
+seconds.
 
 #### Scenario: Holding the pull at the window's edge
 - **WHEN** the reader pulls to the bottom of the window and holds while the page scrolls and a depth unfolds
 - **THEN** exactly one depth unlocks; the page following the answer does not count as pulling, and the next depth
   takes another full pull once this one has settled
 
-#### Scenario: A long answer
-- **WHEN** the unlocked depth grows the answer past the bottom of the window
-- **THEN** the page scrolls with it and brings the handle back to about the middle of the window, leaving room for
-  the next pull
+#### Scenario: Unlocking at the bottom of a long answer
+- **WHEN** the reader has scrolled down to the handle and unlocks the next depth
+- **THEN** the page scrolls back to the start of the answer, and the new sentences are highlighted where they were
+  inserted
 
 ### Requirement: Overview of the analysis
-The card SHALL open with a summary of the answer so far and an outline of every depth. The narrator SHALL write, per
-depth, the question it answers, a headline of a few words and a summary of the whole answer so far, every figure of
-which appears in the rows of that depth or an earlier one. The summary SHALL be rewritten at each depth; the body
-text SHALL only grow. Each depth's first sentence SHALL carry its question as a heading.
+The card SHALL open with an outline of every depth. The narrator SHALL write, per depth, the question it answers, a
+headline of a few words and a summary of the whole answer so far, every figure of which appears in the rows of that
+depth or an earlier one; the summary is stored but not shown. The text SHALL only grow. Each depth's first sentence
+SHALL carry its question as a heading.
 
 #### Scenario: Unlocking a depth
 - **WHEN** the reader unlocks the Split depth of "What is our revenue year to date?"
-- **THEN** the summary is rewritten to cover revenue and its split by store, the outline marks Split as current with
-  its headline, and the store sentence appears under the heading "Which cafés bring in the revenue?"
+- **THEN** the outline marks Split as current with its headline, and the store sentence appears under the heading
+  "Which cafés bring in the revenue?"
 
 #### Scenario: Depths still to come
 - **WHEN** the reader is at depth 2 of 5

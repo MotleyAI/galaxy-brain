@@ -28,11 +28,6 @@ export function outlineOf(
   });
 }
 
-/** The summary to show at a depth: that depth's, or the latest one before it while its own is still being written. */
-export function summaryAt(digests: Digest[], depth: number): Digest | null {
-  return [...digests].filter((d) => d.level <= depth).sort((a, b) => b.level - a.level)[0] ?? null;
-}
-
 /** The first visible segment of each deeper level, in reading order: where that depth's question heading goes. */
 export function depthStarts(pieces: Piece[]): Map<string, number> {
   const starts = new Map<string, number>();

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Digest, ResolvedLevel, Segment } from "../state";
-import { depthStarts, outlineOf, summaryAt } from "./digest";
+import { depthStarts, outlineOf } from "./digest";
 import type { Piece } from "./stretch";
 
 const level = (index: number, title: string): ResolvedLevel => ({ index, title, rationale: "", panels: [] });
@@ -16,12 +16,6 @@ describe("outline", () => {
 
   it("falls back to the level title while a depth has no digest yet", () => {
     expect(outlineOf(2, levels, [], 1, 1).map((e) => e.label)).toEqual(["Number", "Split"]);
-  });
-});
-
-describe("summary", () => {
-  it("is the current depth's, or the latest earlier one while it is still being written", () => {
-    expect([summaryAt(digests, 2)?.summary, summaryAt(digests, 3)?.summary, summaryAt([], 0)]).toEqual(["S2.", "S2.", null]);
   });
 });
 

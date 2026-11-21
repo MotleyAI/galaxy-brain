@@ -10,12 +10,13 @@ for how deep the reader has gone.
   full. Pulling the handle on its bottom edge opens room while a brain on the handle charges; past a threshold the
   next depth writes itself into the text and its charts unfold, and pulling up folds a depth. The brain grows and
   glows brighter per depth and carries the depth names as tooltip and accessible value. Near the window's bottom the
-  page scrolls so the pull continues, and it follows the answer while a depth unfolds. Keyboard: arrows, Page
+  page scrolls so the pull continues; once a depth unlocks, the page returns to the start of the answer and marks the
+  new text. Keyboard: arrows, Page
   Up/Down, Home, End.
 - Overview: per depth the narrator also writes a question heading, a short headline and a summary of the whole
   answer so far, grounded in the rows up to that depth and stored with the trace (`Digest` in `core`, `digests` in
-  traces and the `narration` event). The card opens with the summary, rewritten at each depth, and an outline of
-  every depth; each depth's first sentence carries its question. The four stored answers were narrated again.
+  traces and the `narration` event). The card opens with an outline of every depth; each depth's first sentence
+  carries its question. The summary is stored but not shown: it duplicated the text. The four stored answers were narrated again.
 - web `panels`: KPI, bar, line and table panels render with OpenUI components (`MetricIndicatorInline`,
   `HorizontalBarChart`, `LineChartCondensed`, `Table`). Values are formatted the same way; charts get the rows as
   SLayer returned them.

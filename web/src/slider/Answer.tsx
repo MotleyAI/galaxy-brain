@@ -12,17 +12,16 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNod
 import { PanelView } from "../panels";
 import { lastPosition, useAnswer, type AnswerStore, type Digest, type Segment } from "../state";
 import { Brain } from "./Brain";
-import { depthStarts, outlineOf, summaryAt, type OutlineEntry } from "./digest";
+import { depthStarts, outlineOf, type OutlineEntry } from "./digest";
 import { charge, Pull, pulledDepth, stage, stretch, writingMs } from "./pull";
 import { reveal, withFallbacks, type Piece } from "./stretch";
 
 const FOLD_MS = 280;
-const UNFOLD_MS = 900;
 const SETTLE_MS = 300;
 const EDGE = 56;
 const SCROLL_STEP = 8;
-const FOLLOW_AT = 0.8;
-const FOLLOW_TO = 0.6;
+const TOP_GAP = 16;
+const FRESH_MS = 4000;
 
 function wordsBetween(segments: Segment[], from: number, to: number): number {
   return segments
@@ -48,19 +47,31 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
   const writing = useRef(0);
   const scrolling = useRef(0);
   const handle = useRef<HTMLDivElement>(null);
-  const article = useRef<HTMLElement>(null);
-  const followUntil = useRef(0);
+  const card = useRef<HTMLDivElement>(null);
+  const [fresh, setFresh] = useState<number | null>(null);
+  const freshTimer = useRef(0);
   reachRef.current = reachable;
 
   const go = (next: number) => {
+    const from = depthRef.current;
     depthRef.current = next;
     setDepth(next);
+    if (next <= from) return;
+    // A new depth: take the reader back to the start of the answer to read it through, with the new text marked.
+    const top = card.current?.getBoundingClientRect().top ?? 0;
+    if (top < 0) window.scrollTo({ top: window.scrollY + top - TOP_GAP, behavior: "smooth" });
+    setFresh(next);
+    window.clearTimeout(freshTimer.current);
+    freshTimer.current = window.setTimeout(
+      () => setFresh(null),
+      writingMs(wordsBetween(segments, from, next)) + FRESH_MS,
+    );
   };
 
   // A new question starts again at the single number.
   useEffect(() => go(0), [state.question]);
 
-  // Write the unlocked depth in word by word (or fold it away), keeping the handle on screen as the answer grows.
+  // Write the unlocked depth in word by word, or fold it away.
   useEffect(() => {
     const from = store.getState().position;
     const to = Math.min(depth, reachable);
@@ -68,31 +79,15 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
     const grows = to > from;
     const ms = grows ? writingMs(wordsBetween(segments, Math.floor(from), to)) : FOLD_MS;
     const start = performance.now();
-    followUntil.current = grows ? Number.POSITIVE_INFINITY : 0;
     const step = (now: number) => {
       const t = Math.min((now - start) / ms, 1);
       store.slide(from + (to - from) * (grows ? t : 1 - (1 - t) ** 2));
       if (t < 1) writing.current = requestAnimationFrame(step);
-      else if (grows) followUntil.current = now + UNFOLD_MS;
     };
     cancelAnimationFrame(writing.current);
     writing.current = requestAnimationFrame(step);
     return () => cancelAnimationFrame(writing.current);
   }, [depth, reachable, segments, store]);
-
-  // While a new depth writes itself in and its charts unfold, keep the handle on screen: the page scrolls with it.
-  useEffect(() => {
-    const el = article.current;
-    if (!el) return;
-    const observer = new ResizeObserver(() => {
-      const box = handle.current?.getBoundingClientRect();
-      if (!box || performance.now() > followUntil.current) return;
-      // Once the handle nears the bottom, bring it back to about 60% down the window, leaving room for the next pull.
-      if (box.bottom > window.innerHeight * FOLLOW_AT) window.scrollBy(0, box.bottom - window.innerHeight * FOLLOW_TO);
-    });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [state.levels.length > 0]);
 
   const track = () => {
     const current = drag.current;
@@ -169,15 +164,12 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
 
   return (
     <ThemeProvider mode={mode}>
-      <Card variant="card" width="full" className="answer-card">
-        <Overview
-          summary={summaryAt(state.digests, shown)}
-          outline={outlineOf(total, state.levels, state.digests, shown, reachable)}
+      <Card variant="card" width="full" className="answer-card" ref={card}>
+        <Outline
+          entries={outlineOf(total, state.levels, state.digests, shown, reachable)}
           onPick={(index) => go(Math.max(0, Math.min(index, reachRef.current)))}
         />
-        <article className="answer" ref={article}>
-          {blocks(reveal(segments, state.levels, state.position), state.digests)}
-        </article>
+        <article className="answer">{blocks(reveal(segments, state.levels, state.position), state.digests, fresh)}</article>
         <div className="pull-room" style={{ height: room }} aria-hidden>
           {room > 24 && <span>{invite}</span>}
         </div>
@@ -227,25 +219,12 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
   );
 }
 
-/** The rewritten summary of the answer so far, and the outline of every depth beside it. */
-function Overview({
-  summary,
-  outline,
-  onPick,
-}: {
-  summary: Digest | null;
-  outline: OutlineEntry[];
-  onPick: (index: number) => void;
-}) {
+/** The analysis at a glance: every depth, with what each unlocked one found and what is still to come. */
+function Outline({ entries, onPick }: { entries: OutlineEntry[]; onPick: (index: number) => void }) {
   return (
-    <header className="overview">
-      <div className="summary" aria-live="polite">
-        <span className="kicker">In short</span>
-        {/* Keyed by level so each rewrite fades in as a new summary. */}
-        <p key={summary?.level ?? -1}>{summary?.summary ?? "Writing the answer…"}</p>
-      </div>
-      <ol className="outline" aria-label="Depths of the analysis">
-        {outline.map((entry) => (
+    <nav className="overview" aria-label="Depths of the analysis">
+      <ol className="outline">
+        {entries.map((entry) => (
           <li key={entry.index} data-state={entry.state}>
             <button type="button" disabled={!entry.reachable} onClick={() => onPick(entry.index)}>
               <span className="dot" aria-hidden />
@@ -254,18 +233,20 @@ function Overview({
           </li>
         ))}
       </ol>
-    </header>
+    </nav>
   );
 }
 
 /** The answer's paragraphs, with each depth's question before its first sentence and each panel after the
  * segment that introduces it. */
-function blocks(pieces: Piece[], digests: Digest[]): ReactNode[] {
+function blocks(pieces: Piece[], digests: Digest[], fresh: number | null): ReactNode[] {
   const result: ReactNode[] = [];
   const starts = depthStarts(pieces);
   let paragraph: Piece[] = [];
   const flush = () => {
-    if (paragraph.length) result.push(<Paragraph key={`p-${paragraph[0]!.segment.id}`} pieces={paragraph} />);
+    if (paragraph.length) {
+      result.push(<Paragraph key={`p-${paragraph[0]!.segment.id}`} pieces={paragraph} fresh={fresh} />);
+    }
     paragraph = [];
   };
   for (const piece of pieces) {
@@ -274,7 +255,7 @@ function blocks(pieces: Piece[], digests: Digest[]): ReactNode[] {
     if (question) {
       flush();
       result.push(
-        <h4 className="depth-question" key={`q-${starting}`}>
+        <h4 className={`depth-question${starting === fresh ? " fresh" : ""}`} key={`q-${starting}`}>
           {question}
         </h4>,
       );
@@ -293,11 +274,14 @@ function blocks(pieces: Piece[], digests: Digest[]): ReactNode[] {
   return result;
 }
 
-function Paragraph({ pieces }: { pieces: Piece[] }) {
+function Paragraph({ pieces, fresh }: { pieces: Piece[]; fresh: number | null }) {
   return (
     <p className="stretch">
       {pieces.map((piece) => (
-        <span className={`segment level-${piece.segment.level}`} key={piece.segment.id}>
+        <span
+          className={`segment level-${piece.segment.level}${piece.segment.level === fresh ? " fresh" : ""}`}
+          key={piece.segment.id}
+        >
           {piece.words.slice(0, piece.shown).map((word, i) => (
             <span className="word" key={i}>
               {word}{" "}
