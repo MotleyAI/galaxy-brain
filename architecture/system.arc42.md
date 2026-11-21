@@ -2,7 +2,7 @@
 
 ## Purpose and context
 
-slayer-zoom answers one data question at the granularity the reader chooses. Growing the answer box moves from a single number,
+galaxy-brain answers one data question at the granularity the reader chooses. Growing the answer box moves from a single number,
 through splits, mix and segments, to trends and drivers. Each step is a SLayer query that refines the one before it,
 so every number reconciles with the step before it. An agent builds the ladder of steps from the semantic layer and
 the business context. SLayer and the Anthropic API are outside the system; the reader uses the web app.
