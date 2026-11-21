@@ -1,4 +1,4 @@
-# slayer-zoom
+# Galaxy brain UX experiment by Motley
 
 **One question, answered at the granularity you choose.**
 

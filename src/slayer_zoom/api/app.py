@@ -125,7 +125,7 @@ def create_app(
     agent: Agent | None = None,
     narrator: NarratorFactory | None = None,
 ) -> FastAPI:
-    app = FastAPI(title="slayer-zoom")
+    app = FastAPI(title="galaxy-brain")
     stored = traces if traces is not None else load_traces()
     live_agent = agent or _default_agent()
     live_writer = narrator or (live_narrator if live_agent is not None and agent is None else None)
