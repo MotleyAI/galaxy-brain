@@ -27,9 +27,15 @@ handle SHALL be operable from the keyboard.
 When a pull reaches the bottom of the window the page SHALL scroll so the pull can continue, and while a new depth
 unfolds the page SHALL keep the handle on screen.
 
+#### Scenario: Holding the pull at the window's edge
+- **WHEN** the reader pulls to the bottom of the window and holds while the page scrolls and a depth unfolds
+- **THEN** exactly one depth unlocks; the page following the answer does not count as pulling, and the next depth
+  takes another full pull once this one has settled
+
 #### Scenario: A long answer
 - **WHEN** the unlocked depth grows the answer past the bottom of the window
-- **THEN** the page scrolls with it and the handle stays visible
+- **THEN** the page scrolls with it and brings the handle back to about the middle of the window, leaving room for
+  the next pull
 
 ### Requirement: OpenUI components
 Panels and the card SHALL be drawn with OpenUI components, and only the panels and the resizable answer SHALL import

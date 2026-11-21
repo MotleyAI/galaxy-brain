@@ -29,3 +29,45 @@ export function writingMs(words: number): number {
 export function stage(depth: number, total: number): number {
   return total > 1 ? Math.max(0, Math.min(1, depth / (total - 1))) : 0;
 }
+
+/**
+ * One pull gesture. Its distance is the finger's own movement plus any page scrolling the reader asked for by
+ * holding the finger at the window's edge; the page following a depth as it unfolds does not count. After an unlock
+ * the gesture is spent until the new depth has settled, then it rearms from wherever the finger is, so each further
+ * depth takes another full pull.
+ */
+export class Pull {
+  private origin: number;
+  private edge = 0;
+  private spentUntil = 0;
+  private rearm = false;
+
+  constructor(clientY: number) {
+    this.origin = clientY;
+  }
+
+  distance(clientY: number, now: number): number {
+    if (now < this.spentUntil) return 0;
+    if (this.rearm) {
+      this.origin = clientY;
+      this.edge = 0;
+      this.rearm = false;
+    }
+    return clientY - this.origin + this.edge;
+  }
+
+  /** The reader held the finger at an edge and the page scrolled by `by` pixels: that counts as pulling. */
+  scrolled(by: number): void {
+    this.edge += by;
+  }
+
+  /** A depth was unlocked or folded: ignore the gesture until it settles, then start counting again. */
+  spend(now: number, ms: number): void {
+    this.spentUntil = now + ms;
+    this.rearm = true;
+  }
+
+  isSpent(now: number): boolean {
+    return now < this.spentUntil;
+  }
+}

@@ -31,7 +31,7 @@ body {
   color: var(--ink);
   font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
 }
-main { max-width: 860px; margin: 0 auto; padding: 40px 16px 80px; }
+main { max-width: 860px; margin: 0 auto; padding: 40px 16px 50vh; }
 header h1 { margin: 0 0 24px; font-size: 22px; letter-spacing: -0.01em; }
 
 .ask { display: flex; gap: 8px; }

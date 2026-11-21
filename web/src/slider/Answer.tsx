@@ -12,13 +12,16 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNod
 import { PanelView } from "../panels";
 import { lastPosition, useAnswer, type AnswerStore, type Segment } from "../state";
 import { Brain } from "./Brain";
-import { charge, pulledDepth, stage, stretch, writingMs } from "./pull";
+import { charge, Pull, pulledDepth, stage, stretch, writingMs } from "./pull";
 import { reveal, withFallbacks, type Piece } from "./stretch";
 
 const FOLD_MS = 280;
 const UNFOLD_MS = 900;
+const SETTLE_MS = 300;
 const EDGE = 56;
-const SCROLL_STEP = 14;
+const SCROLL_STEP = 8;
+const FOLLOW_AT = 0.8;
+const FOLLOW_TO = 0.6;
 
 function wordsBetween(segments: Segment[], from: number, to: number): number {
   return segments
@@ -40,7 +43,7 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
   const [pull, setPull] = useState(0);
   const depthRef = useRef(0);
   const reachRef = useRef(reachable);
-  const drag = useRef<{ origin: number; clientY: number } | null>(null);
+  const drag = useRef<{ pull: Pull; clientY: number } | null>(null);
   const writing = useRef(0);
   const scrolling = useRef(0);
   const handle = useRef<HTMLDivElement>(null);
@@ -64,11 +67,12 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
     const grows = to > from;
     const ms = grows ? writingMs(wordsBetween(segments, Math.floor(from), to)) : FOLD_MS;
     const start = performance.now();
-    followUntil.current = grows ? start + ms + UNFOLD_MS : 0;
+    followUntil.current = grows ? Number.POSITIVE_INFINITY : 0;
     const step = (now: number) => {
       const t = Math.min((now - start) / ms, 1);
       store.slide(from + (to - from) * (grows ? t : 1 - (1 - t) ** 2));
       if (t < 1) writing.current = requestAnimationFrame(step);
+      else if (grows) followUntil.current = now + UNFOLD_MS;
     };
     cancelAnimationFrame(writing.current);
     writing.current = requestAnimationFrame(step);
@@ -82,8 +86,8 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
     const observer = new ResizeObserver(() => {
       const box = handle.current?.getBoundingClientRect();
       if (!box || performance.now() > followUntil.current) return;
-      const over = box.bottom + 24 - window.innerHeight;
-      if (over > 0) window.scrollBy(0, over);
+      // Once the handle nears the bottom, bring it back to about 60% down the window, leaving room for the next pull.
+      if (box.bottom > window.innerHeight * FOLLOW_AT) window.scrollBy(0, box.bottom - window.innerHeight * FOLLOW_TO);
     });
     observer.observe(el);
     return () => observer.disconnect();
@@ -92,22 +96,36 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
   const track = () => {
     const current = drag.current;
     if (!current) return;
-    const dy = current.clientY + window.scrollY - current.origin;
-    const next = pulledDepth(depthRef.current, dy, reachRef.current);
-    if (next !== depthRef.current) {
+    const now = performance.now();
+    const dy = current.pull.distance(current.clientY, now);
+    const from = depthRef.current;
+    const next = pulledDepth(from, dy, reachRef.current);
+    if (next !== from) {
       go(next);
-      current.origin = current.clientY + window.scrollY;
+      // One depth per pull: wait until this one has written itself in, then count a fresh pull.
+      const settle = next > from ? writingMs(wordsBetween(segments, from, next)) + SETTLE_MS : FOLD_MS + SETTLE_MS;
+      current.pull.spend(now, settle);
       setPull(0);
     } else {
       setPull(dy);
     }
   };
-  // While the finger rests near an edge of the window, scroll the page so the pull can continue.
+  // While the finger rests near the window's edge in the direction of the pull, scroll the page so the pull can go
+  // on. Only this scrolling counts toward the pull; the page following an unfolding depth does not.
   const edgeScroll = () => {
     const current = drag.current;
     if (!current) return;
-    if (current.clientY > window.innerHeight - EDGE) window.scrollBy(0, SCROLL_STEP);
-    else if (current.clientY < EDGE) window.scrollBy(0, -SCROLL_STEP);
+    const now = performance.now();
+    if (!current.pull.isSpent(now)) {
+      const dy = current.pull.distance(current.clientY, now);
+      const step =
+        current.clientY > window.innerHeight - EDGE && dy > 0 ? SCROLL_STEP : current.clientY < EDGE && dy < 0 ? -SCROLL_STEP : 0;
+      if (step) {
+        const before = window.scrollY;
+        window.scrollBy(0, step);
+        current.pull.scrolled(window.scrollY - before);
+      }
+    }
     track();
     scrolling.current = requestAnimationFrame(edgeScroll);
   };
@@ -176,7 +194,7 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
                 // A synthetic or already-released pointer: the pull still works while it stays on the handle.
               }
             }
-            drag.current = { origin: event.clientY + window.scrollY, clientY: event.clientY };
+            drag.current = { pull: new Pull(event.clientY), clientY: event.clientY };
             cancelAnimationFrame(scrolling.current);
             scrolling.current = requestAnimationFrame(edgeScroll);
           }}

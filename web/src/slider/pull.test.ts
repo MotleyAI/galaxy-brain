@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { charge, pulledDepth, stage, stretch, THRESHOLD, writingMs } from "./pull";
+import { charge, Pull, pulledDepth, stage, stretch, THRESHOLD, writingMs } from "./pull";
 
 describe("pull to unlock", () => {
   it("unlocks one depth at a time, only past the threshold", () => {
@@ -31,5 +31,24 @@ describe("pull to unlock", () => {
 
   it("grows the brain from the plain number to the deepest analysis", () => {
     expect([stage(0, 5), stage(2, 5), stage(4, 5), stage(0, 1)]).toEqual([0, 0.5, 1, 0]);
+  });
+});
+
+describe("a pull gesture", () => {
+  it("counts the finger's movement and edge scrolling, not the page following the answer", () => {
+    const pull = new Pull(300);
+    expect(pull.distance(360, 0)).toBe(60);
+    pull.scrolled(40);
+    expect(pull.distance(360, 0)).toBe(100);
+  });
+
+  it("unlocks one depth per pull: spent until the depth settles, then a full pull again", () => {
+    const pull = new Pull(300);
+    expect(pull.distance(300 + THRESHOLD, 0)).toBe(THRESHOLD);
+    pull.spend(0, 1000);
+    pull.scrolled(500);
+    expect([pull.isSpent(500), pull.distance(700, 500)]).toEqual([true, 0]);
+    expect(pull.distance(700, 1000)).toBe(0);
+    expect(pull.distance(700 + THRESHOLD - 1, 1100)).toBeLessThan(THRESHOLD);
   });
 });
