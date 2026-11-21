@@ -6,7 +6,8 @@ Writes the answer's text as stretchtext. When a level lands, the narrator (Claud
 structured output) inserts one to three short sentences or clauses into the text so far, and introduces each of
 the level's new panels with exactly one of them. For each level it also writes a digest: the question the level
 answers (shown as a heading), its finding in a few words (shown in the outline), and a summary of the whole answer
-so far, which replaces the previous one. Text and digests are stored with the trace and replay without an API key.
+so far, which replaces the previous one (stored, not shown in the web app today). Text and digests are stored with
+the trace and replay without an API key.
 
 ## Building blocks
 
@@ -25,4 +26,5 @@ Levels are discrete, but the reader's experience should not be: text that grows 
 continuously and makes each new chart the natural next thing to read. Writing per level, as the agent's levels
 land, keeps the text grounded in exactly the rows the reader can see at that point. Sonnet is fast enough to keep
 up with the agent. Insertion alone makes the structure hard to see at a glance, so each level also gets a question
-heading, a headline for the outline and a rewritten summary: the one place where rewording helps the reader.
+heading and a headline for the outline. The rewritten summary is kept with the trace for other views of the answer;
+the web app does not show it, since it repeated the text.
