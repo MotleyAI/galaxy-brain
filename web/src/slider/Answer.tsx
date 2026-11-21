@@ -1,5 +1,15 @@
-import "@openuidev/react-ui/layered/styles/index.css";
-import { Button, Card, ThemeProvider, useSystemThemeMode } from "@openuidev/react-ui";
+import "@openuidev/react-ui/styles/openui-defaults.css";
+import "@openuidev/react-ui/styles/shared.css";
+import "@openuidev/react-ui/styles/card.css";
+import "@openuidev/react-ui/styles/button.css";
+import "@openuidev/react-ui/styles/table.css";
+import "@openuidev/react-ui/styles/metricIndicator.css";
+import "@openuidev/react-ui/styles/charts.css";
+import "@openuidev/react-ui/styles/tooltipWrapper.css";
+import { Button } from "@openuidev/react-ui/parts/Button/Button";
+import { Card } from "@openuidev/react-ui/parts/Card/Card";
+import { ThemeProvider } from "@openuidev/react-ui/parts/ThemeProvider/ThemeProvider";
+import { useSystemThemeMode } from "@openuidev/react-ui/parts/ThemeProvider/useSystemThemeMode";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { PanelView } from "../panels";
 import { lastPosition, useAnswer, type AnswerStore } from "../state";

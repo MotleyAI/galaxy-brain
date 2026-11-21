@@ -4,6 +4,7 @@
 - [x] 1.2 Resizable OpenUI card with off-screen measurement, drag and keyboard handle, level buttons
 - [x] 1.3 Panels on OpenUI components
 - [x] 1.4 Import-law test for OpenUI
+- [x] 1.5 Per-file OpenUI imports; series named with units
 
 ## 2. Architecture
 

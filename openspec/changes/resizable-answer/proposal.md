@@ -15,7 +15,11 @@ appears is hidden in the gesture itself.
 - web `panels`: KPI, bar, line and table panels render with OpenUI components (`MetricIndicatorInline`,
   `HorizontalBarChart`, `LineChartCondensed`, `Table`). Values are formatted the same way; charts get the rows as
   SLayer returned them.
-- New dependency: `@openuidev/react-ui` 0.18.9 (MIT) with its peers.
+- New dependency: `@openuidev/react-ui` 0.18.9 (MIT) with its peers. The app imports OpenUI's components file by file
+  (alias `@openuidev/react-ui/parts/*`) and only the stylesheets it uses: the package entry re-exports the whole
+  library, which put 2.1 MB of JS on first load; file by file it is 355 KB (115 KB gzipped).
+- Charts name each series by its column label and unit ("Revenue ($)") and plot shares in percent points, since
+  OpenUI charts print bare compact numbers.
 
 ## Impact
 

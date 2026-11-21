@@ -1,26 +1,17 @@
-import {
-  HorizontalBarChart,
-  LineChartCondensed,
-  MetricIndicatorInline,
-  Table as UiTable,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@openuidev/react-ui";
+import { HorizontalBarChart } from "@openuidev/react-ui/parts/Charts/BarChart/HorizontalBarChart";
+import { LineChartCondensed } from "@openuidev/react-ui/parts/Charts/LineChart/LineChartCondensed";
+import { MetricIndicatorInline } from "@openuidev/react-ui/parts/MetricIndicator";
+import { Table as UiTable, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@openuidev/react-ui/parts/Table/Table";
 import { memo } from "react";
-import type { PanelData, ResolvedPanel } from "../state";
-import { formatCell, labelOf, measures, visibleColumns } from "./format";
+import type { Column, PanelData, ResolvedPanel } from "../state";
+import { chartValue, formatCell, labelOf, measures, seriesName, visibleColumns } from "./format";
 
 const CHART_HEIGHT = 220;
 
-/** Chart rows: the dimension label as the category, the measure as SLayer returned it. */
-function chartRows(data: PanelData, label: (row: PanelData["rows"][number]) => string, key: string) {
-  return data.rows.map((row) => {
-    const value = row[key];
-    return { category: label(row), [key]: typeof value === "number" ? value : 0 };
-  });
+/** Chart rows: the dimension label as the category, the measure as SLayer returned it, named with its unit. */
+function chartRows(data: PanelData, label: (row: PanelData["rows"][number]) => string, measure: Column) {
+  const name = seriesName(measure);
+  return data.rows.map((row) => ({ category: label(row), [name]: chartValue(row[measure.key] ?? null, measure) }));
 }
 
 function Kpi({ data }: { data: PanelData }) {
@@ -34,10 +25,10 @@ function Bars({ data }: { data: PanelData }) {
   const [measure] = measures(data);
   if (!measure) return null;
   const dims = visibleColumns(data).filter((c) => c.role === "dimension");
-  const rows = chartRows(data, (row) => labelOf(row, dims), measure.key);
+  const rows = chartRows(data, (row) => labelOf(row, dims), measure);
   return (
     <figure className="chart">
-      <HorizontalBarChart data={rows} categoryKey="category" legend={false} />
+      <HorizontalBarChart data={rows} categoryKey="category" />
       <figcaption>
         {data.rows.map((row, i) => (
           <span key={i}>
@@ -85,11 +76,11 @@ function Line({ data }: { data: PanelData }) {
   const [measure, ...others] = measures(data);
   const [x] = data.columns.filter((c) => c.role === "dimension");
   if (!measure || !x) return null;
-  const rows = chartRows(data, (row) => formatCell(row[x.key] ?? null, x), measure.key);
+  const rows = chartRows(data, (row) => formatCell(row[x.key] ?? null, x), measure);
   const last = data.rows[data.rows.length - 1];
   return (
     <figure className="chart">
-      <LineChartCondensed data={rows} categoryKey="category" legend={false} height={CHART_HEIGHT} showDots />
+      <LineChartCondensed data={rows} categoryKey="category" height={CHART_HEIGHT} showDots />
       {last && others.length > 0 && (
         <figcaption>
           {others.map((c) => (
