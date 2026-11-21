@@ -14,6 +14,7 @@
 - [x] 3.3 Outline and question headings in the card; tests
 - [x] 3.4 Summary pane removed; new text marked
 - [x] 3.5 Tour after an unlock: follow the section down, pause, glide back up; one depth per press; reader scrolling ends the tour
+- [x] 3.6 Tour starts at the depth's first change and follows the writing point; momentum does not end it
 
 ## 2. Architecture
 

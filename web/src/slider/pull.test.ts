@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { charge, glide, Pull, pulledDepth, returnMs, ScrollStreams, stage, stretch, THRESHOLD, writingMs } from "./pull";
+import { charge, glide, Pull, pulledDepth, returnMs, rewindMs, ScrollStreams, stage, stretch, THRESHOLD, writingMs } from "./pull";
 
 describe("pull to unlock", () => {
   it("unlocks one depth at a time, only past the threshold", () => {
@@ -78,5 +78,11 @@ describe("scroll streams", () => {
     const starts = Array.from({ length: 125 }, (_, i) => streams.feed(i * 16));
     expect(new Set(starts)).toEqual(new Set([0]));
     expect(streams.feed(2400)).toBe(2400);
+  });
+});
+
+describe("the rewind", () => {
+  it("is quick but visible: longer for a longer way back, within bounds", () => {
+    expect([rewindMs(100), rewindMs(1500), rewindMs(9000)]).toEqual([400, 1000, 1400]);
   });
 });

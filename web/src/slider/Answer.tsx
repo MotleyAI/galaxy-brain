@@ -12,8 +12,8 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNod
 import { PanelView } from "../panels";
 import { lastPosition, useAnswer, type AnswerStore, type Digest, type Segment } from "../state";
 import { Brain } from "./Brain";
-import { depthStarts, outlineOf, type OutlineEntry } from "./digest";
-import { charge, glide, Pull, pulledDepth, returnMs, ScrollStreams, stage, stretch, THINK_MS, writingMs } from "./pull";
+import { depthStarts, firstChangeAnchor, outlineOf, type OutlineEntry } from "./digest";
+import { charge, glide, Pull, pulledDepth, returnMs, rewindMs, ScrollStreams, stage, stretch, THINK_MS, writingMs } from "./pull";
 import { reveal, withFallbacks, type Piece } from "./stretch";
 
 const FOLD_MS = 280;
@@ -23,6 +23,8 @@ const SCROLL_STEP = 8;
 const TOP_GAP = 16;
 const BOTTOM_GAP = 24;
 const PAUSE_MS = 900;
+const REWIND_AT = 0.3;
+const SMOOTH_JUMP = 120;
 const WATCHDOG_SLACK_MS = 2000;
 const FRESH_MS = 4000;
 
@@ -57,12 +59,13 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
   // After an unlock the page tours the new depth: it follows the section down as it writes, pauses at its end, then
   // glides back up to the start of the answer. Any scrolling of the reader's own ends the tour.
   const tour = useRef<{
-    phase: "follow" | "pause" | "return" | null;
+    phase: "rewind" | "follow" | "pause" | "return" | null;
     startedAt: number;
+    writeDelay: number;
     timer: number;
     frame: number;
     watchdog: number;
-  }>({ phase: null, startedAt: 0, timer: 0, frame: 0, watchdog: 0 });
+  }>({ phase: null, startedAt: 0, writeDelay: THINK_MS, timer: 0, frame: 0, watchdog: 0 });
   const streams = useRef(new ScrollStreams());
   reachRef.current = reachable;
 
@@ -92,33 +95,66 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
     tour.current.frame = requestAnimationFrame(step);
   };
 
+  /** Glides to where a depth's first change lands; returns how long that takes (0 when it is already in view). */
+  const rewindTo = (level: number): number => {
+    tour.current.phase = "follow";
+    const el = article.current;
+    if (!el) return 0;
+    const anchorId = firstChangeAnchor(segments, level);
+    const anchor = anchorId ? el.querySelector(`[data-seg="${anchorId}"]`) : null;
+    const box = (anchor ?? el).getBoundingClientRect();
+    const y = anchor ? box.bottom : box.top;
+    if (y > window.innerHeight * 0.15 && y < window.innerHeight * 0.7) return 0;
+    const from = window.scrollY;
+    const to = Math.max(0, from + y - window.innerHeight * REWIND_AT);
+    const ms = rewindMs(to - from);
+    const start = performance.now();
+    tour.current.phase = "rewind";
+    const step = (now: number) => {
+      if (tour.current.phase !== "rewind") return;
+      const t = Math.min((now - start) / ms, 1);
+      window.scrollTo(0, from + (to - from) * glide(t));
+      if (t < 1) tour.current.frame = requestAnimationFrame(step);
+      else tour.current.phase = "follow";
+    };
+    tour.current.frame = requestAnimationFrame(step);
+    return ms;
+  };
+
   const go = (next: number) => {
     const from = depthRef.current;
     depthRef.current = next;
     setDepth(next);
     endTour();
     if (next <= from) return;
-    tour.current.phase = "follow";
     tour.current.startedAt = performance.now();
+    // First take the reader to where this depth's first change lands, often well above the handle; the writing
+    // starts once they are there.
+    const rewind = rewindTo(next);
+    tour.current.writeDelay = Math.max(THINK_MS, rewind);
     // Whatever happens, a tour never outlives its depth by long, so it can never block the next pull.
     tour.current.watchdog = window.setTimeout(
       endTour,
-      THINK_MS + writingMs(wordsBetween(segments, from, next)) + PAUSE_MS + returnMs(4000) + WATCHDOG_SLACK_MS,
+      tour.current.writeDelay + writingMs(wordsBetween(segments, from, next)) + PAUSE_MS + returnMs(4000) + WATCHDOG_SLACK_MS,
     );
     window.clearTimeout(freshTimer.current);
     setFresh(next);
   };
 
-  // While the new section writes itself in, and through the pause at its end, keep the handle on screen.
+  // While the new depth writes itself in, follow the writing point down: the last new sentence or chart stays on
+  // screen, through the pause at its end.
   useEffect(() => {
     const el = article.current;
     if (!el) return;
     const observer = new ResizeObserver(() => {
       const phase = tour.current.phase;
-      const box = handle.current?.getBoundingClientRect();
-      if (!box || (phase !== "follow" && phase !== "pause")) return;
+      if (phase !== "follow" && phase !== "pause") return;
+      const marked = el.querySelectorAll(".segment.fresh, .inline-panel.fresh");
+      const box = marked[marked.length - 1]?.getBoundingClientRect();
+      if (!box) return;
       const over = box.bottom + BOTTOM_GAP - window.innerHeight;
-      if (over > 0) window.scrollBy(0, over);
+      // Small steps keep pace with the words; a jump to an insertion further down glides there.
+      if (over > 0) window.scrollBy({ top: over, behavior: over > SMOOTH_JUMP ? "smooth" : "auto" });
     });
     observer.observe(el);
     return () => observer.disconnect();
@@ -158,12 +194,12 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
     const grows = to > from;
     const ms = grows ? writingMs(wordsBetween(segments, Math.floor(from), to)) : FOLD_MS;
     // A new depth (not text arriving mid-write) waits a beat before its first word.
-    const start = performance.now() + (grows && from === Math.floor(from) ? THINK_MS : 0);
+    const start = performance.now() + (grows && from === Math.floor(from) ? tour.current.writeDelay : 0);
     const step = (now: number) => {
       const t = Math.max(0, Math.min((now - start) / ms, 1));
       store.slide(from + (to - from) * (grows ? t : 1 - (1 - t) ** 2));
       if (t < 1) writing.current = requestAnimationFrame(step);
-      else if (grows && tour.current.phase === "follow") {
+      else if (grows && (tour.current.phase === "follow" || tour.current.phase === "rewind")) {
         // Linger at the end of the new section, then glide back up so the reader sees how much was added.
         tour.current.phase = "pause";
         tour.current.timer = window.setTimeout(returnToTop, PAUSE_MS);
@@ -352,7 +388,7 @@ function blocks(pieces: Piece[], digests: Digest[], fresh: number | null): React
     if (piece.panel) {
       flush();
       result.push(
-        <div className="inline-panel" key={`panel-${piece.panel.id}`}>
+        <div className={`inline-panel${piece.segment.level === fresh ? " fresh" : ""}`} key={`panel-${piece.panel.id}`}>
           <PanelView panel={piece.panel} />
         </div>,
       );
@@ -369,6 +405,7 @@ function Paragraph({ pieces, fresh }: { pieces: Piece[]; fresh: number | null })
         <span
           className={`segment level-${piece.segment.level}${piece.segment.level === fresh ? " fresh" : ""}`}
           key={piece.segment.id}
+          data-seg={piece.segment.id}
         >
           {piece.words.slice(0, piece.shown).map((word, i) => (
             <span className="word" key={i}>

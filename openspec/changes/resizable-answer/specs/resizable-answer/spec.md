@@ -32,14 +32,14 @@ most one depth; the next depth SHALL take a new pull, and no pull SHALL start wh
 - **THEN** exactly one depth unlocks, and the next takes a new, deliberate pull
 
 ### Requirement: Tour the new depth, then read it from the top
-Once a depth unlocks, the page SHALL follow the new section down as it writes, pause at its end, then glide back up
-to the start of the answer at a readable pace, with the new text marked until a few seconds after. Any scrolling of
-the reader's own SHALL end the tour.
+Once a depth unlocks, the page SHALL first go to where the depth's first change lands, then follow the writing
+down as the new text appears, pause at its end, then glide back up to the start of the answer at a readable pace,
+with the new text marked until a few seconds after. Any scrolling of the reader's own SHALL end the tour.
 
 #### Scenario: Unlocking at the bottom of a long answer
 - **WHEN** the reader has scrolled down to the handle and unlocks the next depth
-- **THEN** the page follows the new section to its end, pauses, and glides back to the start of the answer, with the
-  new sentences highlighted where they were inserted
+- **THEN** the page goes up to where the first new sentence is inserted, follows the writing down through each new
+  sentence and chart, pauses, and glides back to the start of the answer, with the new sentences highlighted
 
 #### Scenario: The reader scrolls during the tour
 - **WHEN** the reader scrolls while the page is following or returning

@@ -1,4 +1,4 @@
-import type { Digest, ResolvedLevel } from "../state";
+import type { Digest, ResolvedLevel, Segment } from "../state";
 import type { Piece } from "./stretch";
 
 export type DepthState = "done" | "current" | "next" | "locked";
@@ -39,4 +39,18 @@ export function depthStarts(pieces: Piece[]): Map<string, number> {
     starts.set(piece.segment.id, level);
   }
   return starts;
+}
+
+/**
+ * Where a depth's first change lands: the visible segment just before its first new segment in reading order, or
+ * null when the depth starts at the very top of the answer.
+ */
+export function firstChangeAnchor(segments: Segment[], level: number): string | null {
+  const first = segments.findIndex((s) => s.level === level);
+  if (first < 0) return null;
+  for (let i = first - 1; i >= 0; i--) {
+    const segment = segments[i]!;
+    if (segment.level < level && segment.text.trim()) return segment.id;
+  }
+  return null;
 }

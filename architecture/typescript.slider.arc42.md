@@ -9,8 +9,9 @@ sentence carries its question as a heading. The reader pulls the handle on the c
 edge down to unlock the next depth: the pull opens room while a brain on the handle charges, and past a threshold the
 next depth writes itself into the text, word by word in place, and its charts unfold. Pulling up folds a depth away.
 The brain grows and glows brighter at each depth; the depth names live in its tooltip and accessible label. Near the
-bottom of the window the page scrolls, so a pull can go on. Once a new depth unlocks, the page tours it: it follows the
-new section down as it writes, pauses at its end, then glides back up to the start of the answer at a readable pace,
+bottom of the window the page scrolls, so a pull can go on. Once a new depth unlocks, the page tours it: it first goes
+to where the depth's first change lands, then follows the writing down as the new text appears, pauses at its end,
+then glides back up to the start of the answer at a readable pace,
 so the reader sees how much was added and can read the fuller analysis from the top. The text the depth added stays
 marked until a few seconds after. Any scrolling of the reader's own ends the tour.
 

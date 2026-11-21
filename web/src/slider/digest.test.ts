@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Digest, ResolvedLevel, Segment } from "../state";
-import { depthStarts, outlineOf } from "./digest";
+import { depthStarts, firstChangeAnchor, outlineOf } from "./digest";
 import type { Piece } from "./stretch";
 
 const level = (index: number, title: string): ResolvedLevel => ({ index, title, rationale: "", panels: [] });
@@ -33,5 +33,22 @@ describe("question headings", () => {
       ["trend", 2],
       ["split", 1],
     ]);
+  });
+});
+
+describe("first change of a depth", () => {
+  const seg = (id: string, lvl: number, text = "Text."): Segment => ({ id, level: lvl, text, panel: null });
+  const text = [seg("answer", 0), seg("trend", 3), seg("split", 1), seg("blank", 1, ""), seg("mix", 2), seg("more", 3)];
+
+  it("is just after the visible text it is inserted after, even when that is high up", () => {
+    expect([firstChangeAnchor(text, 3), firstChangeAnchor(text, 2), firstChangeAnchor(text, 1)]).toEqual([
+      "answer",
+      "split",
+      "answer",
+    ]);
+  });
+
+  it("is the top of the answer when the depth starts first, and nothing for a depth with no text", () => {
+    expect([firstChangeAnchor([seg("lead", 1), seg("answer", 0)], 1), firstChangeAnchor(text, 7)]).toEqual([null, null]);
   });
 });

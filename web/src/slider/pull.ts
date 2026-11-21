@@ -114,3 +114,8 @@ export class ScrollStreams {
     return this.start;
   }
 }
+
+/** How long the page takes to rewind to where a new depth's first change lands, before the writing starts. */
+export function rewindMs(distance: number): number {
+  return Math.max(400, Math.min(1400, Math.abs(distance) / 1.5));
+}
