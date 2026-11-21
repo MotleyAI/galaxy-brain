@@ -20,10 +20,16 @@ export function pulledDepth(depth: number, dy: number, reachable: number): numbe
   return depth;
 }
 
-/** How long a newly unlocked depth takes to write itself in: about 28 ms a word, never too abrupt or too slow. */
+/**
+ * How long a newly unlocked depth takes to write itself in: about 110 ms a word (nine words a second, close to
+ * reading pace), so the text appears at thinking speed; at least 1.5 s, at most 7 s for a very long depth.
+ */
 export function writingMs(words: number): number {
-  return Math.max(450, Math.min(1800, words * 28));
+  return Math.max(1500, Math.min(7000, words * 110));
 }
+
+/** A beat before the first word of a new depth, while the brain levels up: the answer seems to think first. */
+export const THINK_MS = 600;
 
 /** The brain's stage for a depth: 0 at the plain number, 1 at the deepest analysis. */
 export function stage(depth: number, total: number): number {

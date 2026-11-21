@@ -25,8 +25,8 @@ describe("pull to unlock", () => {
     expect(stretch(400, false) - stretch(300, false)).toBeLessThan(10);
   });
 
-  it("writes a depth in at a reading pace, within bounds", () => {
-    expect([writingMs(5), writingMs(40), writingMs(500)]).toEqual([450, 1120, 1800]);
+  it("writes a depth in at thinking speed, about nine words a second, within bounds", () => {
+    expect([writingMs(5), writingMs(40), writingMs(500)]).toEqual([1500, 4400, 7000]);
   });
 
   it("grows the brain from the plain number to the deepest analysis", () => {

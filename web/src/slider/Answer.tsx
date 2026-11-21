@@ -13,7 +13,7 @@ import { PanelView } from "../panels";
 import { lastPosition, useAnswer, type AnswerStore, type Digest, type Segment } from "../state";
 import { Brain } from "./Brain";
 import { depthStarts, outlineOf, type OutlineEntry } from "./digest";
-import { charge, glide, Pull, pulledDepth, returnMs, stage, stretch, writingMs } from "./pull";
+import { charge, glide, Pull, pulledDepth, returnMs, stage, stretch, THINK_MS, writingMs } from "./pull";
 import { reveal, withFallbacks, type Piece } from "./stretch";
 
 const FOLD_MS = 280;
@@ -143,9 +143,10 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
     if (from === to) return;
     const grows = to > from;
     const ms = grows ? writingMs(wordsBetween(segments, Math.floor(from), to)) : FOLD_MS;
-    const start = performance.now();
+    // A new depth (not text arriving mid-write) waits a beat before its first word.
+    const start = performance.now() + (grows && from === Math.floor(from) ? THINK_MS : 0);
     const step = (now: number) => {
-      const t = Math.min((now - start) / ms, 1);
+      const t = Math.max(0, Math.min((now - start) / ms, 1));
       store.slide(from + (to - from) * (grows ? t : 1 - (1 - t) ** 2));
       if (t < 1) writing.current = requestAnimationFrame(step);
       else if (grows && tour.current.phase === "follow") {
