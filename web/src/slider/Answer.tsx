@@ -10,8 +10,9 @@ import { ThemeProvider } from "@openuidev/react-ui/parts/ThemeProvider/ThemeProv
 import { useSystemThemeMode } from "@openuidev/react-ui/parts/ThemeProvider/useSystemThemeMode";
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { PanelView } from "../panels";
-import { lastPosition, useAnswer, type AnswerStore, type Segment } from "../state";
+import { lastPosition, useAnswer, type AnswerStore, type Digest, type Segment } from "../state";
 import { Brain } from "./Brain";
+import { depthStarts, outlineOf, summaryAt, type OutlineEntry } from "./digest";
 import { charge, Pull, pulledDepth, stage, stretch, writingMs } from "./pull";
 import { reveal, withFallbacks, type Piece } from "./stretch";
 
@@ -169,7 +170,14 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
   return (
     <ThemeProvider mode={mode}>
       <Card variant="card" width="full" className="answer-card">
-        <article className="answer" ref={article}>{blocks(reveal(segments, state.levels, state.position))}</article>
+        <Overview
+          summary={summaryAt(state.digests, shown)}
+          outline={outlineOf(total, state.levels, state.digests, shown, reachable)}
+          onPick={(index) => go(Math.max(0, Math.min(index, reachRef.current)))}
+        />
+        <article className="answer" ref={article}>
+          {blocks(reveal(segments, state.levels, state.position), state.digests)}
+        </article>
         <div className="pull-room" style={{ height: room }} aria-hidden>
           {room > 24 && <span>{invite}</span>}
         </div>
@@ -219,15 +227,58 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
   );
 }
 
-/** The answer's paragraphs, with each panel right after the segment that introduces it. */
-function blocks(pieces: Piece[]): ReactNode[] {
+/** The rewritten summary of the answer so far, and the outline of every depth beside it. */
+function Overview({
+  summary,
+  outline,
+  onPick,
+}: {
+  summary: Digest | null;
+  outline: OutlineEntry[];
+  onPick: (index: number) => void;
+}) {
+  return (
+    <header className="overview">
+      <div className="summary" aria-live="polite">
+        <span className="kicker">In short</span>
+        {/* Keyed by level so each rewrite fades in as a new summary. */}
+        <p key={summary?.level ?? -1}>{summary?.summary ?? "Writing the answer…"}</p>
+      </div>
+      <ol className="outline" aria-label="Depths of the analysis">
+        {outline.map((entry) => (
+          <li key={entry.index} data-state={entry.state}>
+            <button type="button" disabled={!entry.reachable} onClick={() => onPick(entry.index)}>
+              <span className="dot" aria-hidden />
+              <span className="label">{entry.label}</span>
+            </button>
+          </li>
+        ))}
+      </ol>
+    </header>
+  );
+}
+
+/** The answer's paragraphs, with each depth's question before its first sentence and each panel after the
+ * segment that introduces it. */
+function blocks(pieces: Piece[], digests: Digest[]): ReactNode[] {
   const result: ReactNode[] = [];
+  const starts = depthStarts(pieces);
   let paragraph: Piece[] = [];
   const flush = () => {
     if (paragraph.length) result.push(<Paragraph key={`p-${paragraph[0]!.segment.id}`} pieces={paragraph} />);
     paragraph = [];
   };
   for (const piece of pieces) {
+    const starting = starts.get(piece.segment.id);
+    const question = starting === undefined ? undefined : digests.find((d) => d.level === starting)?.question;
+    if (question) {
+      flush();
+      result.push(
+        <h4 className="depth-question" key={`q-${starting}`}>
+          {question}
+        </h4>,
+      );
+    }
     if (piece.shown > 0) paragraph.push(piece);
     if (piece.panel) {
       flush();

@@ -37,6 +37,26 @@ unfolds the page SHALL keep the handle on screen.
 - **THEN** the page scrolls with it and brings the handle back to about the middle of the window, leaving room for
   the next pull
 
+### Requirement: Overview of the analysis
+The card SHALL open with a summary of the answer so far and an outline of every depth. The narrator SHALL write, per
+depth, the question it answers, a headline of a few words and a summary of the whole answer so far, every figure of
+which appears in the rows of that depth or an earlier one. The summary SHALL be rewritten at each depth; the body
+text SHALL only grow. Each depth's first sentence SHALL carry its question as a heading.
+
+#### Scenario: Unlocking a depth
+- **WHEN** the reader unlocks the Split depth of "What is our revenue year to date?"
+- **THEN** the summary is rewritten to cover revenue and its split by store, the outline marks Split as current with
+  its headline, and the store sentence appears under the heading "Which cafés bring in the revenue?"
+
+#### Scenario: Depths still to come
+- **WHEN** the reader is at depth 2 of 5
+- **THEN** the outline shows the headlines of depths 1 and 2 and the titles of depths 3 to 5, and clicking an
+  unlocked depth goes there
+
+#### Scenario: A made-up figure in a summary
+- **WHEN** a drafted summary states a figure that no row up to its depth rounds to
+- **THEN** the narrator asks once more, and if it still fails the previous summary is kept
+
 ### Requirement: OpenUI components
 Panels and the card SHALL be drawn with OpenUI components, and only the panels and the resizable answer SHALL import
 OpenUI.

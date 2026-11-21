@@ -12,6 +12,10 @@ for how deep the reader has gone.
   glows brighter per depth and carries the depth names as tooltip and accessible value. Near the window's bottom the
   page scrolls so the pull continues, and it follows the answer while a depth unfolds. Keyboard: arrows, Page
   Up/Down, Home, End.
+- Overview: per depth the narrator also writes a question heading, a short headline and a summary of the whole
+  answer so far, grounded in the rows up to that depth and stored with the trace (`Digest` in `core`, `digests` in
+  traces and the `narration` event). The card opens with the summary, rewritten at each depth, and an outline of
+  every depth; each depth's first sentence carries its question. The four stored answers were narrated again.
 - web `panels`: KPI, bar, line and table panels render with OpenUI components (`MetricIndicatorInline`,
   `HorizontalBarChart`, `LineChartCondensed`, `Table`). Values are formatted the same way; charts get the rows as
   SLayer returned them.
@@ -27,4 +31,4 @@ for how deep the reader has gone.
   pull to unlock and a new enforced principle (each depth shows the same complete text; a pull moves one step past
   its threshold); the panels arc42 names OpenUI; a new
   system principle 7 limits OpenUI imports to the panels and the resizable answer, enforced by a test.
-- No backend change: the same events drive the card.
+- Narrator, traces and slider arc42 files describe the digests, the overview and that only the summary is rewritten.
