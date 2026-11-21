@@ -1,5 +1,5 @@
 import { useMemo, useState, type FormEvent } from "react";
-import { GranularitySlider, ZoomedAnswer } from "../slider";
+import { ResizableAnswer } from "../slider";
 import { createAnswerStore, useAnswer } from "../state";
 import "./styles.css";
 
@@ -20,7 +20,7 @@ export function App() {
     <main>
       <header>
         <h1>slayer-zoom</h1>
-        <p>One question, answered at the granularity you choose.</p>
+        <p>One question. Drag the answer open for more detail.</p>
       </header>
       <form onSubmit={submit} className="ask">
         <input value={question} onChange={(e) => setQuestion(e.target.value)} aria-label="Question" />
@@ -29,8 +29,7 @@ export function App() {
         </button>
       </form>
       {state.status === "error" && <p className="error">{state.error}</p>}
-      <GranularitySlider store={store} />
-      <ZoomedAnswer store={store} />
+      <ResizableAnswer store={store} />
     </main>
   );
 }
