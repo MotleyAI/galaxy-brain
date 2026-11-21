@@ -13,7 +13,7 @@ import { PanelView } from "../panels";
 import { lastPosition, useAnswer, type AnswerStore, type Digest, type Segment } from "../state";
 import { Brain } from "./Brain";
 import { depthStarts, outlineOf, type OutlineEntry } from "./digest";
-import { charge, glide, Pull, pulledDepth, returnMs, stage, stretch, THINK_MS, writingMs } from "./pull";
+import { charge, glide, Pull, pulledDepth, returnMs, ScrollStreams, stage, stretch, THINK_MS, writingMs } from "./pull";
 import { reveal, withFallbacks, type Piece } from "./stretch";
 
 const FOLD_MS = 280;
@@ -23,6 +23,7 @@ const SCROLL_STEP = 8;
 const TOP_GAP = 16;
 const BOTTOM_GAP = 24;
 const PAUSE_MS = 900;
+const WATCHDOG_SLACK_MS = 2000;
 const FRESH_MS = 4000;
 
 function wordsBetween(segments: Segment[], from: number, to: number): number {
@@ -55,15 +56,19 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
   const freshTimer = useRef(0);
   // After an unlock the page tours the new depth: it follows the section down as it writes, pauses at its end, then
   // glides back up to the start of the answer. Any scrolling of the reader's own ends the tour.
-  const tour = useRef<{ phase: "follow" | "pause" | "return" | null; timer: number; frame: number }>({
-    phase: null,
-    timer: 0,
-    frame: 0,
-  });
+  const tour = useRef<{
+    phase: "follow" | "pause" | "return" | null;
+    startedAt: number;
+    timer: number;
+    frame: number;
+    watchdog: number;
+  }>({ phase: null, startedAt: 0, timer: 0, frame: 0, watchdog: 0 });
+  const streams = useRef(new ScrollStreams());
   reachRef.current = reachable;
 
   const endTour = () => {
     window.clearTimeout(tour.current.timer);
+    window.clearTimeout(tour.current.watchdog);
     cancelAnimationFrame(tour.current.frame);
     if (tour.current.phase === null) return;
     tour.current.phase = null;
@@ -94,6 +99,12 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
     endTour();
     if (next <= from) return;
     tour.current.phase = "follow";
+    tour.current.startedAt = performance.now();
+    // Whatever happens, a tour never outlives its depth by long, so it can never block the next pull.
+    tour.current.watchdog = window.setTimeout(
+      endTour,
+      THINK_MS + writingMs(wordsBetween(segments, from, next)) + PAUSE_MS + returnMs(4000) + WATCHDOG_SLACK_MS,
+    );
     window.clearTimeout(freshTimer.current);
     setFresh(next);
   };
@@ -115,8 +126,11 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
 
   // The reader's own scrolling ends the tour: never fight them for the page.
   useEffect(() => {
+    // Only a scroll the reader starts during the tour counts: the momentum of the scroll that brought them down to
+    // the handle keeps arriving for a second or two and must not cancel it.
     const stop = () => {
-      if (tour.current.phase !== null) endTour();
+      const began = streams.current.feed(performance.now());
+      if (tour.current.phase !== null && began > tour.current.startedAt) endTour();
     };
     const keys = (event: globalThis.KeyboardEvent) => {
       // Keys on the handle unlock depths; they start a tour rather than end one.

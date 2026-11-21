@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { charge, glide, Pull, pulledDepth, returnMs, stage, stretch, THRESHOLD, writingMs } from "./pull";
+import { charge, glide, Pull, pulledDepth, returnMs, ScrollStreams, stage, stretch, THRESHOLD, writingMs } from "./pull";
 
 describe("pull to unlock", () => {
   it("unlocks one depth at a time, only past the threshold", () => {
@@ -69,5 +69,14 @@ describe("the cushion and the return", () => {
     expect([glide(0), glide(0.5), glide(1)]).toEqual([0, 0.5, 1]);
     expect(glide(0.1)).toBeLessThan(0.1);
     expect(glide(0.9)).toBeGreaterThan(0.9);
+  });
+});
+
+describe("scroll streams", () => {
+  it("treats momentum after the fingers lift as the same stream, and a pause as a new one", () => {
+    const streams = new ScrollStreams(250);
+    const starts = Array.from({ length: 125 }, (_, i) => streams.feed(i * 16));
+    expect(new Set(starts)).toEqual(new Set([0]));
+    expect(streams.feed(2400)).toBe(2400);
   });
 });

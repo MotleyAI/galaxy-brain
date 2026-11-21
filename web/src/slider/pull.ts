@@ -95,3 +95,22 @@ export function returnMs(distance: number): number {
 export function glide(t: number): number {
   return t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2;
 }
+
+/**
+ * Tells a reader's new scroll from the tail of an old one. Wheel and touch events arrive in streams; a gap longer
+ * than `gapMs` starts a new stream. Trackpad momentum keeps a stream going for a second or two after the fingers
+ * lift, so only a stream that began after a given moment counts as the reader taking the page back.
+ */
+export class ScrollStreams {
+  private last = Number.NEGATIVE_INFINITY;
+  private start = Number.NEGATIVE_INFINITY;
+
+  constructor(private readonly gapMs = 250) {}
+
+  /** Records a scroll event and returns when its stream began. */
+  feed(now: number): number {
+    if (now - this.last > this.gapMs) this.start = now;
+    this.last = now;
+    return this.start;
+  }
+}
