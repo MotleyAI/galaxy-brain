@@ -23,20 +23,27 @@ handle SHALL be operable from the keyboard.
 - **WHEN** the reader unlocks the last depth
 - **THEN** the brain is at its largest and radiant, and pulling further only resists
 
-### Requirement: Read the fuller analysis from the top
-When a pull reaches the bottom of the window the page SHALL scroll so the pull can continue. Once a new depth
-unlocks, the page SHALL return to the start of the answer, and the text that depth added SHALL stay marked for a few
-seconds.
+### Requirement: One depth per pull
+When a pull reaches the bottom of the window the page SHALL scroll so the pull can continue. A press SHALL unlock at
+most one depth; the next depth SHALL take a new pull, and no pull SHALL start while the page tours a depth.
 
-#### Scenario: Holding the pull at the window's edge
-- **WHEN** the reader pulls to the bottom of the window and holds while the page scrolls and a depth unfolds
-- **THEN** exactly one depth unlocks; the page following the answer does not count as pulling, and the next depth
-  takes another full pull once this one has settled
+#### Scenario: Pulling too far
+- **WHEN** the reader keeps pulling well past the threshold, or holds the pull at the window's edge
+- **THEN** exactly one depth unlocks, and the next takes a new, deliberate pull
+
+### Requirement: Tour the new depth, then read it from the top
+Once a depth unlocks, the page SHALL follow the new section down as it writes, pause at its end, then glide back up
+to the start of the answer at a readable pace, with the new text marked until a few seconds after. Any scrolling of
+the reader's own SHALL end the tour.
 
 #### Scenario: Unlocking at the bottom of a long answer
 - **WHEN** the reader has scrolled down to the handle and unlocks the next depth
-- **THEN** the page scrolls back to the start of the answer, and the new sentences are highlighted where they were
-  inserted
+- **THEN** the page follows the new section to its end, pauses, and glides back to the start of the answer, with the
+  new sentences highlighted where they were inserted
+
+#### Scenario: The reader scrolls during the tour
+- **WHEN** the reader scrolls while the page is following or returning
+- **THEN** the tour stops and the page stays where the reader put it
 
 ### Requirement: Overview of the analysis
 The card SHALL open with an outline of every depth. The narrator SHALL write, per depth, the question it answers, a

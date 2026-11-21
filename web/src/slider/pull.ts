@@ -70,4 +70,22 @@ export class Pull {
   isSpent(now: number): boolean {
     return now < this.spentUntil;
   }
+
+  /** This press has unlocked its depth: nothing more until the finger lifts and pulls again. */
+  lock(): void {
+    this.spentUntil = Number.POSITIVE_INFINITY;
+  }
+}
+
+/**
+ * How long the page takes to glide back up to the start of the answer after a new depth: slow enough to see how much
+ * was added (about 0.8 px per ms), never a jump and never a long wait.
+ */
+export function returnMs(distance: number): number {
+  return Math.max(1200, Math.min(3200, Math.abs(distance) / 0.8));
+}
+
+/** Ease in and out, so the glide starts and lands softly. */
+export function glide(t: number): number {
+  return t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2;
 }

@@ -9,8 +9,10 @@ handle grows and glows brighter with each depth, from a plain outline at the sin
 analysis. Pull up to fold a depth away.
 
 At the top of the answer, an outline lists every depth: what each unlocked one found, and what is still to come.
-Each depth's text opens with the question it answers. When a new depth unlocks, the page goes back to the top of the
-answer so you can read the fuller analysis through, with the new sentences briefly highlighted. It is the same answer at every depth, only deeper, and every number reconciles with the depth
+Each depth's text opens with the question it answers. When a new depth unlocks, the page follows the new section down as it
+writes, pauses at its end so you can see how much was added, then glides back to the top of the answer so you can read
+the fuller analysis through, with the new sentences highlighted. Each pull unlocks one depth; the next takes another
+deliberate pull. It is the same answer at every depth, only deeper, and every number reconciles with the depth
 before it.
 
 ## An example

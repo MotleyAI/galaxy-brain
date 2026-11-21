@@ -12,7 +12,8 @@
 - [x] 3.1 Narrator digests (question, headline, summary) with grounding, fallback and markup stripping; tests
 - [x] 3.2 Digests in traces and the narration event; stored answers narrated again; grounding test on stored digests
 - [x] 3.3 Outline and question headings in the card; tests
-- [x] 3.4 Summary pane removed; after an unlock the page returns to the answer's start and marks the new text
+- [x] 3.4 Summary pane removed; new text marked
+- [x] 3.5 Tour after an unlock: follow the section down, pause, glide back up; one depth per press; reader scrolling ends the tour
 
 ## 2. Architecture
 

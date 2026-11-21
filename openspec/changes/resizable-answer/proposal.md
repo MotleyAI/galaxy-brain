@@ -10,8 +10,8 @@ for how deep the reader has gone.
   full. Pulling the handle on its bottom edge opens room while a brain on the handle charges; past a threshold the
   next depth writes itself into the text and its charts unfold, and pulling up folds a depth. The brain grows and
   glows brighter per depth and carries the depth names as tooltip and accessible value. Near the window's bottom the
-  page scrolls so the pull continues; once a depth unlocks, the page returns to the start of the answer and marks the
-  new text. Keyboard: arrows, Page
+  page scrolls so the pull continues; once a depth unlocks, the page follows the new section down, pauses at its end and
+  glides back to the start of the answer, marking the new text. A press unlocks at most one depth. Keyboard: arrows, Page
   Up/Down, Home, End.
 - Overview: per depth the narrator also writes a question heading, a short headline and a summary of the whole
   answer so far, grounded in the rows up to that depth and stored with the trace (`Digest` in `core`, `digests` in

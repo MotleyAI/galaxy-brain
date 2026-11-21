@@ -13,7 +13,7 @@ import { PanelView } from "../panels";
 import { lastPosition, useAnswer, type AnswerStore, type Digest, type Segment } from "../state";
 import { Brain } from "./Brain";
 import { depthStarts, outlineOf, type OutlineEntry } from "./digest";
-import { charge, Pull, pulledDepth, stage, stretch, writingMs } from "./pull";
+import { charge, glide, Pull, pulledDepth, returnMs, stage, stretch, writingMs } from "./pull";
 import { reveal, withFallbacks, type Piece } from "./stretch";
 
 const FOLD_MS = 280;
@@ -21,6 +21,8 @@ const SETTLE_MS = 300;
 const EDGE = 56;
 const SCROLL_STEP = 8;
 const TOP_GAP = 16;
+const BOTTOM_GAP = 24;
+const PAUSE_MS = 900;
 const FRESH_MS = 4000;
 
 function wordsBetween(segments: Segment[], from: number, to: number): number {
@@ -48,25 +50,88 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
   const scrolling = useRef(0);
   const handle = useRef<HTMLDivElement>(null);
   const card = useRef<HTMLDivElement>(null);
+  const article = useRef<HTMLElement>(null);
   const [fresh, setFresh] = useState<number | null>(null);
   const freshTimer = useRef(0);
+  // After an unlock the page tours the new depth: it follows the section down as it writes, pauses at its end, then
+  // glides back up to the start of the answer. Any scrolling of the reader's own ends the tour.
+  const tour = useRef<{ phase: "follow" | "pause" | "return" | null; timer: number; frame: number }>({
+    phase: null,
+    timer: 0,
+    frame: 0,
+  });
   reachRef.current = reachable;
+
+  const endTour = () => {
+    window.clearTimeout(tour.current.timer);
+    cancelAnimationFrame(tour.current.frame);
+    if (tour.current.phase === null) return;
+    tour.current.phase = null;
+    window.clearTimeout(freshTimer.current);
+    freshTimer.current = window.setTimeout(() => setFresh(null), FRESH_MS);
+  };
+  const returnToTop = () => {
+    tour.current.phase = "return";
+    const from = window.scrollY;
+    const to = Math.max(0, from + (card.current?.getBoundingClientRect().top ?? 0) - TOP_GAP);
+    if (to >= from) return endTour();
+    const ms = returnMs(from - to);
+    const start = performance.now();
+    const step = (now: number) => {
+      if (tour.current.phase !== "return") return;
+      const t = Math.min((now - start) / ms, 1);
+      window.scrollTo(0, from + (to - from) * glide(t));
+      if (t < 1) tour.current.frame = requestAnimationFrame(step);
+      else endTour();
+    };
+    tour.current.frame = requestAnimationFrame(step);
+  };
 
   const go = (next: number) => {
     const from = depthRef.current;
     depthRef.current = next;
     setDepth(next);
+    endTour();
     if (next <= from) return;
-    // A new depth: take the reader back to the start of the answer to read it through, with the new text marked.
-    const top = card.current?.getBoundingClientRect().top ?? 0;
-    if (top < 0) window.scrollTo({ top: window.scrollY + top - TOP_GAP, behavior: "smooth" });
-    setFresh(next);
+    tour.current.phase = "follow";
     window.clearTimeout(freshTimer.current);
-    freshTimer.current = window.setTimeout(
-      () => setFresh(null),
-      writingMs(wordsBetween(segments, from, next)) + FRESH_MS,
-    );
+    setFresh(next);
   };
+
+  // While the new section writes itself in, and through the pause at its end, keep the handle on screen.
+  useEffect(() => {
+    const el = article.current;
+    if (!el) return;
+    const observer = new ResizeObserver(() => {
+      const phase = tour.current.phase;
+      const box = handle.current?.getBoundingClientRect();
+      if (!box || (phase !== "follow" && phase !== "pause")) return;
+      const over = box.bottom + BOTTOM_GAP - window.innerHeight;
+      if (over > 0) window.scrollBy(0, over);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [state.levels.length > 0]);
+
+  // The reader's own scrolling ends the tour: never fight them for the page.
+  useEffect(() => {
+    const stop = () => {
+      if (tour.current.phase !== null) endTour();
+    };
+    const keys = (event: globalThis.KeyboardEvent) => {
+      // Keys on the handle unlock depths; they start a tour rather than end one.
+      if (event.target === handle.current) return;
+      if (["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "].includes(event.key)) stop();
+    };
+    window.addEventListener("wheel", stop, { passive: true });
+    window.addEventListener("touchmove", stop, { passive: true });
+    window.addEventListener("keydown", keys);
+    return () => {
+      window.removeEventListener("wheel", stop);
+      window.removeEventListener("touchmove", stop);
+      window.removeEventListener("keydown", keys);
+    };
+  }, []);
 
   // A new question starts again at the single number.
   useEffect(() => go(0), [state.question]);
@@ -83,6 +148,11 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
       const t = Math.min((now - start) / ms, 1);
       store.slide(from + (to - from) * (grows ? t : 1 - (1 - t) ** 2));
       if (t < 1) writing.current = requestAnimationFrame(step);
+      else if (grows && tour.current.phase === "follow") {
+        // Linger at the end of the new section, then glide back up so the reader sees how much was added.
+        tour.current.phase = "pause";
+        tour.current.timer = window.setTimeout(returnToTop, PAUSE_MS);
+      }
     };
     cancelAnimationFrame(writing.current);
     writing.current = requestAnimationFrame(step);
@@ -98,9 +168,10 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
     const next = pulledDepth(from, dy, reachRef.current);
     if (next !== from) {
       go(next);
-      // One depth per pull: wait until this one has written itself in, then count a fresh pull.
-      const settle = next > from ? writingMs(wordsBetween(segments, from, next)) + SETTLE_MS : FOLD_MS + SETTLE_MS;
-      current.pull.spend(now, settle);
+      // A hard cushion: a press unlocks one depth at most; the next takes a new, deliberate pull. A fold waits
+      // until it has settled.
+      if (next > from) current.pull.lock();
+      else current.pull.spend(now, FOLD_MS + SETTLE_MS);
       setPull(0);
     } else {
       setPull(dy);
@@ -169,7 +240,7 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
           entries={outlineOf(total, state.levels, state.digests, shown, reachable)}
           onPick={(index) => go(Math.max(0, Math.min(index, reachRef.current)))}
         />
-        <article className="answer">{blocks(reveal(segments, state.levels, state.position), state.digests, fresh)}</article>
+        <article className="answer" ref={article}>{blocks(reveal(segments, state.levels, state.position), state.digests, fresh)}</article>
         <div className="pull-room" style={{ height: room }} aria-hidden>
           {room > 24 && <span>{invite}</span>}
         </div>
@@ -187,6 +258,8 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
           data-pulling={pull !== 0 || undefined}
           onKeyDown={onKey}
           onPointerDown={(event) => {
+            // No pulling while the page tours a depth that just unlocked.
+            if (tour.current.phase !== null) return;
             if (event.currentTarget.hasPointerCapture?.(event.pointerId) === false) {
               try {
                 event.currentTarget.setPointerCapture(event.pointerId);

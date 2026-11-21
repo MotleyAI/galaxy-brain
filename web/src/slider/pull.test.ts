@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { charge, Pull, pulledDepth, stage, stretch, THRESHOLD, writingMs } from "./pull";
+import { charge, glide, Pull, pulledDepth, returnMs, stage, stretch, THRESHOLD, writingMs } from "./pull";
 
 describe("pull to unlock", () => {
   it("unlocks one depth at a time, only past the threshold", () => {
@@ -50,5 +50,24 @@ describe("a pull gesture", () => {
     expect([pull.isSpent(500), pull.distance(700, 500)]).toEqual([true, 0]);
     expect(pull.distance(700, 1000)).toBe(0);
     expect(pull.distance(700 + THRESHOLD - 1, 1100)).toBeLessThan(THRESHOLD);
+  });
+});
+
+
+describe("the cushion and the return", () => {
+  it("unlocks at most one depth per press, however far the finger keeps going", () => {
+    const pull = new Pull(300);
+    pull.lock();
+    expect([pull.isSpent(1e9), pull.distance(300 + THRESHOLD * 5, 1e9)]).toEqual([true, 0]);
+  });
+
+  it("glides back up at a readable pace: longer for more new content, within bounds", () => {
+    expect([returnMs(300), returnMs(2000), returnMs(9000)]).toEqual([1200, 2500, 3200]);
+  });
+
+  it("eases in and out, from start to end", () => {
+    expect([glide(0), glide(0.5), glide(1)]).toEqual([0, 0.5, 1]);
+    expect(glide(0.1)).toBeLessThan(0.1);
+    expect(glide(0.9)).toBeGreaterThan(0.9);
   });
 });
