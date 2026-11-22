@@ -47,6 +47,8 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
   const [units, setUnits] = useState(0);
   const [target, setTarget] = useState(0);
   const [dy, setDy] = useState(0);
+  // The head with the answer so far can fold to one line, leaving the screen to the analysis.
+  const [headOpen, setHeadOpen] = useState(true);
   const unitsRef = useRef(0);
   const targetRef = useRef(0);
   const streamRef = useRef(stream);
@@ -117,12 +119,6 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
       startFollowing();
       aim(next);
     } else wanted.current = true;
-  };
-  // Go straight to a depth from the rail: write on through the depths before it, or unwrite back to it.
-  const goTo = (level: number) => {
-    wanted.current = false;
-    startFollowing();
-    aim(depthEnd(streamRef.current, level));
   };
   const back = () => {
     wanted.current = false;
@@ -243,39 +239,25 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
             : building
               ? "Thinking deeper…"
               : "That's the full analysis";
-  // What each depth found, in the narrator's few words, under its name on the rail once it is written.
-  const finding = (level: number) => state.digests.find((d) => d.level === level)?.headline;
   const charge = dy > 0 && more ? Math.min(1, dy / STEP_PULL) : dy < 0 && depth > 0 ? -Math.min(1, -dy / STEP_PULL) : fill >= 1 && more ? 0 : fill;
 
   return (
     <ThemeProvider mode={mode}>
       <Card variant="card" width="full" className="answer-card stream" data-writing={writing || unwriting || undefined}>
-        <header className="research-head">
-          {soFar && (
-            <p className="so-far" aria-live="polite">
+        {soFar && (
+          <header className="research-head" data-open={headOpen || undefined}>
+            <button type="button" className="head-toggle" aria-expanded={headOpen} onClick={() => setHeadOpen(!headOpen)}>
               <span className="so-far-tag">So far</span>
-              <span className="so-far-text" key={completed}>
+              {!headOpen && <span className="so-far-peek">{soFar.headline || soFar.summary}</span>}
+              <span className="head-action">{headOpen ? "Hide" : "Show"}</span>
+            </button>
+            {headOpen && (
+              <p className="so-far-text" key={completed} aria-live="polite">
                 {soFar.summary || soFar.headline}
-              </span>
-            </p>
-          )}
-          <ol className="rail" aria-label="Depths of the analysis">
-            {Array.from({ length: depths }, (_, i) => {
-              const level = state.levels[i];
-              const status =
-                i < depth || (i === depth && fill >= 1 && !writing) ? "done" : i === depth ? "current" : i === nextDepth && more && !writing ? "next" : "ahead";
-              return (
-                <li key={i} data-status={status}>
-                  <button type="button" disabled={!level || (status === "done" && i === depth)} onClick={() => goTo(i)}>
-                    <span className="rail-dot" aria-hidden />
-                    <span className="rail-label">{level?.title ?? "…"}</span>
-                    {status === "done" && finding(i) && <span className="rail-finding">{finding(i)}</span>}
-                  </button>
-                </li>
-              );
-            })}
-          </ol>
-        </header>
+              </p>
+            )}
+          </header>
+        )}
         <article className="answer">
           {blocks(written(stream, shown), writing, {
             contextOf,

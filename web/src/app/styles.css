@@ -1,7 +1,7 @@
 /*
  * The answer's design system. Two type sizes, two weights, three inks, one spacing scale.
  *   --text  (16px) is for reading: the answer's prose, each depth's question, the question box.
- *   --small (13px) is for everything about the reading: the summary, the rail, chart titles and labels, captions,
+ *   --small (13px) is for everything about the reading: the summary, chart titles and labels, captions,
  *                   tables, context, evidence and the bar. Weight 600 marks a title; ink and muted mark importance.
  * The accent marks only what can be clicked and where the reader is. No uppercase, no pills, no frames inside the
  * answer: structure comes from space.
@@ -97,38 +97,22 @@ header h1 { margin: 0 0 var(--s4); font-size: 22px; font-weight: 600; letter-spa
 }
 .answer { padding: var(--s4) var(--s4) var(--s1); display: flow-root; }
 
-/* The head: what the answer says so far, and the path of depths with what each found. Stays in view. */
+/* The head: what the answer says so far, in view while reading. It folds to one line to give the analysis the screen. */
 .research-head {
-  position: sticky; top: 0; z-index: 2; padding: var(--s3) var(--s4); background: var(--surface);
+  position: sticky; top: 0; z-index: 2; padding: var(--s2) var(--s4) var(--s3); background: var(--surface);
   border-bottom: 1px solid var(--line); border-radius: 14px 14px 0 0;
+  font-size: var(--small); line-height: var(--small-lh);
 }
-.so-far { margin: 0 0 var(--s3); display: grid; gap: 2px; font-size: var(--small); line-height: var(--small-lh); }
-.so-far-tag { color: var(--muted); }
-.so-far-text {
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;
-  animation: so-far-in 520ms ease-out both; text-wrap: pretty;
+.research-head:not([data-open]) { padding-bottom: var(--s2); }
+.head-toggle {
+  display: flex; align-items: baseline; gap: var(--s2); width: 100%; padding: var(--s1) 0; border: 0; background: none;
+  font: inherit; color: var(--muted); text-align: left; cursor: pointer;
 }
-.research-head:hover .so-far-text { -webkit-line-clamp: unset; }
+.so-far-peek { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--ink); }
+.head-action { margin-left: auto; color: var(--accent); }
+.head-toggle:hover .head-action { text-decoration: underline; text-underline-offset: 3px; }
+.so-far-text { margin: 0; color: var(--ink); text-wrap: pretty; animation: so-far-in 520ms ease-out both; }
 @keyframes so-far-in { from { opacity: 0; transform: translateY(3px); } }
-.rail { list-style: none; margin: 0; padding: 0; display: flex; }
-.rail li { flex: 1; position: relative; min-width: 0; }
-.rail li + li::before { content: ""; position: absolute; top: 4px; right: 50%; width: 100%; height: 1px; background: var(--line); }
-.rail li[data-status="done"] + li::before, .rail li[data-status="current"]::before { background: var(--accent); }
-.rail button {
-  position: relative; z-index: 1; width: 100%; display: grid; justify-items: center; gap: 2px; padding: 0 var(--s1);
-  border: 0; background: none; font: inherit; font-size: var(--small); line-height: var(--small-lh);
-  color: var(--muted); text-align: center; cursor: pointer;
-}
-.rail button:disabled { cursor: default; }
-.rail-dot {
-  width: 9px; height: 9px; margin-bottom: var(--s1); border-radius: 50%; border: 1.5px solid var(--line);
-  background: var(--surface); transition: background 300ms, border-color 300ms, box-shadow 300ms;
-}
-.rail-finding { color: var(--ink); text-wrap: balance; }
-.rail li[data-status="done"] .rail-dot { background: var(--accent); border-color: var(--accent); }
-.rail li[data-status="current"] .rail-dot { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-.rail li[data-status="current"] .rail-label { color: var(--accent); }
-.rail button:not(:disabled):hover .rail-label { color: var(--accent); }
 
 /* The prose: one size, one measure. Each depth opens with its question in the same size, set in bold. */
 .stretch { font-size: var(--text); line-height: var(--text-lh); margin: 0 0 var(--s3); max-width: 62ch; text-wrap: pretty; }
