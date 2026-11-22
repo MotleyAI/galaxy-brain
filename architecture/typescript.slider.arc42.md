@@ -4,10 +4,9 @@
 
 The answer and its depth control in one: an OpenUI card that deepens an analysis one depth at a time. Its head stays
 in view while the reader scrolls. It shows the answer so far, the narrator's summary of the last depth written in
-full, which fades to the new summary as each depth completes. Under it, a rail names the depths the agent planned
-(for example Number, Split, Trend, Why, Actions) and marks those done, the one being written, and the next; under each
-written step it shows what that depth found, in the narrator's few words ("Brooklyn $318.1K"), so the rail reads as
-the argument in brief. Clicking a step writes on to it or goes back to it. The answer starts as depth 1 in full: one sentence and its number. Under the
+full, which fades to the new summary as each depth completes. "Hide" folds the head to one line, the latest finding
+in the narrator's few words ("So far: Brooklyn $318.1K"), and "Show" opens it again; the reader's place in the
+analysis stays where it was. The answer starts as depth 1 in full: one sentence and its number. Under the
 answer sits one bar with a single line that says what a tap or a pull does now: the next step's question ("Why is
 revenue moving? ↓"), "Tap to finish this depth" while one writes, "Release to go deeper" or "Release to go back"
 once a pull has gone far enough, and "That's the full analysis" at the end. A tap on the bar, a short pull down on
@@ -36,15 +35,15 @@ See the `typescript` view in `views.c4`.
 1. The answer reads levels, narration, digests and what the agent explored from answer state and never changes them; how much of the answer is written is its own state. [review]
 2. Writing only ever adds below: words and panels are appended after what is written, in the narration's order, and unwriting only removes from the end. [enforced: test:web/src/slider/stream.test.ts]
 3. Never faster than a reader can follow: a depth writes itself at about eleven words a second, half as fast again from depth 3 on, and charts cost a share of that like words do. [enforced: test:web/src/slider/stream.test.ts]
-4. What the head, the rail and its findings, the bar's next question and the exploration note say comes from the agent and the narrator: digests, level titles and the recorded probes, never text the answer makes up. [review]
+4. What the head and its folded line, the bar's next question and the exploration note say comes from the agent and the narrator: digests, level titles and the recorded probes, never text the answer makes up. [review]
 
 ## Rationale
 
 The reader has a decision to make, and the impression that should stay is research visibly deepening toward it, not
 the animation. The answer so far makes that visible in one place: the conclusion sharpens as each depth lands,
-without the reader reconstructing it from paragraphs further down. A named rail gives depth a shape: how deep the
-analysis goes, where the reader is, and what comes next, in sober words rather than in the brain's mood; the finding
-under each written step lets a reader who only scans the head take away the argument. Naming the
+without the reader reconstructing it from paragraphs further down. The head holds only that, and folds to one line,
+because the analysis needs the screen more than a map of it does; depth already shows in the questions down the
+page and in the bar's next step. Naming the
 next step by its question is more intuitive than an anonymous handle, and tells a finance reader this is research,
 not a reveal. One control that is both the button and the handle, with one line of text that changes with what it
 will do, keeps the bottom of the answer quiet and leaves no second thing to aim at; the pull stays as a shortcut on
