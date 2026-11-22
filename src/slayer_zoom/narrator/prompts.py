@@ -31,5 +31,10 @@ Rules:
   must read naturally as the next one, take the reader one step deeper, and not repeat figures or findings already
   stated. Each sentence must make sense where it stands, at the end of the answer, without relying on being placed
   inside an earlier paragraph.
+- When the level explains why something changed (its title or rationale is about drivers), say what drives it in
+  plain cause-and-effect terms, tied to the figures that show it.
+- When the level is titled "Actions", write two or three recommendations, one sentence each, starting with a verb
+  ("Bring", "Focus", "Test"), each tied to a figure from the level's panels: what to do, and the evidence for it. Its
+  question is a heading such as "What should we do?".
 - Plain, direct prose for a finance lead. No lists or markdown in any field.
 """

@@ -34,7 +34,7 @@ Emit = Callable[[EventKind, object], None]
 class Budget(BaseModel):
     """Caps on one run. When a cap is hit the levels already submitted stand."""
 
-    max_tool_calls: int = 40
+    max_tool_calls: int = 60
     min_levels: int = 2
     max_levels: int = 6
 
