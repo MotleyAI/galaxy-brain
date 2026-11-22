@@ -2,19 +2,25 @@
 
 ## Purpose and context
 
-The answer and its depth control in one: an OpenUI card with a handle on its bottom edge. The answer starts as depth 1
-in full: one sentence and its number. A short pull down on the handle, a tap, or Down, Enter or Space on it asks for
-the next depth; the pull opens a slim, empty band above the handle, which closes on release. The depth then writes
-itself below what is there, word by word at about eleven words a second, and draws its charts row
-by row; a caret marks the writing point. Each depth is a paragraph after the one before, opening with the question it
-answers, with each panel right after the sentence that introduces it. Panels draw as part of the same stream: a single
-number rises into focus, bar charts and tables unroll a row at a time, and a line chart opens its frame, then draws
-left to right through time. The page follows the writing point: whenever the handle under it leaves the middle of the
-screen, the page eases toward it a little each frame, until the reader scrolls; the writing carries on either way. Pulling or tapping again while a depth writes
-skips to its end; pulling up, or Up, goes back a depth, unwriting from the end at three times the pace. A depth asked
-for before the agent has built it starts writing when it arrives. A brain on the handle grows and glows brighter with
-the depth being written, with rays shining out of it; its ring charges with the pull and fills as the depth is
-written. The tooltip and accessible value give the depth number; Home and End jump to depth 1 or to everything.
+The answer and its depth control in one: an OpenUI card that deepens an analysis one depth at a time. Its head stays
+in view while the reader scrolls. It shows the answer so far, the narrator's summary of the last depth written in
+full, which fades to the new summary as each depth completes. Under it, a rail names the depths the agent planned
+(for example Number, Split, Trend, Why, Actions) and marks those done, the one being written, and the next; clicking a
+step writes on to it or goes back to it. The answer starts as depth 1 in full: one sentence and its number. Under the
+answer, a button names the next step by its question ("Go deeper: Why is revenue moving?"); a tap on it, a short pull
+down on the handle, or Down, Enter or Space on the handle asks for that depth. The pull opens a slim, empty band above
+the handle, which closes on release. The depth then writes itself below what is there, word by word at about eleven
+words a second (half as fast again from depth 3 on), and a caret marks the writing point. Each depth is a paragraph
+after the one before, opening with its question and the business-context facts that shaped it, with its first new
+chart right after the sentence that introduces it; its further charts fold into one-line "Evidence" links that open
+in place. Charts draw as part of the same stream: a single number rises into focus, bar charts and tables unroll a
+row at a time, and a line chart opens its frame, then draws left to right through time. The Why depth also notes how
+the agent got there: how many exploratory queries and profiles it ran, on which measures and splits. The page follows
+the writing point: whenever the handle under it leaves the middle of the screen, the page eases toward it a little
+each frame, until the reader scrolls; the writing carries on either way. While a depth writes, the button skips to
+its end; pulling up, or Up, goes back a depth, unwriting from the end at three times the pace. A depth asked for
+before the agent has built it starts writing when it arrives. A small brain on the handle grows with the depth being
+written. Home and End jump to depth 1 or to everything.
 
 ## Building blocks
 
@@ -22,23 +28,26 @@ See the `typescript` view in `views.c4`.
 
 ## Principles
 
-1. The answer reads levels, narration and digests from answer state and never changes them; how much of the answer is written is its own state. [review]
+1. The answer reads levels, narration, digests and what the agent explored from answer state and never changes them; how much of the answer is written is its own state. [review]
 2. Writing only ever adds below: words and panels are appended after what is written, in the narration's order, and unwriting only removes from the end. [enforced: test:web/src/slider/stream.test.ts]
-3. Never faster than human speed: a depth writes itself at most about eleven words a second, and charts and tables cost a share of that like words do. [enforced: test:web/src/slider/stream.test.ts]
+3. Never faster than a reader can follow: a depth writes itself at about eleven words a second, half as fast again from depth 3 on, and charts cost a share of that like words do. [enforced: test:web/src/slider/stream.test.ts]
+4. What the head, the rail and the exploration note say comes from the agent and the narrator: digests, level titles and the recorded probes, never text the answer makes up. [review]
 
 ## Rationale
 
-The answer should feel like one continuous expansion that the reader steers: they decide how far the analysis goes,
-and see each depth being written rather than revealed. One gesture per depth matches what a reader asks for, the next
-idea rather than the next few words, and leaves their hands free to read; an earlier version made the reader hold the
-pull for the writing to go on, which tied reading to effort and could stop mid-sentence. The speed cap keeps the
-writing at a pace a person can follow, and skipping lets a fast reader have the whole depth at once. Following the
-writing point replaces a guided tour: the reader sees the new depth arrive without the page being taken from them,
-and scrolling hands control straight back. Appending only, depth after depth, means nothing the reader has read ever
-moves. Drawing each chart a row at a time, at the same steady pace as the words, makes charts part of the writing
-rather than interruptions; each animation follows the data's own shape (rows arrive one by one, time runs left to
-right), and only clips or fades what is there, so no number is ever shown that SLayer did not return. Easing
-toward the writing point, rather than pinning the page to it, keeps new lines and charts from jolting what the reader
-is looking at. Nothing names the next depth before it is written, so each depth is a small surprise; the question
-headings show the analysis's structure as it is written, not before. Every panel the text
-never introduces still gets a place, so no data is lost to a missing sentence.
+The reader has a decision to make, and the impression that should stay is research visibly deepening toward it, not
+the animation. The answer so far makes that visible in one place: the conclusion sharpens as each depth lands,
+without the reader reconstructing it from paragraphs further down. A named rail gives depth a shape: how deep the
+analysis goes, where the reader is, and what comes next, in sober words rather than in the brain's mood. Naming the
+next step by its question is more intuitive than an anonymous handle, and tells a finance reader this is research,
+not a reveal; the pull stays as a shortcut. One gesture per depth matches what a reader asks for, the next idea
+rather than the next few words, and leaves their hands free to read. The speed keeps the writing at a pace a person
+can follow; later depths, where the reader is invested and wants the point, run faster, and skipping gives a fast
+reader the whole depth at once. Following the writing point replaces a guided tour: the reader sees the new depth
+arrive without the page being taken from them, and scrolling hands control straight back. Appending only means
+nothing the reader has read ever moves. One main chart per depth keeps each depth readable; the rest of the evidence
+is one tap away, so nothing is hidden and nothing crowds the point. Drawing each chart a row at a time makes charts
+part of the writing; each animation follows the data's own shape and only clips or fades what is there, so no number
+is ever shown that SLayer did not return. The exploration note shows that the agent searched before it concluded,
+while saying only what it queried, never what it found. Every panel the text never introduces still gets a place,
+so no data is lost to a missing sentence.
