@@ -108,34 +108,46 @@ export function depthAt(stream: Placed[], units: number): { depth: number; fill:
   return { depth, fill: to > from ? Math.max(0, Math.min(1, (units - from) / (to - from))) : 1 };
 }
 
-/** Human speed: about eleven words a second at most, close to reading pace, however hard the reader pulls. */
+/** Human speed: a depth writes itself at about eleven words a second, close to reading pace. */
 export const MAX_UNITS_PER_S = 11;
-/** How far below the press point the finger must go before anything is written, and where full speed is reached. */
-export const DEAD_ZONE = 12;
-export const FULL_SPEED_AT = 140;
+/** Going back a depth unwrites faster: three times the writing pace. */
+export const UNWRITE_FACTOR = 3;
+/** How far the reader pulls the handle, in pixels, to ask for the next depth (or, pulling up, to go back one). */
+export const STEP_PULL = 56;
+/** The band under the answer while a depth writes itself: two lines of the agent's reasoning for it. */
+export const BAND = 40;
 
-/**
- * The writing speed for a pull: nothing within the dead zone, then faster the further the finger is pulled, up to
- * human speed. Pulling up unwrites at the same pace.
- */
-export function speed(dy: number): number {
-  const beyond = Math.max(0, Math.abs(dy) - DEAD_ZONE);
-  const throttle = Math.min(1, beyond / (FULL_SPEED_AT - DEAD_ZONE));
-  return Math.sign(dy) * throttle * MAX_UNITS_PER_S;
+/** Where each depth ends in the stream, in order: the stops a pull moves between. */
+export function stops(stream: Placed[]): number[] {
+  const levels = [...new Set(stream.map((p) => p.item.level))];
+  return levels.map((level) => depthEnd(stream, level));
 }
 
-/** The units after `ms` of pulling at `dy`, within the depth 1 floor and what has arrived. */
-export function advance(units: number, dy: number, ms: number, floor: number, total: number): number {
-  return Math.max(floor, Math.min(total, units + (speed(dy) * ms) / 1000));
+/** The end of the next depth after `at`, or `at` itself when no further depth has arrived. */
+export function nextStop(stream: Placed[], at: number): number {
+  return stops(stream).find((end) => end > at + 1e-9) ?? at;
+}
+
+/** The end of the depth before the one `at` is in or past: depth 1 at least. */
+export function prevStop(stream: Placed[], at: number): number {
+  const before = stops(stream).filter((end) => end < at - 1e-9);
+  return before.length ? before[before.length - 1]! : depthEnd(stream, 0);
+}
+
+/** The units after `ms` of writing toward `target` (or unwriting, faster, when it is behind). */
+export function toward(units: number, target: number, ms: number): number {
+  const rate = target < units ? MAX_UNITS_PER_S * UNWRITE_FACTOR : MAX_UNITS_PER_S;
+  const step = (rate * ms) / 1000;
+  return target > units ? Math.min(target, units + step) : Math.max(target, units - step);
 }
 
 /**
- * The room the pull opens under the answer: a slim band, just tall enough for a line of reasoning, that follows the
- * finger a little and resists past full speed.
+ * The room a pull opens under the answer: it follows the finger by half until the pull is enough for the next depth,
+ * then resists, so it never grows much past a line or two.
  */
 export function room(dy: number): number {
   if (dy <= 0) return 0;
-  return dy <= FULL_SPEED_AT ? dy * 0.28 : FULL_SPEED_AT * 0.28 + Math.sqrt(dy - FULL_SPEED_AT) * 1.5;
+  return dy <= STEP_PULL ? dy * 0.5 : STEP_PULL * 0.5 + Math.sqrt(dy - STEP_PULL) * 1.5;
 }
 
 /** How many of a chart's rows are drawn, as a fraction (2.4 = two rows and 40% of the third), after its frame. */

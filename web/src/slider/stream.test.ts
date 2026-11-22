@@ -1,17 +1,20 @@
 import { describe, expect, it } from "vitest";
 import type { Digest, ResolvedLevel, ResolvedPanel, Segment } from "../state";
 import {
-  advance,
   buildStream,
   depthAt,
   depthEnd,
   drawnOf,
   FRAME_UNITS,
   MAX_UNITS_PER_S,
+  nextStop,
+  prevStop,
   room,
   ROW_UNITS,
-  speed,
+  STEP_PULL,
+  toward,
   totalUnits,
+  UNWRITE_FACTOR,
   written,
 } from "./stream";
 
@@ -71,23 +74,28 @@ describe("the stream", () => {
 });
 
 describe("the pull", () => {
-  it("writes nothing in the dead zone, then faster the further it goes, never faster than human speed", () => {
-    expect(speed(5)).toBe(0);
-    expect(speed(76)).toBeCloseTo(MAX_UNITS_PER_S / 2);
-    expect(speed(1000)).toBe(MAX_UNITS_PER_S);
-    expect(speed(-1000)).toBe(-MAX_UNITS_PER_S);
+  const stream = buildStream(narration, levels, digests);
+  const end = totalUnits(stream);
+
+  it("moves a depth at a time: the next depth's end, or back to the one before", () => {
+    expect(nextStop(stream, 9)).toBe(end);
+    expect(nextStop(stream, end)).toBe(end);
+    expect(prevStop(stream, end)).toBe(9);
+    expect(prevStop(stream, 15)).toBe(9);
+    expect(prevStop(stream, 9)).toBe(9);
   });
 
-  it("advances with time, within depth 1 and what has arrived", () => {
-    expect(advance(10, 1000, 1000, 9, 100)).toBe(10 + MAX_UNITS_PER_S);
-    expect(advance(10, -1000, 1000, 9, 100)).toBe(9);
-    expect(advance(99, 1000, 1000, 9, 100)).toBe(100);
+  it("writes a depth at human speed, never past it, and unwrites faster", () => {
+    expect(toward(10, 100, 1000)).toBe(10 + MAX_UNITS_PER_S);
+    expect(toward(99, 100, 1000)).toBe(100);
+    expect(toward(100, 9, 1000)).toBe(100 - MAX_UNITS_PER_S * UNWRITE_FACTOR);
+    expect(toward(10, 9, 1000)).toBe(9);
   });
 
-  it("opens a slim room that follows the finger a little, then resists past full speed", () => {
+  it("opens a slim room that follows the finger to a step, then resists", () => {
     expect(room(-10)).toBe(0);
-    expect(room(100)).toBeCloseTo(28);
-    expect(room(140)).toBeLessThan(40);
+    expect(room(STEP_PULL)).toBeCloseTo(28);
+    expect(room(200)).toBeLessThan(50);
     expect(room(500) - room(400)).toBeLessThan(10);
   });
 });
