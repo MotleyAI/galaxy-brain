@@ -1736,46 +1736,76 @@
       "panel": "total"
     },
     {
-      "id": "total_change_text",
-      "level": 3,
-      "text": "That is up 5.8% on the previous month and 106.4% on the same month last year, though the year-ago comparison includes stores that have since opened.",
-      "panel": "total_change"
-    },
-    {
       "id": "store_split",
       "level": 1,
-      "text": "Brooklyn led with $84.4K, followed by Philadelphia at $53.1K, Chicago at $38.1K and San Francisco at $32.7K.",
+      "text": "Brooklyn was the largest store at $84.4K, followed by Philadelphia at $53.1K.",
       "panel": "by_store"
     },
     {
-      "id": "store_drivers_text",
+      "id": "store_rest",
+      "level": 1,
+      "text": "Chicago brought in $38.1K and San Francisco $32.7K.",
+      "panel": null
+    },
+    {
+      "id": "share_orders",
       "level": 2,
-      "text": "Brooklyn's 40.5% share came from volume, with 7,839 orders from 556 customers, while average order size stayed close to $10.76 in Brooklyn and $10.99 in San Francisco.",
+      "text": "Brooklyn's lead comes mostly from volume, with 40.5% of revenue on 7,839 orders from 556 customers.",
       "panel": "store_drivers"
     },
     {
-      "id": "store_change_text",
+      "id": "aov_flat",
+      "level": 2,
+      "text": "Average order value is close across the stores, from $10.39 in Chicago to $10.99 in San Francisco.",
+      "panel": null
+    },
+    {
+      "id": "others_orders",
+      "level": 2,
+      "text": "Philadelphia took 25.5% of revenue on 4,940 orders, while Chicago and San Francisco had 3,669 and 2,980 orders.",
+      "panel": null
+    },
+    {
+      "id": "total_change_intro",
+      "level": 3,
+      "text": "Total revenue rose 5.8% on the previous month and is up 106.4% on the same month last year, though that year-on-year figure includes stores that did not exist then.",
+      "panel": "total_change"
+    },
+    {
+      "id": "store_mom",
       "level": 3,
       "text": "Chicago grew 26.3% and San Francisco 32.5% on the previous month, while Brooklyn slipped 4.1% and Philadelphia 1.9%.",
       "panel": "store_change"
     },
     {
-      "id": "store_yoy_text",
+      "id": "store_yoy",
       "level": 3,
-      "text": "Brooklyn is up 61.3% on last year and Philadelphia 9.2%, and Chicago and San Francisco have no prior year because they opened in July.",
+      "text": "Against last year, Brooklyn is up 61.3% and Philadelphia up 9.2%, and Chicago and San Francisco have no comparison because they opened in July.",
       "panel": null
     },
     {
-      "id": "store_trend_text",
+      "id": "trend_intro",
       "level": 4,
-      "text": "Looking across the year, Brooklyn peaked at $114.3K in May and has fallen to $84.4K, while Chicago and San Francisco have climbed since opening.",
+      "text": "Over the complete months this year, Brooklyn peaked at $114.3K in May and has fallen to $84.4K, while Philadelphia has eased from $73.5K in March to $53.1K.",
       "panel": "store_trend"
     },
     {
-      "id": "store_mix_text",
+      "id": "trend_new",
       "level": 4,
-      "text": "Beverages dominate the mix everywhere, led by Brooklyn at 9,240 units against 2,449 jaffles.",
+      "text": "Chicago and San Francisco have climbed since opening in July, with Chicago reaching $38.1K and San Francisco $32.7K in the latest month.",
+      "panel": null
+    },
+    {
+      "id": "mix_intro",
+      "level": 4,
+      "text": "Beverages dominate the mix in every store, led by Brooklyn with 9,240 beverage units against 2,449 jaffle units.",
       "panel": "store_mix"
+    },
+    {
+      "id": "mix_rest",
+      "level": 4,
+      "text": "Philadelphia sold 5,724 beverages and 1,510 jaffles, Chicago 4,221 and 1,020, and San Francisco 3,552 and 879.",
+      "panel": null
     }
   ],
   "digests": [
@@ -1783,31 +1813,31 @@
       "level": 0,
       "question": "How did our stores do?",
       "headline": "$208.4K gross revenue",
-      "summary": "Our stores brought in $208.4K in gross revenue last month."
+      "summary": "Our stores generated $208.4K in gross revenue last month across all locations."
     },
     {
       "level": 1,
-      "question": "Which stores drove the revenue?",
+      "question": "How does it split by store?",
       "headline": "Brooklyn $84.4K",
-      "summary": "Our stores brought in $208.4K in gross revenue last month, with Brooklyn the largest contributor at $84.4K and San Francisco the smallest at $32.7K."
+      "summary": "Our stores generated $208.4K in gross revenue last month, with Brooklyn the largest at $84.4K and Philadelphia next at $53.1K. Chicago and San Francisco contributed $38.1K and $32.7K."
     },
     {
       "level": 2,
-      "question": "What drives each store's revenue?",
+      "question": "What is driving each store's revenue?",
       "headline": "volume, not order size",
-      "summary": "Our stores brought in $208.4K in gross revenue last month, led by Brooklyn at $84.4K and 40.5% of the total. Brooklyn's lead comes from order volume, since average orders are similar across stores at roughly $10 to $11."
+      "summary": "Our stores generated $208.4K in gross revenue last month, led by Brooklyn at $84.4K and Philadelphia at $53.1K, with Chicago and San Francisco behind. The gaps between stores come mainly from order volume and customer counts, since average order value is similar everywhere at roughly $10 to $11."
     },
     {
       "level": 3,
       "question": "How does it compare with before?",
-      "headline": "up 5.8% on month",
-      "summary": "Our stores brought in $208.4K last month, up 5.8% on the previous month, with Brooklyn leading at $84.4K and 40.5% of the total through order volume. Growth came from Chicago and San Francisco, while Brooklyn and Philadelphia dipped slightly on the month."
+      "headline": "New stores drive growth",
+      "summary": "Our stores generated $208.4K in gross revenue last month, up 5.8% on the previous month, led by Brooklyn at $84.4K and Philadelphia at $53.1K. Gaps between stores come from order volume rather than order value, and the growth came from Chicago and San Francisco while Brooklyn and Philadelphia dipped slightly."
     },
     {
       "level": 4,
-      "question": "How are stores trending, and what do they sell?",
-      "headline": "Brooklyn off May peak",
-      "summary": "Our stores brought in $208.4K last month, up 5.8% on the previous month, with Brooklyn leading at $84.4K through order volume. Growth came from the newer Chicago and San Francisco stores, while Brooklyn is well below its $114.3K May peak, and beverages make up most units sold in every store."
+      "question": "What is the trend and mix?",
+      "headline": "Older stores fading",
+      "summary": "Our stores generated $208.4K in gross revenue last month, up 5.8% on the previous month, led by Brooklyn at $84.4K and Philadelphia at $53.1K. Gaps between stores come from order volume rather than order value, and growth comes from the newer Chicago and San Francisco stores while Brooklyn and Philadelphia have drifted down from their earlier peaks. Beverages make up most of the units sold in every store."
     }
   ]
 }

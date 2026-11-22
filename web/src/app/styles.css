@@ -136,3 +136,17 @@ header h1 { margin: 0 0 24px; font-size: 22px; letter-spacing: -0.01em; }
 @media (prefers-reduced-motion: reduce) {
   .stretch .word, .inline-panel, .brain-cue .brain-body, .brain-cue .rays line, .depth-question { animation: none; }
 }
+
+/* Continuous expansion: the answer unrolls out of the handle while it is held. Charts draw as the pull goes, so
+   they have no entrance animation of their own. */
+.stream .stretch.level-0 { font-weight: 550; }
+.stream .inline-panel { animation: none; }
+.stream .depth-question { animation: none; }
+.unroll { overflow: hidden; }
+.caret {
+  display: inline-block; width: 2px; height: 1.05em; margin-left: 1px; vertical-align: -0.15em;
+  background: var(--accent); border-radius: 1px; animation: caret 900ms steps(2, jump-none) infinite;
+}
+@keyframes caret { 50% { opacity: 0; } }
+.stream[data-writing] .brain-cue .brain-body { animation-duration: 600ms; }
+@media (prefers-reduced-motion: reduce) { .caret { animation: none; } }

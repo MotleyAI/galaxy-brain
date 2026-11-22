@@ -1,4 +1,4 @@
-"""Writes the answer's text, level by level, as insertions into the text so far. Every figure is checked."""
+"""Writes the answer's text, level by level, each a paragraph after the text so far. Figures are checked."""
 
 import json
 import re
@@ -33,9 +33,10 @@ def plain(text: str) -> str:
 
 
 class DraftInsertion(BaseModel):
+    """A sentence of the level's paragraph. The paragraph goes after everything written so far."""
+
     id: str
     text: str
-    after: str | None = None
     panel: str | None = None
 
 
@@ -180,12 +181,14 @@ class Narrator:
         )
         draft = response.parsed_output if response.stop_reason != "refusal" else None
         used = {s.id for s in self.segments}
+        # A level's sentences go after the text so far, in the order drafted: the answer only grows below.
+        end = self.segments[-1].id if self.segments else None
         insertions: list[Insertion] = []
         for item in draft.insertions if draft else []:
             sid = item.id if _ID.fullmatch(item.id) and item.id not in used else f"l{level.index}_{len(used)}"
             used.add(sid)
             segment = Segment(id=sid, level=level.index, text=plain(item.text), panel=item.panel)
-            insertions.append(Insertion(segment=segment, after=item.after))
+            insertions.append(Insertion(segment=segment, after=end))
         return draft or Draft(), insertions
 
     def _problems(

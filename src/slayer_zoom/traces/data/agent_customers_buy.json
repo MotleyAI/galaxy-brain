@@ -1597,7 +1597,7 @@
   },
   "narration": [
     {
-      "id": "units_answer",
+      "id": "units_total_answer",
       "level": 0,
       "text": "Customers have bought 274,061 units so far this year.",
       "panel": "units_total"
@@ -1605,38 +1605,74 @@
     {
       "id": "type_split",
       "level": 1,
-      "text": "Beverages account for 212,122 of those units, or 77.4%, while jaffles make up the other 61,939, or 22.6%.",
+      "text": "Beverages make up most of that volume, at 212,122 units or 77.4% of the total.",
       "panel": "by_type"
     },
     {
-      "id": "product_detail",
-      "level": 2,
-      "text": "Within beverages, sales are spread almost evenly, with each of the five drinks at roughly 15.4% to 15.5% of units, led by for richer or pourover at 42,578 units.",
-      "panel": "by_product"
-    },
-    {
-      "id": "jaffle_detail",
-      "level": 2,
-      "text": "The five jaffles are just as even at about 4.5% each, with nutellaphone who dis? on top at 12,518 units.",
+      "id": "type_jaffle",
+      "level": 1,
+      "text": "Jaffles account for the remaining 61,939 units, or 22.6%.",
       "panel": null
     },
     {
-      "id": "store_detail",
+      "id": "product_intro",
+      "level": 2,
+      "text": "Within each line, sales are spread very evenly across the five products.",
+      "panel": "by_product"
+    },
+    {
+      "id": "product_bev",
+      "level": 2,
+      "text": "The top beverage, for richer or pourover, sold 42,578 units or 15.5%, with chai and mighty close behind at 42,451 units.",
+      "panel": null
+    },
+    {
+      "id": "product_jaffle",
+      "level": 2,
+      "text": "The best-selling jaffle, nutellaphone who dis?, sold 12,518 units or 4.6%, only just ahead of doctor stew at 12,499.",
+      "panel": null
+    },
+    {
+      "id": "store_intro",
       "level": 3,
-      "text": "Brooklyn sells the most, at 112,763 beverages and 33,409 jaffles, and the mix looks much the same in every store, with about 1.2 beverages and 1.4 to 1.6 jaffles in each order that contains them.",
+      "text": "The mix by store looks much the same everywhere, with Brooklyn selling the most at 112,763 beverage units and 33,409 jaffle units.",
       "panel": "store_mix"
     },
     {
-      "id": "trend_detail",
+      "id": "store_orders",
       "level": 3,
-      "text": "Month by month both lines moved together, peaking in August at 25,136 beverages and 7,268 jaffles, with November only a partial month.",
+      "text": "Orders that include a jaffle carry about 1.4 of them in Brooklyn and 1.57 in San Francisco, against roughly 1.17 units for orders with a beverage.",
+      "panel": null
+    },
+    {
+      "id": "trend_intro",
+      "level": 3,
+      "text": "Month by month, both lines rose through the summer and peaked in August, at 25,136 beverage units and 7,268 jaffle units.",
       "panel": "monthly_mix"
     },
     {
-      "id": "yoy_detail",
+      "id": "trend_partial",
+      "level": 3,
+      "text": "November is still a partial month, so its lower totals of 15,797 and 3,986 units should not be read as a drop.",
+      "panel": null
+    },
+    {
+      "id": "yoy_intro",
       "level": 4,
-      "text": "Against the same month last year, beverages were up 542% in January but only 105.5% in October, and jaffles show the same fading pattern, because the comparison includes new stores.",
+      "text": "Against the same month last year, both lines are well ahead in every complete month, though this comparison includes new stores as well as like-for-like growth.",
       "panel": "mix_yoy"
+    },
+    {
+      "id": "yoy_early",
+      "level": 4,
+      "text": "The gap was widest in January, when beverages were up 542.3% and jaffles 542.1%.",
+      "panel": null
+    },
+    {
+      "id": "yoy_late",
+      "level": 4,
+      "text": "By October the increase had narrowed to 107.7% for beverages and 101.0% for jaffles.",
+      "panel": null
     }
   ],
   "digests": [
@@ -1644,31 +1680,31 @@
       "level": 0,
       "question": "What do our customers buy?",
       "headline": "274,061 units",
-      "summary": "Customers have bought 274,061 units year to date, counted in units because there is no revenue figure per product."
+      "summary": "Customers have bought 274,061 units so far this year, counted in units because there is no revenue per product."
     },
     {
       "level": 1,
-      "question": "What product lines sell most?",
+      "question": "What do our customers buy?",
       "headline": "Beverages 77.4%",
-      "summary": "Customers have bought 274,061 units year to date, counted in units because there is no revenue figure per product. Beverages drive most of it at 77.4% of units, with jaffles at 22.6%."
+      "summary": "Customers have bought 274,061 units so far this year, counted in units because there is no revenue per product. Beverages are about 77.4% of units and jaffles 22.6%."
     },
     {
       "level": 2,
-      "question": "Which products sell the most?",
-      "headline": "Evenly spread menu",
-      "summary": "Customers have bought 274,061 units year to date, 77.4% beverages and 22.6% jaffles. Within each line sales are spread evenly, with for richer or pourover the top seller at 42,578 units and no single product dominating."
+      "question": "Which products sell most?",
+      "headline": "Evenly spread products",
+      "summary": "Customers have bought 274,061 units so far this year, counted in units because there is no revenue per product. Beverages are 77.4% of units and jaffles 22.6%, and within each line the five products sell almost equally, led by for richer or pourover at 15.5% and nutellaphone who dis? at 4.6%."
     },
     {
       "level": 3,
-      "question": "How does it vary by store?",
-      "headline": "Same mix everywhere",
-      "summary": "Customers have bought 274,061 units year to date, 77.4% beverages and 22.6% jaffles, spread evenly across products with for richer or pourover on top at 42,578 units. The mix is the same in every store, led by Brooklyn, and both lines rose and fell together, peaking in August."
+      "question": "How do stores and months differ?",
+      "headline": "Peak in August",
+      "summary": "Customers have bought 274,061 units so far this year, 77.4% beverages and 22.6% jaffles, with the five products in each line selling almost equally. The mix is similar across stores and orders hold about 1.2 beverages or 1.4 or more jaffles, while volume of both lines peaked in August, and November is only partial."
     },
     {
       "level": 4,
-      "question": "Is it growing year on year?",
-      "headline": "Growth fading as base grows",
-      "summary": "Customers have bought 274,061 units year to date, 77.4% beverages and 22.6% jaffles, spread evenly across products and stores, with Brooklyn leading and August the peak. Every complete month is above the same month last year, but the gains narrow from about 5.4 times last year's level in January to roughly 1.0 times in October, and they include new stores."
+      "question": "How does it compare with last year?",
+      "headline": "Growth slowing, still ahead",
+      "summary": "Customers have bought 274,061 units so far this year, 77.4% beverages and 22.6% jaffles, with the five products in each line selling almost equally and a similar mix across stores. Volume peaked in August and November is only partial. Both lines are well above last year in every complete month, with the increase narrowing from about 542% in January to roughly 101% to 108% in October, partly because new stores are included."
     }
   ]
 }

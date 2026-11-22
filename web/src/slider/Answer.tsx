@@ -10,327 +10,255 @@ import { ThemeProvider } from "@openuidev/react-ui/parts/ThemeProvider/ThemeProv
 import { useSystemThemeMode } from "@openuidev/react-ui/parts/ThemeProvider/useSystemThemeMode";
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { PanelView } from "../panels";
-import { lastPosition, useAnswer, type AnswerStore, type Digest, type Segment } from "../state";
+import { useAnswer, type AnswerStore } from "../state";
 import { Brain } from "./Brain";
-import { depthStarts, firstChangeAnchor } from "./digest";
-import { charge, glide, Pull, pulledDepth, returnMs, rewindMs, ScrollStreams, stage, stretch, THINK_MS, writingMs } from "./pull";
-import { reveal, withFallbacks, type Piece } from "./stretch";
-
-const FOLD_MS = 280;
-const SETTLE_MS = 300;
-const EDGE = 56;
-const SCROLL_STEP = 8;
-const TOP_GAP = 16;
-const BOTTOM_GAP = 24;
-const PAUSE_MS = 900;
-const REWIND_AT = 0.3;
-const SMOOTH_JUMP = 120;
-const WATCHDOG_SLACK_MS = 2000;
-const FRESH_MS = 4000;
-
-function wordsBetween(segments: Segment[], from: number, to: number): number {
-  return segments
-    .filter((s) => s.level > from && s.level <= to)
-    .reduce((sum, s) => sum + s.text.split(/\s+/).filter(Boolean).length, 0);
-}
+import { stage } from "./pull";
+import {
+  buildStream,
+  depthAt,
+  depthEnd,
+  drawnOf,
+  nextStop,
+  prevStop,
+  room,
+  STEP_PULL,
+  totalUnits,
+  toward,
+  written,
+  type Shown,
+} from "./stream";
 
 /**
- * The answer at a depth the reader unlocks. It always shows its current depth in full. Pulling the handle down opens
- * room while the brain charges; past the threshold the next depth writes itself into the text and its charts unfold.
- * Pulling up folds a depth away. Near the bottom of the window the page scrolls, so the pull can go on.
+ * The answer, a depth at a time, written live. A short pull on the handle (or a tap, or the Down arrow) asks for the
+ * next depth; it then writes itself below what is there at reading pace, charts drawing row by row. The page eases
+ * along to keep the writing point in view until the reader scrolls themselves. Pulling again while a depth writes
+ * skips to its end; pulling up goes back a depth.
  */
 export function ResizableAnswer({ store }: { store: AnswerStore }) {
   const state = useAnswer(store);
   const mode = useSystemThemeMode();
-  const reachable = lastPosition(state);
-  const segments = useMemo(() => withFallbacks(state.narration, state.levels), [state.narration, state.levels]);
-  const [depth, setDepth] = useState(0);
-  const [pull, setPull] = useState(0);
-  const depthRef = useRef(0);
-  const reachRef = useRef(reachable);
-  const drag = useRef<{ pull: Pull; clientY: number } | null>(null);
-  const writing = useRef(0);
-  const scrolling = useRef(0);
+  const stream = useMemo(() => buildStream(state.narration, state.levels, state.digests), [state.narration, state.levels, state.digests]);
+  const floor = depthEnd(stream, 0);
+  const total = totalUnits(stream);
+  const [units, setUnits] = useState(0);
+  const [target, setTarget] = useState(0);
+  const [dy, setDy] = useState(0);
+  const unitsRef = useRef(0);
+  const targetRef = useRef(0);
+  const streamRef = useRef(stream);
+  streamRef.current = stream;
+  // A deeper depth was asked for before it arrived: write it as soon as it does.
+  const wanted = useRef(false);
+  // While following: when it started, so the tail of a scroll gesture from before does not count as taking over.
+  const follow = useRef<number | null>(null);
+  const followFrame = useRef(0);
+  const drag = useRef<{ originY: number } | null>(null);
+  const frame = useRef(0);
+  const last = useRef(0);
   const handle = useRef<HTMLDivElement>(null);
-  const card = useRef<HTMLDivElement>(null);
-  const article = useRef<HTMLElement>(null);
-  const [fresh, setFresh] = useState<number | null>(null);
-  const freshTimer = useRef(0);
-  // After an unlock the page tours the new depth: it follows the section down as it writes, pauses at its end, then
-  // glides back up to the start of the answer. Any scrolling of the reader's own ends the tour.
-  const tour = useRef<{
-    phase: "rewind" | "follow" | "pause" | "return" | null;
-    startedAt: number;
-    writeDelay: number;
-    timer: number;
-    frame: number;
-    watchdog: number;
-  }>({ phase: null, startedAt: 0, writeDelay: THINK_MS, timer: 0, frame: 0, watchdog: 0 });
-  const streams = useRef(new ScrollStreams());
-  reachRef.current = reachable;
 
-  const endTour = () => {
-    window.clearTimeout(tour.current.timer);
-    window.clearTimeout(tour.current.watchdog);
-    cancelAnimationFrame(tour.current.frame);
-    if (tour.current.phase === null) return;
-    tour.current.phase = null;
-    window.clearTimeout(freshTimer.current);
-    freshTimer.current = window.setTimeout(() => setFresh(null), FRESH_MS);
+  const setShown = (next: number) => {
+    unitsRef.current = next;
+    setUnits(next);
   };
-  const returnToTop = () => {
-    tour.current.phase = "return";
-    const from = window.scrollY;
-    const to = Math.max(0, from + (card.current?.getBoundingClientRect().top ?? 0) - TOP_GAP);
-    if (to >= from) return endTour();
-    const ms = returnMs(from - to);
-    const start = performance.now();
-    const step = (now: number) => {
-      if (tour.current.phase !== "return") return;
-      const t = Math.min((now - start) / ms, 1);
-      window.scrollTo(0, from + (to - from) * glide(t));
-      if (t < 1) tour.current.frame = requestAnimationFrame(step);
-      else endTour();
-    };
-    tour.current.frame = requestAnimationFrame(step);
+  const tick = (now: number) => {
+    const ms = Math.min(64, now - last.current);
+    last.current = now;
+    const next = toward(unitsRef.current, targetRef.current, ms);
+    setShown(next);
+    frame.current = next === targetRef.current ? 0 : requestAnimationFrame(tick);
   };
-
-  /** Glides to where a depth's first change lands; returns how long that takes (0 when it is already in view). */
-  const rewindTo = (level: number): number => {
-    tour.current.phase = "follow";
-    const el = article.current;
-    if (!el) return 0;
-    const anchorId = firstChangeAnchor(segments, level);
-    const anchor = anchorId ? el.querySelector(`[data-seg="${anchorId}"]`) : null;
-    const box = (anchor ?? el).getBoundingClientRect();
-    const y = anchor ? box.bottom : box.top;
-    if (y > window.innerHeight * 0.15 && y < window.innerHeight * 0.7) return 0;
-    const from = window.scrollY;
-    const to = Math.max(0, from + y - window.innerHeight * REWIND_AT);
-    const ms = rewindMs(to - from);
-    const start = performance.now();
-    tour.current.phase = "rewind";
-    const step = (now: number) => {
-      if (tour.current.phase !== "rewind") return;
-      const t = Math.min((now - start) / ms, 1);
-      window.scrollTo(0, from + (to - from) * glide(t));
-      if (t < 1) tour.current.frame = requestAnimationFrame(step);
-      else tour.current.phase = "follow";
-    };
-    tour.current.frame = requestAnimationFrame(step);
-    return ms;
+  const aim = (next: number) => {
+    targetRef.current = next;
+    setTarget(next);
+    if (!frame.current && next !== unitsRef.current) {
+      last.current = performance.now();
+      frame.current = requestAnimationFrame(tick);
+    }
+  };
+  // Follow the writing point: whenever the handle under it drifts out of the comfortable middle of the screen, the
+  // page eases toward it a little each frame, so lines and charts arriving never jolt the page.
+  const ease = () => {
+    const el = handle.current;
+    if (follow.current === null || !el) {
+      followFrame.current = 0;
+      return;
+    }
+    const { top, bottom } = el.getBoundingClientRect();
+    const low = window.innerHeight * 0.75;
+    const high = window.innerHeight * 0.25;
+    const off = bottom > low ? bottom - low : top < high ? top - high : 0;
+    if (Math.abs(off) >= 1) window.scrollBy(0, off * 0.16 + Math.sign(off));
+    else if (unitsRef.current === targetRef.current) {
+      follow.current = null;
+      followFrame.current = 0;
+      return;
+    }
+    followFrame.current = requestAnimationFrame(ease);
+  };
+  const startFollowing = () => {
+    follow.current = performance.now();
+    if (!followFrame.current) followFrame.current = requestAnimationFrame(ease);
+  };
+  const forward = () => {
+    const at = targetRef.current;
+    if (at > unitsRef.current + 1e-9) {
+      startFollowing();
+      setShown(at);
+      return;
+    }
+    const next = nextStop(streamRef.current, at);
+    if (next > at) {
+      startFollowing();
+      aim(next);
+    } else wanted.current = true;
+  };
+  const back = () => {
+    wanted.current = false;
+    startFollowing();
+    aim(prevStop(streamRef.current, unitsRef.current));
   };
 
-  const go = (next: number) => {
-    const from = depthRef.current;
-    depthRef.current = next;
-    setDepth(next);
-    endTour();
-    if (next <= from) return;
-    tour.current.startedAt = performance.now();
-    // First take the reader to where this depth's first change lands, often well above the handle; the writing
-    // starts once they are there.
-    const rewind = rewindTo(next);
-    tour.current.writeDelay = Math.max(THINK_MS, rewind);
-    // Whatever happens, a tour never outlives its depth by long, so it can never block the next pull.
-    tour.current.watchdog = window.setTimeout(
-      endTour,
-      tour.current.writeDelay + writingMs(wordsBetween(segments, from, next)) + PAUSE_MS + returnMs(4000) + WATCHDOG_SLACK_MS,
-    );
-    window.clearTimeout(freshTimer.current);
-    setFresh(next);
-  };
-
-  // While the new depth writes itself in, follow the writing point down: the last new sentence or chart stays on
-  // screen, through the pause at its end.
+  // A new question starts again at depth 1.
   useEffect(() => {
-    const el = article.current;
-    if (!el) return;
-    const observer = new ResizeObserver(() => {
-      const phase = tour.current.phase;
-      if (phase !== "follow" && phase !== "pause") return;
-      const marked = el.querySelectorAll(".segment.fresh, .inline-panel.fresh");
-      const box = marked[marked.length - 1]?.getBoundingClientRect();
-      if (!box) return;
-      const over = box.bottom + BOTTOM_GAP - window.innerHeight;
-      // Small steps keep pace with the words; a jump to an insertion further down glides there.
-      if (over > 0) window.scrollBy({ top: over, behavior: over > SMOOTH_JUMP ? "smooth" : "auto" });
-    });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [state.levels.length > 0]);
-
-  // The reader's own scrolling ends the tour: never fight them for the page.
+    cancelAnimationFrame(frame.current);
+    frame.current = 0;
+    wanted.current = false;
+    setShown(0);
+    targetRef.current = 0;
+    setTarget(0);
+  }, [state.question]);
+  // Depth 1 is always there in full, however it arrives.
+  const lastFloor = useRef(0);
   useEffect(() => {
-    // Only a scroll the reader starts during the tour counts: the momentum of the scroll that brought them down to
-    // the handle keeps arriving for a second or two and must not cancel it.
-    const stop = () => {
-      const began = streams.current.feed(performance.now());
-      if (tour.current.phase !== null && began > tour.current.startedAt) endTour();
+    if (targetRef.current <= lastFloor.current || targetRef.current < floor) {
+      targetRef.current = floor;
+      setTarget(floor);
+      setShown(floor);
+    }
+    lastFloor.current = floor;
+  }, [floor]);
+  // A depth asked for while it was still being built starts writing when it arrives.
+  useEffect(() => {
+    if (wanted.current && nextStop(stream, targetRef.current) > targetRef.current && unitsRef.current >= targetRef.current) {
+      wanted.current = false;
+      startFollowing();
+      aim(nextStop(stream, targetRef.current));
+    }
+  });
+  useEffect(
+    () => () => {
+      cancelAnimationFrame(frame.current);
+      cancelAnimationFrame(followFrame.current);
+    },
+    [],
+  );
+
+  // The reader scrolling takes over from the follow; the writing carries on.
+  useEffect(() => {
+    const takeOver = () => {
+      if (follow.current !== null && performance.now() - follow.current > 300) follow.current = null;
     };
-    const keys = (event: globalThis.KeyboardEvent) => {
-      // Keys on the handle unlock depths; they start a tour rather than end one.
-      if (event.target === handle.current) return;
-      if (["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "].includes(event.key)) stop();
+    const onKey = (event: globalThis.KeyboardEvent) => {
+      if (event.target !== handle.current && ["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "].includes(event.key)) takeOver();
     };
-    window.addEventListener("wheel", stop, { passive: true });
-    window.addEventListener("touchmove", stop, { passive: true });
-    window.addEventListener("keydown", keys);
+    window.addEventListener("wheel", takeOver, { passive: true });
+    window.addEventListener("touchmove", takeOver, { passive: true });
+    window.addEventListener("keydown", onKey);
     return () => {
-      window.removeEventListener("wheel", stop);
-      window.removeEventListener("touchmove", stop);
-      window.removeEventListener("keydown", keys);
+      window.removeEventListener("wheel", takeOver);
+      window.removeEventListener("touchmove", takeOver);
+      window.removeEventListener("keydown", onKey);
     };
   }, []);
 
-  // A new question starts again at the single number.
-  useEffect(() => go(0), [state.question]);
-
-  // Write the unlocked depth in word by word, or fold it away.
-  useEffect(() => {
-    const from = store.getState().position;
-    const to = Math.min(depth, reachable);
-    if (from === to) return;
-    const grows = to > from;
-    const ms = grows ? writingMs(wordsBetween(segments, Math.floor(from), to)) : FOLD_MS;
-    // A new depth (not text arriving mid-write) waits a beat before its first word.
-    const start = performance.now() + (grows && from === Math.floor(from) ? tour.current.writeDelay : 0);
-    const step = (now: number) => {
-      const t = Math.max(0, Math.min((now - start) / ms, 1));
-      store.slide(from + (to - from) * (grows ? t : 1 - (1 - t) ** 2));
-      if (t < 1) writing.current = requestAnimationFrame(step);
-      else if (grows && (tour.current.phase === "follow" || tour.current.phase === "rewind")) {
-        // Linger at the end of the new section, then glide back up so the reader sees how much was added.
-        tour.current.phase = "pause";
-        tour.current.timer = window.setTimeout(returnToTop, PAUSE_MS);
-      }
-    };
-    cancelAnimationFrame(writing.current);
-    writing.current = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(writing.current);
-  }, [depth, reachable, segments, store]);
-
-  const track = () => {
-    const current = drag.current;
-    if (!current) return;
-    const now = performance.now();
-    const dy = current.pull.distance(current.clientY, now);
-    const from = depthRef.current;
-    const next = pulledDepth(from, dy, reachRef.current);
-    if (next !== from) {
-      go(next);
-      // A hard cushion: a press unlocks one depth at most; the next takes a new, deliberate pull. A fold waits
-      // until it has settled.
-      if (next > from) current.pull.lock();
-      else current.pull.spend(now, FOLD_MS + SETTLE_MS);
-      setPull(0);
-    } else {
-      setPull(dy);
-    }
-  };
-  // While the finger rests near the window's edge in the direction of the pull, scroll the page so the pull can go
-  // on. Only this scrolling counts toward the pull; the page following an unfolding depth does not.
-  const edgeScroll = () => {
-    const current = drag.current;
-    if (!current) return;
-    const now = performance.now();
-    if (!current.pull.isSpent(now)) {
-      const dy = current.pull.distance(current.clientY, now);
-      const step =
-        current.clientY > window.innerHeight - EDGE && dy > 0 ? SCROLL_STEP : current.clientY < EDGE && dy < 0 ? -SCROLL_STEP : 0;
-      if (step) {
-        const before = window.scrollY;
-        window.scrollBy(0, step);
-        current.pull.scrolled(window.scrollY - before);
-      }
-    }
-    track();
-    scrolling.current = requestAnimationFrame(edgeScroll);
-  };
-  const release = () => {
-    drag.current = null;
-    cancelAnimationFrame(scrolling.current);
-    setPull(0);
-  };
   const onKey = (event: KeyboardEvent) => {
-    const moves: Record<string, number> = {
-      ArrowDown: depthRef.current + 1,
-      PageDown: depthRef.current + 1,
-      ArrowUp: depthRef.current - 1,
-      PageUp: depthRef.current - 1,
-      Home: 0,
-      End: reachRef.current,
-    };
-    const target = moves[event.key];
-    if (target === undefined) return;
+    switch (event.key) {
+      case "ArrowDown":
+      case "PageDown":
+      case "Enter":
+      case " ":
+        if (!event.repeat) forward();
+        break;
+      case "ArrowUp":
+      case "PageUp":
+        if (!event.repeat) back();
+        break;
+      case "Home":
+        aim(floor);
+        setShown(floor);
+        break;
+      case "End":
+        aim(total);
+        setShown(total);
+        break;
+      default:
+        return;
+    }
     event.preventDefault();
-    go(Math.max(0, Math.min(target, reachRef.current)));
   };
 
   const building = state.status === "loading" || state.status === "streaming";
-  const total = Math.max(state.expectedLevels ?? state.levels.length + (building ? 1 : 0), state.levels.length);
   const note = state.notes[state.notes.length - 1];
   if (state.levels.length === 0) return building ? <p className="progress">{note ?? "Starting…"}</p> : null;
 
-  const shown = Math.min(depth, reachable);
-  const canUnlock = shown < reachable;
-  const room = stretch(pull, canUnlock);
-  // Generic on purpose: the next depth stays a surprise, so nothing here names it or the agent's steps.
-  const label = `Depth ${shown + 1} of ${total}`;
-  const invite = canUnlock
-    ? charge(pull) > 0.85
-      ? "Keep pulling…"
-      : "Pull to expand"
-    : shown + 1 < total
-      ? "Thinking deeper…"
-      : "That's the full depth";
+  const shown = Math.max(floor, Math.min(units, total));
+  const goal = Math.max(floor, Math.min(target, total));
+  const depths = Math.max(state.expectedLevels ?? state.levels.length, state.levels.length);
+  const { depth, fill } = depthAt(stream, shown);
+  const more = goal < total;
+  const writing = goal > shown + 1e-9;
+  const unwriting = goal < shown - 1e-9;
+  const label = `Depth ${depth + 1} of ${depths}`;
+  const band = room(dy);
+  const charge = dy > 0 && more ? Math.min(1, dy / STEP_PULL) : dy < 0 && depth > 0 ? -Math.min(1, -dy / STEP_PULL) : fill >= 1 && more ? 0 : fill;
 
   return (
     <ThemeProvider mode={mode}>
-      <Card variant="card" width="full" className="answer-card" ref={card}>
-        <article className="answer" ref={article}>{blocks(reveal(segments, state.levels, state.position), state.digests, fresh)}</article>
-        <div className="pull-room" style={{ height: room }} aria-hidden>
-          {room > 24 && <span>{invite}</span>}
-        </div>
+      <Card variant="card" width="full" className="answer-card stream" data-writing={writing || unwriting || undefined}>
+        <article className="answer">{blocks(written(stream, shown), writing)}</article>
+        <div className="pull-room" style={{ height: band }} aria-hidden />
         <div
           ref={handle}
           className="pull-handle"
           role="slider"
           tabIndex={0}
-          title={`${label}. ${invite}.`}
-          aria-label="Depth of the answer: pull down to unlock more"
-          aria-valuemin={1}
-          aria-valuemax={total}
-          aria-valuenow={shown + 1}
+          title={`${label}. ${more ? "Pull or press Down for the next depth" : "That's the full depth"}.`}
+          aria-label="Depth of the answer: pull down or press Down for the next depth, Up to go back"
+          aria-valuemin={Math.round(floor)}
+          aria-valuemax={Math.round(total)}
+          aria-valuenow={Math.round(goal)}
           aria-valuetext={label}
-          data-pulling={pull !== 0 || undefined}
+          data-pulling={dy !== 0 || undefined}
           onKeyDown={onKey}
           onPointerDown={(event) => {
-            // No pulling while the page tours a depth that just unlocked.
-            if (tour.current.phase !== null) return;
-            if (event.currentTarget.hasPointerCapture?.(event.pointerId) === false) {
-              try {
-                event.currentTarget.setPointerCapture(event.pointerId);
-              } catch {
-                // A synthetic or already-released pointer: the pull still works while it stays on the handle.
-              }
+            try {
+              event.currentTarget.setPointerCapture(event.pointerId);
+            } catch {
+              // A synthetic pointer: the pull still works while it stays on the handle.
             }
-            drag.current = { pull: new Pull(event.clientY), clientY: event.clientY };
-            cancelAnimationFrame(scrolling.current);
-            scrolling.current = requestAnimationFrame(edgeScroll);
+            drag.current = { originY: event.clientY };
           }}
           onPointerMove={(event) => {
-            if (!drag.current) return;
-            drag.current.clientY = event.clientY;
-            track();
+            if (drag.current) setDy(event.clientY - drag.current.originY);
           }}
-          onPointerUp={release}
-          onPointerCancel={release}
+          onPointerUp={(event) => {
+            if (!drag.current) return;
+            const pulled = event.clientY - drag.current.originY;
+            drag.current = null;
+            setDy(0);
+            if (pulled >= STEP_PULL || Math.abs(pulled) < 4) forward();
+            else if (pulled <= -STEP_PULL) back();
+          }}
+          onPointerCancel={() => {
+            drag.current = null;
+            setDy(0);
+          }}
         >
-          <Brain stage={stage(shown, total)} charge={charge(pull)} depth={shown} />
-          {shown === 0 && canUnlock && pull === 0 && <span className="hint">Pull to expand</span>}
+          <Brain stage={stage(depth, depths)} charge={charge} depth={depth} />
+          {shown <= floor && more && dy === 0 && <span className="hint">Pull to expand</span>}
         </div>
-        {building && shown === reachable && pull === 0 && (
+        {building && !more && !writing && dy === 0 && (
           <p className="progress" aria-live="polite">
             Thinking deeper…
           </p>
@@ -340,35 +268,35 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
   );
 }
 
-/** The answer's paragraphs, with each depth's question before its first sentence and each panel after the
- * segment that introduces it. */
-function blocks(pieces: Piece[], digests: Digest[], fresh: number | null): ReactNode[] {
+/** The stream as written so far: each depth's question, its paragraph, and its panels as far as they have drawn. */
+function blocks(items: Shown[], writing: boolean): ReactNode[] {
   const result: ReactNode[] = [];
-  const starts = depthStarts(pieces);
-  let paragraph: Piece[] = [];
+  let paragraph: Shown[] = [];
+  const end = items[items.length - 1];
   const flush = () => {
-    if (paragraph.length) {
-      result.push(<Paragraph key={`p-${paragraph[0]!.segment.id}`} pieces={paragraph} fresh={fresh} />);
-    }
+    const first = paragraph[0];
+    if (first) result.push(<Paragraph key={`p-${first.item.id}`} items={paragraph} caret={writing ? end : undefined} />);
     paragraph = [];
   };
-  for (const piece of pieces) {
-    const starting = starts.get(piece.segment.id);
-    const question = starting === undefined ? undefined : digests.find((d) => d.level === starting)?.question;
-    if (question) {
-      flush();
+  for (const shown of items) {
+    const item = shown.item;
+    if (item.kind === "text") {
+      if (paragraph.length && paragraph[0]!.item.level !== item.level) flush();
+      paragraph.push(shown);
+      continue;
+    }
+    flush();
+    if (item.kind === "question") {
       result.push(
-        <h4 className={`depth-question${starting === fresh ? " fresh" : ""}`} key={`q-${starting}`}>
-          {question}
+        <h4 className="depth-question" key={item.id}>
+          {item.words.slice(0, shown.words).join(" ")}
+          {writing && shown === end && <span className="caret" />}
         </h4>,
       );
-    }
-    if (piece.shown > 0) paragraph.push(piece);
-    if (piece.panel) {
-      flush();
+    } else {
       result.push(
-        <div className={`inline-panel${piece.segment.level === fresh ? " fresh" : ""}`} key={`panel-${piece.panel.id}`}>
-          <PanelView panel={piece.panel} />
+        <div className="inline-panel" key={item.id}>
+          <PanelView panel={item.panel} drawn={shown.progress >= 1 ? undefined : drawnOf(shown)} />
         </div>,
       );
     }
@@ -377,22 +305,23 @@ function blocks(pieces: Piece[], digests: Digest[], fresh: number | null): React
   return result;
 }
 
-function Paragraph({ pieces, fresh }: { pieces: Piece[]; fresh: number | null }) {
+function Paragraph({ items, caret }: { items: Shown[]; caret?: Shown }) {
   return (
-    <p className="stretch">
-      {pieces.map((piece) => (
-        <span
-          className={`segment level-${piece.segment.level}${piece.segment.level === fresh ? " fresh" : ""}`}
-          key={piece.segment.id}
-          data-seg={piece.segment.id}
-        >
-          {piece.words.slice(0, piece.shown).map((word, i) => (
-            <span className="word" key={i}>
-              {word}{" "}
-            </span>
-          ))}
-        </span>
-      ))}
+    <p className={`stretch level-${items[0]!.item.level}`}>
+      {items.map((shown) => {
+        const item = shown.item;
+        if (item.kind !== "text") return null;
+        return (
+          <span className="segment" key={item.id} data-seg={item.id}>
+            {item.words.slice(0, shown.words).map((word, i) => (
+              <span className="word" key={i}>
+                {word}{" "}
+              </span>
+            ))}
+            {shown === caret && <span className="caret" />}
+          </span>
+        );
+      })}
     </p>
   );
 }
