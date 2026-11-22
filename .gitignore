@@ -9,3 +9,6 @@ dist/
 living-architecture.local.yaml
 .DS_Store
 .slayer/
+scripts/demo-video/frames/
+scripts/demo-video/frames.txt
+scripts/demo-video/*.mp4
