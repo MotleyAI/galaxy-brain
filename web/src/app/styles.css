@@ -256,3 +256,17 @@ header h1 { margin: 0 0 var(--s4); font-size: 22px; font-weight: 600; letter-spa
   .stretch .word, .brain-cue .brain-body, .brain-cue .rays line, .query-lines, .note-body,
   .so-far-text, .caret { animation: none; }
 }
+/* On a phone, tables tighten their gutters and step down one pixel (the one exception to the two sizes) so every
+   column fits the width; headers wrap. */
+@media (max-width: 520px) {
+  main { padding-left: var(--s2); padding-right: var(--s2); }
+  .answer { padding-left: var(--s3); padding-right: var(--s3); }
+  .research-head { padding-left: var(--s3); padding-right: var(--s3); }
+  .panel .openui-table-cell, .panel .openui-table-head { padding-right: 6px; }
+  .panel .openui-table-cell:last-child, .panel .openui-table-head:last-child { padding-right: 0; }
+  .panel .openui-table-container { overflow-x: auto; }
+  .panel .openui-table-head-content { min-width: 0; }
+  .panel .openui-table-cell, .panel .openui-table-head { font-size: 12px; }
+  .panel .openui-table-head { white-space: normal; }
+  .panel .openui-table { table-layout: auto; width: 100%; }
+}
