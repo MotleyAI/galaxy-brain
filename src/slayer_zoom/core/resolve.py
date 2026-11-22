@@ -21,4 +21,6 @@ def query_hash(query: SlayerQuery) -> str:
 
 def resolve_level(level: Level, runner: QueryRunner) -> ResolvedLevel:
     panels = [ResolvedPanel(**panel.model_dump(), data=runner.run(panel.query)) for panel in level.panels]
-    return ResolvedLevel(index=level.index, title=level.title, rationale=level.rationale, panels=panels)
+    return ResolvedLevel(
+        index=level.index, title=level.title, rationale=level.rationale, panels=panels, context=level.context
+    )

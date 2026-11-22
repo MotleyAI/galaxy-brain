@@ -16,11 +16,23 @@ export interface PanelData {
 
 export type PanelKind = "kpi" | "bar" | "table" | "line" | "delta";
 
+/** A SLayer query as the agent wrote it: data, not SQL. */
+export interface SlayerQuery {
+  source_model: string;
+  measures: (string | { formula: string; name?: string; label?: string })[];
+  dimensions?: string[];
+  time_dimensions?: { dimension: string; granularity?: string; date_range?: string | string[] }[];
+  filters?: string[];
+  order?: { column: string; direction?: string }[];
+  limit?: number | null;
+}
+
 export interface ResolvedPanel {
   id: string;
   kind: PanelKind;
   title: string;
   parent: string | null;
+  query?: SlayerQuery;
   data: PanelData;
 }
 
@@ -29,6 +41,8 @@ export interface ResolvedLevel {
   title: string;
   rationale: string;
   panels: ResolvedPanel[];
+  /** Facts from the business context that shaped this level, quoted word for word. */
+  context?: string[];
 }
 
 /** One piece of the answer's text. Level n's text is every segment with level <= n, in order. */

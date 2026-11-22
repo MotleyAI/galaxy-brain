@@ -12,6 +12,7 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNod
 import { PanelView } from "../panels";
 import { useAnswer, type AnswerStore } from "../state";
 import { Brain } from "./Brain";
+import { QueryCard } from "./QueryCard";
 import { stage } from "./pull";
 import {
   buildStream,
@@ -211,12 +212,13 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
   const unwriting = goal < shown - 1e-9;
   const label = `Depth ${depth + 1} of ${depths}`;
   const band = room(dy);
+  const contextOf = (level: number) => state.levels.find((l) => l.index === level)?.context ?? [];
   const charge = dy > 0 && more ? Math.min(1, dy / STEP_PULL) : dy < 0 && depth > 0 ? -Math.min(1, -dy / STEP_PULL) : fill >= 1 && more ? 0 : fill;
 
   return (
     <ThemeProvider mode={mode}>
       <Card variant="card" width="full" className="answer-card stream" data-writing={writing || unwriting || undefined}>
-        <article className="answer">{blocks(written(stream, shown), writing)}</article>
+        <article className="answer">{blocks(written(stream, shown), writing, contextOf)}</article>
         <div className="pull-room" style={{ height: band }} aria-hidden />
         <div
           ref={handle}
@@ -269,7 +271,7 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
 }
 
 /** The stream as written so far: each depth's question, its paragraph, and its panels as far as they have drawn. */
-function blocks(items: Shown[], writing: boolean): ReactNode[] {
+function blocks(items: Shown[], writing: boolean, contextOf: (level: number) => string[]): ReactNode[] {
   const result: ReactNode[] = [];
   let paragraph: Shown[] = [];
   const end = items[items.length - 1];
@@ -293,10 +295,22 @@ function blocks(items: Shown[], writing: boolean): ReactNode[] {
           {writing && shown === end && <span className="caret" />}
         </h4>,
       );
+      // Once its question is written, a depth notes the business facts that shaped it.
+      const facts = shown.progress >= 1 ? contextOf(item.level) : [];
+      if (facts.length)
+        result.push(
+          <p className="context-note" key={`ctx-${item.level}`}>
+            <span className="context-tag">From your business context</span>
+            {facts.map((fact, i) => (
+              <q key={i}>{fact.replace(/[`*]/g, "")}</q>
+            ))}
+          </p>,
+        );
     } else {
       result.push(
         <div className="inline-panel" key={item.id}>
           <PanelView panel={item.panel} drawn={shown.progress >= 1 ? undefined : drawnOf(shown)} />
+          {shown.progress >= 1 && item.panel.query && <QueryCard query={item.panel.query} />}
         </div>,
       );
     }

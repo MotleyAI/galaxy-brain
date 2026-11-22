@@ -1,0 +1,3812 @@
+{
+  "ladder": {
+    "question": "Where should we focus to grow revenue next quarter?",
+    "levels": [
+      {
+        "index": 0,
+        "title": "Number",
+        "panels": [
+          {
+            "id": "q_revenue",
+            "kind": "kpi",
+            "title": "Gross revenue, last complete quarter (Q3 2026)",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                }
+              ],
+              "dimensions": [],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "quarter",
+                  "date_range": [
+                    "2026-07-01",
+                    "2026-09-30"
+                  ]
+                }
+              ],
+              "filters": [],
+              "limit": null
+            },
+            "parent": null
+          }
+        ],
+        "rationale": "Gross revenue in the last complete quarter, the baseline that next quarter has to beat.",
+        "context": [
+          "Today's data is partial: the last day in the data is today. Treat the current month as incomplete, and compare complete months when you compare periods."
+        ]
+      },
+      {
+        "index": 1,
+        "title": "Split",
+        "panels": [
+          {
+            "id": "q_revenue",
+            "kind": "kpi",
+            "title": "Gross revenue, last complete quarter (Q3 2026)",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                }
+              ],
+              "dimensions": [],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "quarter",
+                  "date_range": [
+                    "2026-07-01",
+                    "2026-09-30"
+                  ]
+                }
+              ],
+              "filters": [],
+              "limit": null
+            },
+            "parent": null
+          },
+          {
+            "id": "q_by_store",
+            "kind": "bar",
+            "title": "Q3 2026 revenue by store",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                }
+              ],
+              "dimensions": [
+                "stores.name"
+              ],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "quarter",
+                  "date_range": [
+                    "2026-07-01",
+                    "2026-09-30"
+                  ]
+                }
+              ],
+              "filters": [],
+              "limit": null
+            },
+            "parent": "q_revenue"
+          },
+          {
+            "id": "q_monthly_store",
+            "kind": "table",
+            "title": "Q3 2026 revenue by month and store",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                }
+              ],
+              "dimensions": [
+                "stores.name"
+              ],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "month",
+                  "date_range": [
+                    "2026-07-01",
+                    "2026-09-30"
+                  ]
+                }
+              ],
+              "filters": [],
+              "limit": null
+            },
+            "parent": "q_revenue"
+          }
+        ],
+        "rationale": "Which cafés the quarter's revenue comes from and how it moved month by month.",
+        "context": [
+          "Chicago and San Francisco only from July 2026"
+        ]
+      },
+      {
+        "index": 2,
+        "title": "Trend",
+        "panels": [
+          {
+            "id": "q_revenue",
+            "kind": "kpi",
+            "title": "Gross revenue, last complete quarter (Q3 2026)",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                }
+              ],
+              "dimensions": [],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "quarter",
+                  "date_range": [
+                    "2026-07-01",
+                    "2026-09-30"
+                  ]
+                }
+              ],
+              "filters": [],
+              "limit": null
+            },
+            "parent": null
+          },
+          {
+            "id": "q_by_store",
+            "kind": "bar",
+            "title": "Q3 2026 revenue by store",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                }
+              ],
+              "dimensions": [
+                "stores.name"
+              ],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "quarter",
+                  "date_range": [
+                    "2026-07-01",
+                    "2026-09-30"
+                  ]
+                }
+              ],
+              "filters": [],
+              "limit": null
+            },
+            "parent": "q_revenue"
+          },
+          {
+            "id": "q_monthly_store",
+            "kind": "table",
+            "title": "Q3 2026 revenue by month and store",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                }
+              ],
+              "dimensions": [
+                "stores.name"
+              ],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "month",
+                  "date_range": [
+                    "2026-07-01",
+                    "2026-09-30"
+                  ]
+                }
+              ],
+              "filters": [],
+              "limit": null
+            },
+            "parent": "q_revenue"
+          },
+          {
+            "id": "store_qoq",
+            "kind": "delta",
+            "title": "Quarterly revenue by store against the previous quarter (2026, complete quarters)",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                },
+                {
+                  "formula": "change_pct(total_revenue)",
+                  "name": "qoq",
+                  "label": "vs previous quarter",
+                  "format": {
+                    "type": "percent",
+                    "precision": 1
+                  }
+                }
+              ],
+              "dimensions": [
+                "stores.name"
+              ],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "quarter",
+                  "date_range": [
+                    "2026-01-01",
+                    "2026-09-30"
+                  ]
+                }
+              ],
+              "filters": [],
+              "limit": null
+            },
+            "parent": null
+          },
+          {
+            "id": "store_monthly_trend",
+            "kind": "line",
+            "title": "Monthly revenue by store, complete months of 2026",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                }
+              ],
+              "dimensions": [
+                "stores.name"
+              ],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "month",
+                  "date_range": [
+                    "2026-01-01",
+                    "2026-10-31"
+                  ]
+                }
+              ],
+              "filters": [],
+              "limit": null
+            },
+            "parent": null
+          }
+        ],
+        "rationale": "How each café's revenue has moved quarter on quarter and month by month, separating the established cafés from the new openings.",
+        "context": [
+          "Year-on-year growth mixes new stores with like-for-like growth, so say that when you show it."
+        ]
+      },
+      {
+        "index": 3,
+        "title": "Why",
+        "panels": [
+          {
+            "id": "q_revenue",
+            "kind": "kpi",
+            "title": "Gross revenue, last complete quarter (Q3 2026)",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                }
+              ],
+              "dimensions": [],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "quarter",
+                  "date_range": [
+                    "2026-07-01",
+                    "2026-09-30"
+                  ]
+                }
+              ],
+              "filters": [],
+              "limit": null
+            },
+            "parent": null
+          },
+          {
+            "id": "q_by_store",
+            "kind": "bar",
+            "title": "Q3 2026 revenue by store",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                }
+              ],
+              "dimensions": [
+                "stores.name"
+              ],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "quarter",
+                  "date_range": [
+                    "2026-07-01",
+                    "2026-09-30"
+                  ]
+                }
+              ],
+              "filters": [],
+              "limit": null
+            },
+            "parent": "q_revenue"
+          },
+          {
+            "id": "q_monthly_store",
+            "kind": "table",
+            "title": "Q3 2026 revenue by month and store",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                }
+              ],
+              "dimensions": [
+                "stores.name"
+              ],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "month",
+                  "date_range": [
+                    "2026-07-01",
+                    "2026-09-30"
+                  ]
+                }
+              ],
+              "filters": [],
+              "limit": null
+            },
+            "parent": "q_revenue"
+          },
+          {
+            "id": "store_qoq",
+            "kind": "delta",
+            "title": "Quarterly revenue by store against the previous quarter (2026, complete quarters)",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                },
+                {
+                  "formula": "change_pct(total_revenue)",
+                  "name": "qoq",
+                  "label": "vs previous quarter",
+                  "format": {
+                    "type": "percent",
+                    "precision": 1
+                  }
+                }
+              ],
+              "dimensions": [
+                "stores.name"
+              ],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "quarter",
+                  "date_range": [
+                    "2026-01-01",
+                    "2026-09-30"
+                  ]
+                }
+              ],
+              "filters": [],
+              "limit": null
+            },
+            "parent": null
+          },
+          {
+            "id": "store_monthly_trend",
+            "kind": "line",
+            "title": "Monthly revenue by store, complete months of 2026",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                }
+              ],
+              "dimensions": [
+                "stores.name"
+              ],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "month",
+                  "date_range": [
+                    "2026-01-01",
+                    "2026-10-31"
+                  ]
+                }
+              ],
+              "filters": [],
+              "limit": null
+            },
+            "parent": null
+          },
+          {
+            "id": "q_store_drivers",
+            "kind": "table",
+            "title": "Q3 2026 revenue drivers by store",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                },
+                {
+                  "formula": "order_count",
+                  "name": "orders",
+                  "label": "Orders"
+                },
+                {
+                  "formula": "unique_customers",
+                  "name": "customers",
+                  "label": "Customers"
+                },
+                {
+                  "formula": "order_count / unique_customers",
+                  "name": "orders_per_customer",
+                  "label": "Orders per customer"
+                },
+                {
+                  "formula": "avg_order_value",
+                  "name": "aov",
+                  "label": "Average order",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 2
+                  }
+                }
+              ],
+              "dimensions": [
+                "stores.name"
+              ],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "quarter",
+                  "date_range": [
+                    "2026-07-01",
+                    "2026-09-30"
+                  ]
+                }
+              ],
+              "filters": [],
+              "limit": null
+            },
+            "parent": "q_by_store"
+          },
+          {
+            "id": "lfl_monthly_drivers",
+            "kind": "table",
+            "title": "Established cafés (Brooklyn, Philadelphia): monthly orders, customers, visits per customer and average order",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                },
+                {
+                  "formula": "order_count",
+                  "name": "orders",
+                  "label": "Orders"
+                },
+                {
+                  "formula": "unique_customers",
+                  "name": "customers",
+                  "label": "Customers"
+                },
+                {
+                  "formula": "order_count / unique_customers",
+                  "name": "orders_per_customer",
+                  "label": "Orders per customer"
+                },
+                {
+                  "formula": "avg_order_value",
+                  "name": "aov",
+                  "label": "Average order",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 2
+                  }
+                }
+              ],
+              "dimensions": [],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "month",
+                  "date_range": [
+                    "2026-01-01",
+                    "2026-10-31"
+                  ]
+                }
+              ],
+              "filters": [
+                "stores.name in ('Brooklyn', 'Philadelphia')"
+              ],
+              "limit": null
+            },
+            "parent": null
+          },
+          {
+            "id": "new_store_ramp",
+            "kind": "table",
+            "title": "New cafés (Chicago, San Francisco): monthly ramp-up in orders and customers",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                },
+                {
+                  "formula": "order_count",
+                  "name": "orders",
+                  "label": "Orders"
+                },
+                {
+                  "formula": "unique_customers",
+                  "name": "customers",
+                  "label": "Customers"
+                },
+                {
+                  "formula": "avg_order_value",
+                  "name": "aov",
+                  "label": "Average order",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 2
+                  }
+                }
+              ],
+              "dimensions": [
+                "stores.name"
+              ],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "month",
+                  "date_range": [
+                    "2026-07-01",
+                    "2026-10-31"
+                  ]
+                }
+              ],
+              "filters": [
+                "stores.name in ('Chicago', 'San Francisco')"
+              ],
+              "limit": null
+            },
+            "parent": null
+          }
+        ],
+        "rationale": "Separates whether revenue moves with visits, customers or basket size, for the established cafés and for the new openings.",
+        "context": [
+          "Philadelphia has orders from November 2024, Brooklyn from June 2025, and Chicago and San Francisco only from July 2026."
+        ]
+      },
+      {
+        "index": 4,
+        "title": "Actions",
+        "panels": [
+          {
+            "id": "q_revenue",
+            "kind": "kpi",
+            "title": "Gross revenue, last complete quarter (Q3 2026)",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                }
+              ],
+              "dimensions": [],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "quarter",
+                  "date_range": [
+                    "2026-07-01",
+                    "2026-09-30"
+                  ]
+                }
+              ],
+              "filters": [],
+              "limit": null
+            },
+            "parent": null
+          },
+          {
+            "id": "q_by_store",
+            "kind": "bar",
+            "title": "Q3 2026 revenue by store",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                }
+              ],
+              "dimensions": [
+                "stores.name"
+              ],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "quarter",
+                  "date_range": [
+                    "2026-07-01",
+                    "2026-09-30"
+                  ]
+                }
+              ],
+              "filters": [],
+              "limit": null
+            },
+            "parent": "q_revenue"
+          },
+          {
+            "id": "q_monthly_store",
+            "kind": "table",
+            "title": "Q3 2026 revenue by month and store",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                }
+              ],
+              "dimensions": [
+                "stores.name"
+              ],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "month",
+                  "date_range": [
+                    "2026-07-01",
+                    "2026-09-30"
+                  ]
+                }
+              ],
+              "filters": [],
+              "limit": null
+            },
+            "parent": "q_revenue"
+          },
+          {
+            "id": "store_qoq",
+            "kind": "delta",
+            "title": "Quarterly revenue by store against the previous quarter (2026, complete quarters)",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                },
+                {
+                  "formula": "change_pct(total_revenue)",
+                  "name": "qoq",
+                  "label": "vs previous quarter",
+                  "format": {
+                    "type": "percent",
+                    "precision": 1
+                  }
+                }
+              ],
+              "dimensions": [
+                "stores.name"
+              ],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "quarter",
+                  "date_range": [
+                    "2026-01-01",
+                    "2026-09-30"
+                  ]
+                }
+              ],
+              "filters": [],
+              "limit": null
+            },
+            "parent": null
+          },
+          {
+            "id": "store_monthly_trend",
+            "kind": "line",
+            "title": "Monthly revenue by store, complete months of 2026",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                }
+              ],
+              "dimensions": [
+                "stores.name"
+              ],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "month",
+                  "date_range": [
+                    "2026-01-01",
+                    "2026-10-31"
+                  ]
+                }
+              ],
+              "filters": [],
+              "limit": null
+            },
+            "parent": null
+          },
+          {
+            "id": "q_store_drivers",
+            "kind": "table",
+            "title": "Q3 2026 revenue drivers by store",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                },
+                {
+                  "formula": "order_count",
+                  "name": "orders",
+                  "label": "Orders"
+                },
+                {
+                  "formula": "unique_customers",
+                  "name": "customers",
+                  "label": "Customers"
+                },
+                {
+                  "formula": "order_count / unique_customers",
+                  "name": "orders_per_customer",
+                  "label": "Orders per customer"
+                },
+                {
+                  "formula": "avg_order_value",
+                  "name": "aov",
+                  "label": "Average order",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 2
+                  }
+                }
+              ],
+              "dimensions": [
+                "stores.name"
+              ],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "quarter",
+                  "date_range": [
+                    "2026-07-01",
+                    "2026-09-30"
+                  ]
+                }
+              ],
+              "filters": [],
+              "limit": null
+            },
+            "parent": "q_by_store"
+          },
+          {
+            "id": "lfl_monthly_drivers",
+            "kind": "table",
+            "title": "Established cafés (Brooklyn, Philadelphia): monthly orders, customers, visits per customer and average order",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                },
+                {
+                  "formula": "order_count",
+                  "name": "orders",
+                  "label": "Orders"
+                },
+                {
+                  "formula": "unique_customers",
+                  "name": "customers",
+                  "label": "Customers"
+                },
+                {
+                  "formula": "order_count / unique_customers",
+                  "name": "orders_per_customer",
+                  "label": "Orders per customer"
+                },
+                {
+                  "formula": "avg_order_value",
+                  "name": "aov",
+                  "label": "Average order",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 2
+                  }
+                }
+              ],
+              "dimensions": [],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "month",
+                  "date_range": [
+                    "2026-01-01",
+                    "2026-10-31"
+                  ]
+                }
+              ],
+              "filters": [
+                "stores.name in ('Brooklyn', 'Philadelphia')"
+              ],
+              "limit": null
+            },
+            "parent": null
+          },
+          {
+            "id": "new_store_ramp",
+            "kind": "table",
+            "title": "New cafés (Chicago, San Francisco): monthly ramp-up in orders and customers",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                },
+                {
+                  "formula": "order_count",
+                  "name": "orders",
+                  "label": "Orders"
+                },
+                {
+                  "formula": "unique_customers",
+                  "name": "customers",
+                  "label": "Customers"
+                },
+                {
+                  "formula": "avg_order_value",
+                  "name": "aov",
+                  "label": "Average order",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 2
+                  }
+                }
+              ],
+              "dimensions": [
+                "stores.name"
+              ],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "month",
+                  "date_range": [
+                    "2026-07-01",
+                    "2026-10-31"
+                  ]
+                }
+              ],
+              "filters": [
+                "stores.name in ('Chicago', 'San Francisco')"
+              ],
+              "limit": null
+            },
+            "parent": null
+          },
+          {
+            "id": "basket_gap",
+            "kind": "table",
+            "title": "Basket lever: extra Q3 revenue if each store's average order matched the chain average",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "order_count",
+                  "name": "orders",
+                  "label": "Orders"
+                },
+                {
+                  "formula": "avg_order_value",
+                  "name": "aov",
+                  "label": "Average order",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 2
+                  }
+                },
+                {
+                  "formula": "sum(order_total, partition_by=[]) / count(id, partition_by=[])",
+                  "name": "chain_aov",
+                  "label": "Chain average order",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 2
+                  }
+                },
+                {
+                  "formula": "order_count * (sum(order_total, partition_by=[]) / count(id, partition_by=[])) - total_revenue",
+                  "name": "basket_gap",
+                  "label": "Revenue gap to chain average",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                }
+              ],
+              "dimensions": [
+                "stores.name"
+              ],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "quarter",
+                  "date_range": [
+                    "2026-07-01",
+                    "2026-09-30"
+                  ]
+                }
+              ],
+              "filters": [],
+              "limit": null
+            },
+            "parent": null
+          },
+          {
+            "id": "frequency_lever",
+            "kind": "delta",
+            "title": "Frequency lever: monthly orders and visits per customer at the established cafés, by store",
+            "query": {
+              "source_model": "orders",
+              "measures": [
+                {
+                  "formula": "order_count",
+                  "name": "orders",
+                  "label": "Orders"
+                },
+                {
+                  "formula": "change_pct(order_count)",
+                  "name": "orders_mom",
+                  "label": "Orders vs previous month",
+                  "format": {
+                    "type": "percent",
+                    "precision": 1
+                  }
+                },
+                {
+                  "formula": "order_count / unique_customers",
+                  "name": "orders_per_customer",
+                  "label": "Orders per customer"
+                },
+                {
+                  "formula": "total_revenue",
+                  "name": "revenue",
+                  "label": "Revenue",
+                  "format": {
+                    "type": "currency",
+                    "symbol": "$",
+                    "precision": 0
+                  }
+                }
+              ],
+              "dimensions": [
+                "stores.name"
+              ],
+              "time_dimensions": [
+                {
+                  "dimension": "ordered_at",
+                  "granularity": "month",
+                  "date_range": [
+                    "2026-06-01",
+                    "2026-10-31"
+                  ]
+                }
+              ],
+              "filters": [
+                "stores.name in ('Brooklyn', 'Philadelphia')"
+              ],
+              "limit": null
+            },
+            "parent": null
+          },
+          {
+            "id": "jaffle_mix",
+            "kind": "table",
+            "title": "Mix lever: Q3 units sold and share of units by store and product line (units, not revenue)",
+            "query": {
+              "source_model": "items",
+              "measures": [
+                {
+                  "formula": "units_sold",
+                  "name": "units",
+                  "label": "Units sold"
+                },
+                {
+                  "formula": "units_sold / count(id, partition_by=[orders.stores.name])",
+                  "name": "unit_share",
+                  "label": "Share of store units",
+                  "format": {
+                    "type": "percent",
+                    "precision": 1
+                  }
+                }
+              ],
+              "dimensions": [
+                "orders.stores.name",
+                "products.type"
+              ],
+              "time_dimensions": [
+                {
+                  "dimension": "orders.ordered_at",
+                  "granularity": "quarter",
+                  "date_range": [
+                    "2026-07-01",
+                    "2026-09-30"
+                  ]
+                }
+              ],
+              "filters": [],
+              "limit": null
+            },
+            "parent": null
+          }
+        ],
+        "rationale": "Sizes three levers for next quarter: lifting below-average baskets to the chain average, recovering visit frequency at the established cafés, and raising the jaffle share of what each café sells (in units, since there is no revenue per product line).",
+        "context": [
+          "There is no revenue per product or product line.",
+          "Use `items.units_sold` for product mix, and say so."
+        ]
+      }
+    ]
+  },
+  "results": {
+    "303f26776c3b8994": {
+      "columns": [
+        {
+          "key": "orders.stores.name",
+          "label": "Store",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.ordered_at",
+          "label": "Order Date",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.total_revenue",
+          "label": "Order Total",
+          "role": "measure",
+          "format": "currency"
+        },
+        {
+          "key": "orders.order_count",
+          "label": "Order ID",
+          "role": "measure",
+          "format": "number"
+        },
+        {
+          "key": "orders.avg_order_value",
+          "label": "avg_order_value",
+          "role": "measure",
+          "format": "number"
+        }
+      ],
+      "rows": [
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2025-07-01T00:00:00",
+          "orders.total_revenue": 134069.22,
+          "orders.order_count": 12923,
+          "orders.avg_order_value": 10.374465681343342
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2025-10-01T00:00:00",
+          "orders.total_revenue": 185829.79,
+          "orders.order_count": 18551,
+          "orders.avg_order_value": 10.017238423804647
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-01-01T00:00:00",
+          "orders.total_revenue": 292122.01,
+          "orders.order_count": 27705,
+          "orders.avg_order_value": 10.544017686338206
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-04-01T00:00:00",
+          "orders.total_revenue": 338828.17,
+          "orders.order_count": 31336,
+          "orders.avg_order_value": 10.812744766402858
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.total_revenue": 318055.3,
+          "orders.order_count": 29787,
+          "orders.avg_order_value": 10.677654681572498
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-10-01T00:00:00",
+          "orders.total_revenue": 145698.4,
+          "orders.order_count": 13999,
+          "orders.avg_order_value": 10.407771983713122
+        },
+        {
+          "orders.stores.name": "Chicago",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.total_revenue": 79470.07,
+          "orders.order_count": 7000,
+          "orders.avg_order_value": 11.352867142857145
+        },
+        {
+          "orders.stores.name": "Chicago",
+          "orders.ordered_at": "2026-10-01T00:00:00",
+          "orders.total_revenue": 68630.02,
+          "orders.order_count": 6325,
+          "orders.avg_order_value": 10.85059604743083
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2025-07-01T00:00:00",
+          "orders.total_revenue": 166764.31,
+          "orders.order_count": 14721,
+          "orders.avg_order_value": 11.328327559269072
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2025-10-01T00:00:00",
+          "orders.total_revenue": 162357.39,
+          "orders.order_count": 14556,
+          "orders.avg_order_value": 11.15398392415499
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-01-01T00:00:00",
+          "orders.total_revenue": 211169.39,
+          "orders.order_count": 18088,
+          "orders.avg_order_value": 11.674557164971253
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-04-01T00:00:00",
+          "orders.total_revenue": 211689.28,
+          "orders.order_count": 18391,
+          "orders.avg_order_value": 11.51048230112555
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.total_revenue": 195443.99,
+          "orders.order_count": 17061,
+          "orders.avg_order_value": 11.455599906218861
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-10-01T00:00:00",
+          "orders.total_revenue": 94850.01,
+          "orders.order_count": 8284,
+          "orders.avg_order_value": 11.449783920811202
+        },
+        {
+          "orders.stores.name": "San Francisco",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.total_revenue": 56109.6,
+          "orders.order_count": 5214,
+          "orders.avg_order_value": 10.761334867663981
+        },
+        {
+          "orders.stores.name": "San Francisco",
+          "orders.ordered_at": "2026-10-01T00:00:00",
+          "orders.total_revenue": 57554.8,
+          "orders.order_count": 5336,
+          "orders.avg_order_value": 10.786131934032984
+        }
+      ]
+    },
+    "6be39945e18fec98": {
+      "columns": [
+        {
+          "key": "orders.ordered_at",
+          "label": "Order Date",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.total_revenue",
+          "label": "Order Total",
+          "role": "measure",
+          "format": "currency"
+        },
+        {
+          "key": "orders.order_count",
+          "label": "Order ID",
+          "role": "measure",
+          "format": "number"
+        },
+        {
+          "key": "orders.unique_customers",
+          "label": "Customer ID",
+          "role": "measure",
+          "format": "number"
+        },
+        {
+          "key": "orders.avg_order_value",
+          "label": "avg_order_value",
+          "role": "measure",
+          "format": "number"
+        }
+      ],
+      "rows": [
+        {
+          "orders.ordered_at": "2026-01-01T00:00:00",
+          "orders.total_revenue": 165332.97,
+          "orders.order_count": 15020,
+          "orders.unique_customers": 1049,
+          "orders.avg_order_value": 11.007521304926764
+        },
+        {
+          "orders.ordered_at": "2026-02-01T00:00:00",
+          "orders.total_revenue": 158062.16,
+          "orders.order_count": 14375,
+          "orders.unique_customers": 1073,
+          "orders.avg_order_value": 10.99562852173913
+        },
+        {
+          "orders.ordered_at": "2026-03-01T00:00:00",
+          "orders.total_revenue": 179896.27,
+          "orders.order_count": 16398,
+          "orders.unique_customers": 1099,
+          "orders.avg_order_value": 10.970622636906938
+        },
+        {
+          "orders.ordered_at": "2026-04-01T00:00:00",
+          "orders.total_revenue": 180009.23,
+          "orders.order_count": 16604,
+          "orders.unique_customers": 1118,
+          "orders.avg_order_value": 10.841317152493376
+        },
+        {
+          "orders.ordered_at": "2026-05-01T00:00:00",
+          "orders.total_revenue": 186422.14,
+          "orders.order_count": 16389,
+          "orders.unique_customers": 1145,
+          "orders.avg_order_value": 11.37483311977546
+        },
+        {
+          "orders.ordered_at": "2026-06-01T00:00:00",
+          "orders.total_revenue": 184086.08,
+          "orders.order_count": 16734,
+          "orders.unique_customers": 1147,
+          "orders.avg_order_value": 11.000721883590295
+        },
+        {
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.total_revenue": 186863.21,
+          "orders.order_count": 17112,
+          "orders.unique_customers": 1146,
+          "orders.avg_order_value": 10.920009934548855
+        },
+        {
+          "orders.ordered_at": "2026-08-01T00:00:00",
+          "orders.total_revenue": 176423.02,
+          "orders.order_count": 15662,
+          "orders.unique_customers": 1145,
+          "orders.avg_order_value": 11.264399182735282
+        },
+        {
+          "orders.ordered_at": "2026-09-01T00:00:00",
+          "orders.total_revenue": 150213.06,
+          "orders.order_count": 14074,
+          "orders.unique_customers": 1147,
+          "orders.avg_order_value": 10.673089384680972
+        },
+        {
+          "orders.ordered_at": "2026-10-01T00:00:00",
+          "orders.total_revenue": 140035.33,
+          "orders.order_count": 13054,
+          "orders.unique_customers": 908,
+          "orders.avg_order_value": 10.727388539911137
+        }
+      ]
+    },
+    "3028266597352296": {
+      "columns": [
+        {
+          "key": "orders.stores.name",
+          "label": "Store",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.ordered_at",
+          "label": "Order Date",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.total_revenue",
+          "label": "Order Total",
+          "role": "measure",
+          "format": "currency"
+        },
+        {
+          "key": "orders.order_count",
+          "label": "Order ID",
+          "role": "measure",
+          "format": "number"
+        },
+        {
+          "key": "orders.unique_customers",
+          "label": "Customer ID",
+          "role": "measure",
+          "format": "number"
+        }
+      ],
+      "rows": [
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.total_revenue": 115816.31,
+          "orders.order_count": 10861,
+          "orders.unique_customers": 698
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-08-01T00:00:00",
+          "orders.total_revenue": 109283.0,
+          "orders.order_count": 9967,
+          "orders.unique_customers": 698
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-09-01T00:00:00",
+          "orders.total_revenue": 92955.99,
+          "orders.order_count": 8959,
+          "orders.unique_customers": 699
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-10-01T00:00:00",
+          "orders.total_revenue": 84692.13,
+          "orders.order_count": 8208,
+          "orders.unique_customers": 548
+        },
+        {
+          "orders.stores.name": "Chicago",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.total_revenue": 12801.66,
+          "orders.order_count": 1207,
+          "orders.unique_customers": 208
+        },
+        {
+          "orders.stores.name": "Chicago",
+          "orders.ordered_at": "2026-08-01T00:00:00",
+          "orders.total_revenue": 34718.31,
+          "orders.order_count": 2960,
+          "orders.unique_customers": 216
+        },
+        {
+          "orders.stores.name": "Chicago",
+          "orders.ordered_at": "2026-09-01T00:00:00",
+          "orders.total_revenue": 31950.1,
+          "orders.order_count": 2833,
+          "orders.unique_customers": 255
+        },
+        {
+          "orders.stores.name": "Chicago",
+          "orders.ordered_at": "2026-10-01T00:00:00",
+          "orders.total_revenue": 36476.13,
+          "orders.order_count": 3458,
+          "orders.unique_customers": 257
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.total_revenue": 71046.9,
+          "orders.order_count": 6251,
+          "orders.unique_customers": 448
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-08-01T00:00:00",
+          "orders.total_revenue": 67140.02,
+          "orders.order_count": 5695,
+          "orders.unique_customers": 447
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-09-01T00:00:00",
+          "orders.total_revenue": 57257.07,
+          "orders.order_count": 5115,
+          "orders.unique_customers": 448
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-10-01T00:00:00",
+          "orders.total_revenue": 55343.2,
+          "orders.order_count": 4846,
+          "orders.unique_customers": 360
+        },
+        {
+          "orders.stores.name": "San Francisco",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.total_revenue": 1026.05,
+          "orders.order_count": 111,
+          "orders.unique_customers": 111
+        },
+        {
+          "orders.stores.name": "San Francisco",
+          "orders.ordered_at": "2026-08-01T00:00:00",
+          "orders.total_revenue": 29211.61,
+          "orders.order_count": 2665,
+          "orders.unique_customers": 200
+        },
+        {
+          "orders.stores.name": "San Francisco",
+          "orders.ordered_at": "2026-09-01T00:00:00",
+          "orders.total_revenue": 25871.94,
+          "orders.order_count": 2438,
+          "orders.unique_customers": 211
+        },
+        {
+          "orders.stores.name": "San Francisco",
+          "orders.ordered_at": "2026-10-01T00:00:00",
+          "orders.total_revenue": 32038.78,
+          "orders.order_count": 2904,
+          "orders.unique_customers": 228
+        }
+      ]
+    },
+    "2bd4bd36e87b16d6": {
+      "columns": [
+        {
+          "key": "items.orders.stores.name",
+          "label": "Store",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "items.products.type",
+          "label": "Category",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "items.orders.ordered_at",
+          "label": "Order Date",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "items.units_sold",
+          "label": "Item ID",
+          "role": "measure",
+          "format": "number"
+        }
+      ],
+      "rows": [
+        {
+          "items.orders.stores.name": "Brooklyn",
+          "items.products.type": "beverage",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units_sold": 33596
+        },
+        {
+          "items.orders.stores.name": "Brooklyn",
+          "items.products.type": "jaffle",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units_sold": 9775
+        },
+        {
+          "items.orders.stores.name": "Chicago",
+          "items.products.type": "beverage",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units_sold": 7968
+        },
+        {
+          "items.orders.stores.name": "Chicago",
+          "items.products.type": "jaffle",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units_sold": 2513
+        },
+        {
+          "items.orders.stores.name": "Philadelphia",
+          "items.products.type": "beverage",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units_sold": 19789
+        },
+        {
+          "items.orders.stores.name": "Philadelphia",
+          "items.products.type": "jaffle",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units_sold": 6146
+        },
+        {
+          "items.orders.stores.name": "San Francisco",
+          "items.products.type": "beverage",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units_sold": 5859
+        },
+        {
+          "items.orders.stores.name": "San Francisco",
+          "items.products.type": "jaffle",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units_sold": 1631
+        }
+      ]
+    },
+    "0319fb54bf51b117": {
+      "columns": [
+        {
+          "key": "orders.stores.name",
+          "label": "Store",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.ordered_at",
+          "label": "Order Date",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.revenue",
+          "label": "Order Total",
+          "role": "measure",
+          "format": "currency"
+        },
+        {
+          "key": "orders.opc",
+          "label": "opc",
+          "role": "measure",
+          "format": "number"
+        },
+        {
+          "key": "orders.aov",
+          "label": "aov",
+          "role": "measure",
+          "format": "number"
+        },
+        {
+          "key": "orders.chain_aov",
+          "label": "chain_aov",
+          "role": "measure",
+          "format": "number"
+        },
+        {
+          "key": "orders.gap",
+          "label": "gap",
+          "role": "measure",
+          "format": "number"
+        }
+      ],
+      "rows": [
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 318055.3,
+          "orders.opc": 42.6137339055794,
+          "orders.aov": 10.677654681572498,
+          "orders.chain_aov": 10.989789712505502,
+          "orders.gap": 9297.566166401375
+        },
+        {
+          "orders.stores.name": "Chicago",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 79470.07,
+          "orders.opc": 27.45098039215686,
+          "orders.aov": 11.352867142857145,
+          "orders.chain_aov": 10.989789712505502,
+          "orders.gap": -2541.5420124614902
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 195443.99,
+          "orders.opc": 37.99777282850779,
+          "orders.aov": 11.455599906218861,
+          "orders.chain_aov": 10.989789712505502,
+          "orders.gap": -7947.187714943633
+        },
+        {
+          "orders.stores.name": "San Francisco",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 56109.6,
+          "orders.opc": 24.71090047393365,
+          "orders.aov": 10.761334867663981,
+          "orders.chain_aov": 10.989789712505502,
+          "orders.gap": 1191.1635610036901
+        }
+      ]
+    },
+    "0cff5aea995ac1f9": {
+      "columns": [
+        {
+          "key": "items.orders.stores.name",
+          "label": "Store",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "items.products.type",
+          "label": "Category",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "items.orders.ordered_at",
+          "label": "Order Date",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "items.units",
+          "label": "Item ID",
+          "role": "measure",
+          "format": "number"
+        },
+        {
+          "key": "items.upo",
+          "label": "upo",
+          "role": "measure",
+          "format": "number"
+        }
+      ],
+      "rows": [
+        {
+          "items.orders.stores.name": "Brooklyn",
+          "items.products.type": "beverage",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units": 33596,
+          "items.upo": 1.1552560090780921
+        },
+        {
+          "items.orders.stores.name": "Brooklyn",
+          "items.products.type": "jaffle",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units": 9775,
+          "items.upo": 1.4062724787800316
+        },
+        {
+          "items.orders.stores.name": "Chicago",
+          "items.products.type": "beverage",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units": 7968,
+          "items.upo": 1.1702158907328535
+        },
+        {
+          "items.orders.stores.name": "Chicago",
+          "items.products.type": "jaffle",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units": 2513,
+          "items.upo": 1.4467472654001152
+        },
+        {
+          "items.orders.stores.name": "Philadelphia",
+          "items.products.type": "beverage",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units": 19789,
+          "items.upo": 1.1850410204203845
+        },
+        {
+          "items.orders.stores.name": "Philadelphia",
+          "items.products.type": "jaffle",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units": 6146,
+          "items.upo": 1.5108161258603736
+        },
+        {
+          "items.orders.stores.name": "San Francisco",
+          "items.products.type": "beverage",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units": 5859,
+          "items.upo": 1.150854449027696
+        },
+        {
+          "items.orders.stores.name": "San Francisco",
+          "items.products.type": "jaffle",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units": 1631,
+          "items.upo": 1.3845500848896435
+        }
+      ]
+    },
+    "a1912c8d081340ad": {
+      "columns": [
+        {
+          "key": "orders.ordered_at",
+          "label": "Order Date",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.revenue",
+          "label": "Revenue",
+          "role": "measure",
+          "format": "currency"
+        }
+      ],
+      "rows": [
+        {
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 649078.96
+        }
+      ]
+    },
+    "5eaadc93a5c308cd": {
+      "columns": [
+        {
+          "key": "orders.stores.name",
+          "label": "Store",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.ordered_at",
+          "label": "Order Date",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.revenue",
+          "label": "Revenue",
+          "role": "measure",
+          "format": "currency"
+        }
+      ],
+      "rows": [
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 318055.3
+        },
+        {
+          "orders.stores.name": "Chicago",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 79470.07
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 195443.99
+        },
+        {
+          "orders.stores.name": "San Francisco",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 56109.6
+        }
+      ]
+    },
+    "503772a06ad5854e": {
+      "columns": [
+        {
+          "key": "orders.stores.name",
+          "label": "Store",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.ordered_at",
+          "label": "Order Date",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.revenue",
+          "label": "Revenue",
+          "role": "measure",
+          "format": "currency"
+        }
+      ],
+      "rows": [
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 115816.31
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-08-01T00:00:00",
+          "orders.revenue": 109283.0
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-09-01T00:00:00",
+          "orders.revenue": 92955.99
+        },
+        {
+          "orders.stores.name": "Chicago",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 12801.66
+        },
+        {
+          "orders.stores.name": "Chicago",
+          "orders.ordered_at": "2026-08-01T00:00:00",
+          "orders.revenue": 34718.31
+        },
+        {
+          "orders.stores.name": "Chicago",
+          "orders.ordered_at": "2026-09-01T00:00:00",
+          "orders.revenue": 31950.1
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 71046.9
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-08-01T00:00:00",
+          "orders.revenue": 67140.02
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-09-01T00:00:00",
+          "orders.revenue": 57257.07
+        },
+        {
+          "orders.stores.name": "San Francisco",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 1026.05
+        },
+        {
+          "orders.stores.name": "San Francisco",
+          "orders.ordered_at": "2026-08-01T00:00:00",
+          "orders.revenue": 29211.61
+        },
+        {
+          "orders.stores.name": "San Francisco",
+          "orders.ordered_at": "2026-09-01T00:00:00",
+          "orders.revenue": 25871.94
+        }
+      ]
+    },
+    "2844c3597d17f08f": {
+      "columns": [
+        {
+          "key": "orders.stores.name",
+          "label": "Store",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.ordered_at",
+          "label": "Order Date",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.revenue",
+          "label": "Order Total",
+          "role": "measure",
+          "format": "currency"
+        },
+        {
+          "key": "orders.qoq",
+          "label": "qoq",
+          "role": "measure",
+          "format": "number"
+        },
+        {
+          "key": "orders.yoy",
+          "label": "yoy",
+          "role": "measure",
+          "format": "number"
+        }
+      ],
+      "rows": [
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-01-01T00:00:00",
+          "orders.revenue": 292122.01,
+          "orders.qoq": 0.5719869779759208,
+          "orders.yoy": null
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-04-01T00:00:00",
+          "orders.revenue": 338828.17,
+          "orders.qoq": 0.1598857956646265,
+          "orders.yoy": 8.48740545234053
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 318055.3,
+          "orders.qoq": -0.06130797802319682,
+          "orders.yoy": 1.372321551508989
+        },
+        {
+          "orders.stores.name": "Chicago",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 79470.07,
+          "orders.qoq": null,
+          "orders.yoy": null
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-01-01T00:00:00",
+          "orders.revenue": 211169.39,
+          "orders.qoq": 0.30064538485128395,
+          "orders.yoy": 1.1742268380903158
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-04-01T00:00:00",
+          "orders.revenue": 211689.28,
+          "orders.qoq": 0.002461957199383797,
+          "orders.yoy": 0.4058774497592521
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 195443.99,
+          "orders.qoq": -0.0767412029555772,
+          "orders.yoy": 0.1719773253641621
+        },
+        {
+          "orders.stores.name": "San Francisco",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 56109.6,
+          "orders.qoq": null,
+          "orders.yoy": null
+        }
+      ]
+    },
+    "594eac9c5aa49077": {
+      "columns": [
+        {
+          "key": "orders.stores.name",
+          "label": "Store",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.ordered_at",
+          "label": "Order Date",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.revenue",
+          "label": "Revenue",
+          "role": "measure",
+          "format": "currency"
+        },
+        {
+          "key": "orders.qoq",
+          "label": "vs previous quarter",
+          "role": "measure",
+          "format": "percent"
+        }
+      ],
+      "rows": [
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-01-01T00:00:00",
+          "orders.revenue": 292122.01,
+          "orders.qoq": 0.5719869779759208
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-04-01T00:00:00",
+          "orders.revenue": 338828.17,
+          "orders.qoq": 0.1598857956646265
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 318055.3,
+          "orders.qoq": -0.06130797802319682
+        },
+        {
+          "orders.stores.name": "Chicago",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 79470.07,
+          "orders.qoq": null
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-01-01T00:00:00",
+          "orders.revenue": 211169.39,
+          "orders.qoq": 0.30064538485128395
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-04-01T00:00:00",
+          "orders.revenue": 211689.28,
+          "orders.qoq": 0.002461957199383797
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 195443.99,
+          "orders.qoq": -0.0767412029555772
+        },
+        {
+          "orders.stores.name": "San Francisco",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 56109.6,
+          "orders.qoq": null
+        }
+      ]
+    },
+    "6761c2a95c5c636c": {
+      "columns": [
+        {
+          "key": "orders.stores.name",
+          "label": "Store",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.ordered_at",
+          "label": "Order Date",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.revenue",
+          "label": "Revenue",
+          "role": "measure",
+          "format": "currency"
+        }
+      ],
+      "rows": [
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-01-01T00:00:00",
+          "orders.revenue": 94301.82
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-02-01T00:00:00",
+          "orders.revenue": 91670.69
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-03-01T00:00:00",
+          "orders.revenue": 106149.5
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-04-01T00:00:00",
+          "orders.revenue": 109796.72
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-05-01T00:00:00",
+          "orders.revenue": 114880.3
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-06-01T00:00:00",
+          "orders.revenue": 114151.15
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 115816.31
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-08-01T00:00:00",
+          "orders.revenue": 109283.0
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-09-01T00:00:00",
+          "orders.revenue": 92955.99
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-10-01T00:00:00",
+          "orders.revenue": 84692.13
+        },
+        {
+          "orders.stores.name": "Chicago",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 12801.66
+        },
+        {
+          "orders.stores.name": "Chicago",
+          "orders.ordered_at": "2026-08-01T00:00:00",
+          "orders.revenue": 34718.31
+        },
+        {
+          "orders.stores.name": "Chicago",
+          "orders.ordered_at": "2026-09-01T00:00:00",
+          "orders.revenue": 31950.1
+        },
+        {
+          "orders.stores.name": "Chicago",
+          "orders.ordered_at": "2026-10-01T00:00:00",
+          "orders.revenue": 36476.13
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-01-01T00:00:00",
+          "orders.revenue": 71031.15
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-02-01T00:00:00",
+          "orders.revenue": 66391.47
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-03-01T00:00:00",
+          "orders.revenue": 73746.77
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-04-01T00:00:00",
+          "orders.revenue": 70212.51
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-05-01T00:00:00",
+          "orders.revenue": 71541.84
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-06-01T00:00:00",
+          "orders.revenue": 69934.93
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 71046.9
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-08-01T00:00:00",
+          "orders.revenue": 67140.02
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-09-01T00:00:00",
+          "orders.revenue": 57257.07
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-10-01T00:00:00",
+          "orders.revenue": 55343.2
+        },
+        {
+          "orders.stores.name": "San Francisco",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 1026.05
+        },
+        {
+          "orders.stores.name": "San Francisco",
+          "orders.ordered_at": "2026-08-01T00:00:00",
+          "orders.revenue": 29211.61
+        },
+        {
+          "orders.stores.name": "San Francisco",
+          "orders.ordered_at": "2026-09-01T00:00:00",
+          "orders.revenue": 25871.94
+        },
+        {
+          "orders.stores.name": "San Francisco",
+          "orders.ordered_at": "2026-10-01T00:00:00",
+          "orders.revenue": 32038.78
+        }
+      ]
+    },
+    "217b715873c1fc20": {
+      "columns": [
+        {
+          "key": "orders.stores.name",
+          "label": "Store",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.ordered_at",
+          "label": "Order Date",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.revenue",
+          "label": "Revenue",
+          "role": "measure",
+          "format": "currency"
+        },
+        {
+          "key": "orders.orders",
+          "label": "Orders",
+          "role": "measure",
+          "format": "number"
+        },
+        {
+          "key": "orders.customers",
+          "label": "Customers",
+          "role": "measure",
+          "format": "number"
+        },
+        {
+          "key": "orders.orders_per_customer",
+          "label": "Orders per customer",
+          "role": "measure",
+          "format": "number"
+        },
+        {
+          "key": "orders.aov",
+          "label": "Average order",
+          "role": "measure",
+          "format": "currency"
+        }
+      ],
+      "rows": [
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 318055.3,
+          "orders.orders": 29787,
+          "orders.customers": 699,
+          "orders.orders_per_customer": 42.6137339055794,
+          "orders.aov": 10.677654681572498
+        },
+        {
+          "orders.stores.name": "Chicago",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 79470.07,
+          "orders.orders": 7000,
+          "orders.customers": 255,
+          "orders.orders_per_customer": 27.45098039215686,
+          "orders.aov": 11.352867142857145
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 195443.99,
+          "orders.orders": 17061,
+          "orders.customers": 449,
+          "orders.orders_per_customer": 37.99777282850779,
+          "orders.aov": 11.455599906218861
+        },
+        {
+          "orders.stores.name": "San Francisco",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 56109.6,
+          "orders.orders": 5214,
+          "orders.customers": 211,
+          "orders.orders_per_customer": 24.71090047393365,
+          "orders.aov": 10.761334867663981
+        }
+      ]
+    },
+    "e574f6e4f6b835be": {
+      "columns": [
+        {
+          "key": "orders.ordered_at",
+          "label": "Order Date",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.revenue",
+          "label": "Revenue",
+          "role": "measure",
+          "format": "currency"
+        },
+        {
+          "key": "orders.orders",
+          "label": "Orders",
+          "role": "measure",
+          "format": "number"
+        },
+        {
+          "key": "orders.customers",
+          "label": "Customers",
+          "role": "measure",
+          "format": "number"
+        },
+        {
+          "key": "orders.orders_per_customer",
+          "label": "Orders per customer",
+          "role": "measure",
+          "format": "number"
+        },
+        {
+          "key": "orders.aov",
+          "label": "Average order",
+          "role": "measure",
+          "format": "currency"
+        }
+      ],
+      "rows": [
+        {
+          "orders.ordered_at": "2026-01-01T00:00:00",
+          "orders.revenue": 165332.97,
+          "orders.orders": 15020,
+          "orders.customers": 1049,
+          "orders.orders_per_customer": 14.318398474737846,
+          "orders.aov": 11.007521304926764
+        },
+        {
+          "orders.ordered_at": "2026-02-01T00:00:00",
+          "orders.revenue": 158062.16,
+          "orders.orders": 14375,
+          "orders.customers": 1073,
+          "orders.orders_per_customer": 13.397017707362535,
+          "orders.aov": 10.99562852173913
+        },
+        {
+          "orders.ordered_at": "2026-03-01T00:00:00",
+          "orders.revenue": 179896.27,
+          "orders.orders": 16398,
+          "orders.customers": 1099,
+          "orders.orders_per_customer": 14.92083712465878,
+          "orders.aov": 10.970622636906938
+        },
+        {
+          "orders.ordered_at": "2026-04-01T00:00:00",
+          "orders.revenue": 180009.23,
+          "orders.orders": 16604,
+          "orders.customers": 1118,
+          "orders.orders_per_customer": 14.851520572450806,
+          "orders.aov": 10.841317152493376
+        },
+        {
+          "orders.ordered_at": "2026-05-01T00:00:00",
+          "orders.revenue": 186422.14,
+          "orders.orders": 16389,
+          "orders.customers": 1145,
+          "orders.orders_per_customer": 14.31353711790393,
+          "orders.aov": 11.37483311977546
+        },
+        {
+          "orders.ordered_at": "2026-06-01T00:00:00",
+          "orders.revenue": 184086.08,
+          "orders.orders": 16734,
+          "orders.customers": 1147,
+          "orders.orders_per_customer": 14.589363557105493,
+          "orders.aov": 11.000721883590295
+        },
+        {
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 186863.21,
+          "orders.orders": 17112,
+          "orders.customers": 1146,
+          "orders.orders_per_customer": 14.93193717277487,
+          "orders.aov": 10.920009934548855
+        },
+        {
+          "orders.ordered_at": "2026-08-01T00:00:00",
+          "orders.revenue": 176423.02,
+          "orders.orders": 15662,
+          "orders.customers": 1145,
+          "orders.orders_per_customer": 13.678602620087336,
+          "orders.aov": 11.264399182735282
+        },
+        {
+          "orders.ordered_at": "2026-09-01T00:00:00",
+          "orders.revenue": 150213.06,
+          "orders.orders": 14074,
+          "orders.customers": 1147,
+          "orders.orders_per_customer": 12.27027027027027,
+          "orders.aov": 10.673089384680972
+        },
+        {
+          "orders.ordered_at": "2026-10-01T00:00:00",
+          "orders.revenue": 140035.33,
+          "orders.orders": 13054,
+          "orders.customers": 908,
+          "orders.orders_per_customer": 14.376651982378855,
+          "orders.aov": 10.727388539911137
+        }
+      ]
+    },
+    "43593021101e5b10": {
+      "columns": [
+        {
+          "key": "orders.stores.name",
+          "label": "Store",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.ordered_at",
+          "label": "Order Date",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.revenue",
+          "label": "Revenue",
+          "role": "measure",
+          "format": "currency"
+        },
+        {
+          "key": "orders.orders",
+          "label": "Orders",
+          "role": "measure",
+          "format": "number"
+        },
+        {
+          "key": "orders.customers",
+          "label": "Customers",
+          "role": "measure",
+          "format": "number"
+        },
+        {
+          "key": "orders.aov",
+          "label": "Average order",
+          "role": "measure",
+          "format": "currency"
+        }
+      ],
+      "rows": [
+        {
+          "orders.stores.name": "Chicago",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 12801.66,
+          "orders.orders": 1207,
+          "orders.customers": 208,
+          "orders.aov": 10.606180613090306
+        },
+        {
+          "orders.stores.name": "Chicago",
+          "orders.ordered_at": "2026-08-01T00:00:00",
+          "orders.revenue": 34718.31,
+          "orders.orders": 2960,
+          "orders.customers": 216,
+          "orders.aov": 11.729158783783783
+        },
+        {
+          "orders.stores.name": "Chicago",
+          "orders.ordered_at": "2026-09-01T00:00:00",
+          "orders.revenue": 31950.1,
+          "orders.orders": 2833,
+          "orders.customers": 255,
+          "orders.aov": 11.277832686198376
+        },
+        {
+          "orders.stores.name": "Chicago",
+          "orders.ordered_at": "2026-10-01T00:00:00",
+          "orders.revenue": 36476.13,
+          "orders.orders": 3458,
+          "orders.customers": 257,
+          "orders.aov": 10.548331405436668
+        },
+        {
+          "orders.stores.name": "San Francisco",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.revenue": 1026.05,
+          "orders.orders": 111,
+          "orders.customers": 111,
+          "orders.aov": 9.243693693693693
+        },
+        {
+          "orders.stores.name": "San Francisco",
+          "orders.ordered_at": "2026-08-01T00:00:00",
+          "orders.revenue": 29211.61,
+          "orders.orders": 2665,
+          "orders.customers": 200,
+          "orders.aov": 10.96120450281426
+        },
+        {
+          "orders.stores.name": "San Francisco",
+          "orders.ordered_at": "2026-09-01T00:00:00",
+          "orders.revenue": 25871.94,
+          "orders.orders": 2438,
+          "orders.customers": 211,
+          "orders.aov": 10.611952420016406
+        },
+        {
+          "orders.stores.name": "San Francisco",
+          "orders.ordered_at": "2026-10-01T00:00:00",
+          "orders.revenue": 32038.78,
+          "orders.orders": 2904,
+          "orders.customers": 228,
+          "orders.aov": 11.032637741046832
+        }
+      ]
+    },
+    "38493e95bcd11307": {
+      "columns": [
+        {
+          "key": "items.orders.stores.name",
+          "label": "Store",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "items.products.type",
+          "label": "Category",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "items.orders.ordered_at",
+          "label": "Order Date",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "items.units",
+          "label": "Item ID",
+          "role": "measure",
+          "format": "number"
+        },
+        {
+          "key": "items.share",
+          "label": "share",
+          "role": "measure",
+          "format": "number"
+        }
+      ],
+      "rows": [
+        {
+          "items.orders.stores.name": "Brooklyn",
+          "items.products.type": "beverage",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units": 33596,
+          "items.share": 0.7746189850360841
+        },
+        {
+          "items.orders.stores.name": "Brooklyn",
+          "items.products.type": "jaffle",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units": 9775,
+          "items.share": 0.225381014963916
+        },
+        {
+          "items.orders.stores.name": "Chicago",
+          "items.products.type": "beverage",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units": 7968,
+          "items.share": 0.7602328022135293
+        },
+        {
+          "items.orders.stores.name": "Chicago",
+          "items.products.type": "jaffle",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units": 2513,
+          "items.share": 0.23976719778647076
+        },
+        {
+          "items.orders.stores.name": "Philadelphia",
+          "items.products.type": "beverage",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units": 19789,
+          "items.share": 0.7630229419703104
+        },
+        {
+          "items.orders.stores.name": "Philadelphia",
+          "items.products.type": "jaffle",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units": 6146,
+          "items.share": 0.2369770580296896
+        },
+        {
+          "items.orders.stores.name": "San Francisco",
+          "items.products.type": "beverage",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units": 5859,
+          "items.share": 0.7822429906542057
+        },
+        {
+          "items.orders.stores.name": "San Francisco",
+          "items.products.type": "jaffle",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units": 1631,
+          "items.share": 0.2177570093457944
+        }
+      ]
+    },
+    "e0813573334cdf70": {
+      "columns": [
+        {
+          "key": "orders.stores.name",
+          "label": "Store",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.ordered_at",
+          "label": "Order Date",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.orders",
+          "label": "Orders",
+          "role": "measure",
+          "format": "number"
+        },
+        {
+          "key": "orders.aov",
+          "label": "Average order",
+          "role": "measure",
+          "format": "currency"
+        },
+        {
+          "key": "orders.chain_aov",
+          "label": "Chain average order",
+          "role": "measure",
+          "format": "currency"
+        },
+        {
+          "key": "orders.basket_gap",
+          "label": "Revenue gap to chain average",
+          "role": "measure",
+          "format": "currency"
+        }
+      ],
+      "rows": [
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.orders": 29787,
+          "orders.aov": 10.677654681572498,
+          "orders.chain_aov": 10.989789712505502,
+          "orders.basket_gap": 9297.566166401375
+        },
+        {
+          "orders.stores.name": "Chicago",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.orders": 7000,
+          "orders.aov": 11.352867142857145,
+          "orders.chain_aov": 10.989789712505502,
+          "orders.basket_gap": -2541.5420124614902
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.orders": 17061,
+          "orders.aov": 11.455599906218861,
+          "orders.chain_aov": 10.989789712505502,
+          "orders.basket_gap": -7947.187714943633
+        },
+        {
+          "orders.stores.name": "San Francisco",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.orders": 5214,
+          "orders.aov": 10.761334867663981,
+          "orders.chain_aov": 10.989789712505502,
+          "orders.basket_gap": 1191.1635610036901
+        }
+      ]
+    },
+    "d5863a0be3f8f8d3": {
+      "columns": [
+        {
+          "key": "orders.stores.name",
+          "label": "Store",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.ordered_at",
+          "label": "Order Date",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "orders.orders",
+          "label": "Orders",
+          "role": "measure",
+          "format": "number"
+        },
+        {
+          "key": "orders.orders_mom",
+          "label": "Orders vs previous month",
+          "role": "measure",
+          "format": "percent"
+        },
+        {
+          "key": "orders.orders_per_customer",
+          "label": "Orders per customer",
+          "role": "measure",
+          "format": "number"
+        },
+        {
+          "key": "orders.revenue",
+          "label": "Revenue",
+          "role": "measure",
+          "format": "currency"
+        }
+      ],
+      "rows": [
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-06-01T00:00:00",
+          "orders.orders": 10608,
+          "orders.orders_mom": 0.027707808564231738,
+          "orders.orders_per_customer": 15.17596566523605,
+          "orders.revenue": 114151.15
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.orders": 10861,
+          "orders.orders_mom": 0.0238499245852187,
+          "orders.orders_per_customer": 15.560171919770774,
+          "orders.revenue": 115816.31
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-08-01T00:00:00",
+          "orders.orders": 9967,
+          "orders.orders_mom": -0.08231286253567811,
+          "orders.orders_per_customer": 14.279369627507164,
+          "orders.revenue": 109283.0
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-09-01T00:00:00",
+          "orders.orders": 8959,
+          "orders.orders_mom": -0.10113374134644326,
+          "orders.orders_per_customer": 12.816881258941345,
+          "orders.revenue": 92955.99
+        },
+        {
+          "orders.stores.name": "Brooklyn",
+          "orders.ordered_at": "2026-10-01T00:00:00",
+          "orders.orders": 8208,
+          "orders.orders_mom": -0.08382631990177475,
+          "orders.orders_per_customer": 14.978102189781023,
+          "orders.revenue": 84692.13
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-06-01T00:00:00",
+          "orders.orders": 6126,
+          "orders.orders_mom": 0.009724740398879182,
+          "orders.orders_per_customer": 13.674107142857142,
+          "orders.revenue": 69934.93
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-07-01T00:00:00",
+          "orders.orders": 6251,
+          "orders.orders_mom": 0.02040483186418544,
+          "orders.orders_per_customer": 13.953125,
+          "orders.revenue": 71046.9
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-08-01T00:00:00",
+          "orders.orders": 5695,
+          "orders.orders_mom": -0.08894576867701168,
+          "orders.orders_per_customer": 12.740492170022371,
+          "orders.revenue": 67140.02
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-09-01T00:00:00",
+          "orders.orders": 5115,
+          "orders.orders_mom": -0.10184372256365233,
+          "orders.orders_per_customer": 11.417410714285714,
+          "orders.revenue": 57257.07
+        },
+        {
+          "orders.stores.name": "Philadelphia",
+          "orders.ordered_at": "2026-10-01T00:00:00",
+          "orders.orders": 4846,
+          "orders.orders_mom": -0.052590420332355815,
+          "orders.orders_per_customer": 13.46111111111111,
+          "orders.revenue": 55343.2
+        }
+      ]
+    },
+    "14c6fa13f7a3a59c": {
+      "columns": [
+        {
+          "key": "items.orders.stores.name",
+          "label": "Store",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "items.products.type",
+          "label": "Category",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "items.orders.ordered_at",
+          "label": "Order Date",
+          "role": "dimension",
+          "format": "number"
+        },
+        {
+          "key": "items.units",
+          "label": "Units sold",
+          "role": "measure",
+          "format": "number"
+        },
+        {
+          "key": "items.unit_share",
+          "label": "Share of store units",
+          "role": "measure",
+          "format": "percent"
+        }
+      ],
+      "rows": [
+        {
+          "items.orders.stores.name": "Brooklyn",
+          "items.products.type": "beverage",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units": 33596,
+          "items.unit_share": 0.7746189850360841
+        },
+        {
+          "items.orders.stores.name": "Brooklyn",
+          "items.products.type": "jaffle",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units": 9775,
+          "items.unit_share": 0.225381014963916
+        },
+        {
+          "items.orders.stores.name": "Chicago",
+          "items.products.type": "beverage",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units": 7968,
+          "items.unit_share": 0.7602328022135293
+        },
+        {
+          "items.orders.stores.name": "Chicago",
+          "items.products.type": "jaffle",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units": 2513,
+          "items.unit_share": 0.23976719778647076
+        },
+        {
+          "items.orders.stores.name": "Philadelphia",
+          "items.products.type": "beverage",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units": 19789,
+          "items.unit_share": 0.7630229419703104
+        },
+        {
+          "items.orders.stores.name": "Philadelphia",
+          "items.products.type": "jaffle",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units": 6146,
+          "items.unit_share": 0.2369770580296896
+        },
+        {
+          "items.orders.stores.name": "San Francisco",
+          "items.products.type": "beverage",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units": 5859,
+          "items.unit_share": 0.7822429906542057
+        },
+        {
+          "items.orders.stores.name": "San Francisco",
+          "items.products.type": "jaffle",
+          "items.orders.ordered_at": "2026-07-01T00:00:00",
+          "items.units": 1631,
+          "items.unit_share": 0.2177570093457944
+        }
+      ]
+    }
+  },
+  "steps": [
+    {
+      "kind": "note",
+      "text": "I'm starting by reading the business context and the orders model.",
+      "tool": null,
+      "input": null,
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "tool",
+      "text": "Reading the business context",
+      "tool": "read_context",
+      "input": null,
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "tool",
+      "text": "Reading the orders model",
+      "tool": "describe_model",
+      "input": {
+        "name": "orders"
+      },
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "note",
+      "text": "Checking the date range and the store split.",
+      "tool": null,
+      "input": null,
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "tool",
+      "text": "Profiling ordered_at in orders",
+      "tool": "profile_dimension",
+      "input": {
+        "model": "orders",
+        "dimension": "ordered_at"
+      },
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "tool",
+      "text": "Profiling stores.name in orders",
+      "tool": "profile_dimension",
+      "input": {
+        "model": "orders",
+        "dimension": "stores.name"
+      },
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "tool",
+      "text": "Profiling stores.regions.name in orders",
+      "tool": "profile_dimension",
+      "input": {
+        "model": "orders",
+        "dimension": "stores.regions.name"
+      },
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "note",
+      "text": "Probing quarterly revenue by store to pick the baseline window.",
+      "tool": null,
+      "input": null,
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "tool",
+      "text": "Checking a query on the data",
+      "tool": "probe_query",
+      "input": {
+        "source_model": "orders",
+        "measures": [
+          "total_revenue",
+          "order_count",
+          "avg_order_value"
+        ],
+        "dimensions": [
+          "stores.name"
+        ],
+        "time_dimensions": [
+          {
+            "dimension": "ordered_at",
+            "granularity": "quarter",
+            "date_range": [
+              "2025-07-01",
+              "2026-11-22"
+            ]
+          }
+        ],
+        "filters": [],
+        "limit": 20
+      },
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "note",
+      "text": "Probing the monthly trend with orders, customers and average order to find the drivers.",
+      "tool": null,
+      "input": null,
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "tool",
+      "text": "Checking a query on the data",
+      "tool": "probe_query",
+      "input": {
+        "source_model": "orders",
+        "measures": [
+          "total_revenue",
+          "order_count",
+          "unique_customers",
+          "avg_order_value"
+        ],
+        "dimensions": [],
+        "time_dimensions": [
+          {
+            "dimension": "ordered_at",
+            "granularity": "month",
+            "date_range": [
+              "2026-01-01",
+              "2026-10-31"
+            ]
+          }
+        ],
+        "filters": [
+          "stores.name in ('Brooklyn', 'Philadelphia')"
+        ],
+        "limit": 20
+      },
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "note",
+      "text": "Checking per-store monthly orders and customers, including the new stores.",
+      "tool": null,
+      "input": null,
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "tool",
+      "text": "Checking a query on the data",
+      "tool": "probe_query",
+      "input": {
+        "source_model": "orders",
+        "measures": [
+          "total_revenue",
+          "order_count",
+          "unique_customers"
+        ],
+        "dimensions": [
+          "stores.name"
+        ],
+        "time_dimensions": [
+          {
+            "dimension": "ordered_at",
+            "granularity": "month",
+            "date_range": [
+              "2026-07-01",
+              "2026-10-31"
+            ]
+          }
+        ],
+        "filters": [],
+        "limit": 20
+      },
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "note",
+      "text": "Checking the items model and product mix by store.",
+      "tool": null,
+      "input": null,
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "tool",
+      "text": "Checking a query on the data",
+      "tool": "probe_query",
+      "input": {
+        "source_model": "items",
+        "measures": [
+          "units_sold"
+        ],
+        "dimensions": [
+          "orders.stores.name",
+          "products.type"
+        ],
+        "time_dimensions": [
+          {
+            "dimension": "orders.ordered_at",
+            "granularity": "quarter",
+            "date_range": [
+              "2026-07-01",
+              "2026-09-30"
+            ]
+          }
+        ],
+        "filters": [],
+        "limit": 20
+      },
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "note",
+      "text": "Testing formulas for sizing the basket and frequency gaps by store.",
+      "tool": null,
+      "input": null,
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "tool",
+      "text": "Checking a query on the data",
+      "tool": "probe_query",
+      "input": {
+        "source_model": "orders",
+        "measures": [
+          {
+            "formula": "total_revenue",
+            "name": "revenue"
+          },
+          {
+            "formula": "order_count / unique_customers",
+            "name": "opc"
+          },
+          {
+            "formula": "avg_order_value",
+            "name": "aov"
+          },
+          {
+            "formula": "sum(order_total, partition_by=[]) / count(id, partition_by=[])",
+            "name": "chain_aov"
+          },
+          {
+            "formula": "order_count * (sum(order_total, partition_by=[]) / count(id, partition_by=[])) - total_revenue",
+            "name": "gap"
+          }
+        ],
+        "dimensions": [
+          "stores.name"
+        ],
+        "time_dimensions": [
+          {
+            "dimension": "ordered_at",
+            "granularity": "quarter",
+            "date_range": [
+              "2026-07-01",
+              "2026-09-30"
+            ]
+          }
+        ],
+        "filters": [],
+        "limit": 20
+      },
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "note",
+      "text": "Checking the items model columns for a per-order attach rate.",
+      "tool": null,
+      "input": null,
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "tool",
+      "text": "Reading the items model",
+      "tool": "describe_model",
+      "input": {
+        "name": "items"
+      },
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "tool",
+      "text": "Checking a query on the data",
+      "tool": "probe_query",
+      "input": {
+        "source_model": "items",
+        "measures": [
+          {
+            "formula": "units_sold",
+            "name": "units"
+          },
+          {
+            "formula": "units_sold / order_id:count_distinct",
+            "name": "upo"
+          }
+        ],
+        "dimensions": [
+          "orders.stores.name",
+          "products.type"
+        ],
+        "time_dimensions": [
+          {
+            "dimension": "orders.ordered_at",
+            "granularity": "quarter",
+            "date_range": [
+              "2026-07-01",
+              "2026-09-30"
+            ]
+          }
+        ],
+        "filters": [],
+        "limit": 20
+      },
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "note",
+      "text": "Submitting level 1: revenue in the last complete quarter as the baseline.",
+      "tool": null,
+      "input": null,
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "tool",
+      "text": "Building level 1: Number",
+      "tool": "submit_level",
+      "input": {
+        "title": "Number",
+        "panels": 1
+      },
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "level",
+      "text": "Number",
+      "tool": null,
+      "input": null,
+      "level": 0,
+      "error": null
+    },
+    {
+      "kind": "tool",
+      "text": "Building level 2: Split",
+      "tool": "submit_level",
+      "input": {
+        "title": "Split",
+        "panels": 3
+      },
+      "level": null,
+      "error": "{\"errors\": [\"panel q_monthly_store in level 1 refines unknown panel q_by_store\"]}"
+    },
+    {
+      "kind": "tool",
+      "text": "Building level 2: Split",
+      "tool": "submit_level",
+      "input": {
+        "title": "Split",
+        "panels": 3
+      },
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "level",
+      "text": "Split",
+      "tool": null,
+      "input": null,
+      "level": 1,
+      "error": null
+    },
+    {
+      "kind": "note",
+      "text": "Checking a quarter-on-quarter comparison by store for the trend level.",
+      "tool": null,
+      "input": null,
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "tool",
+      "text": "Checking a query on the data",
+      "tool": "probe_query",
+      "input": {
+        "source_model": "orders",
+        "measures": [
+          {
+            "formula": "total_revenue",
+            "name": "revenue"
+          },
+          {
+            "formula": "change_pct(total_revenue)",
+            "name": "qoq"
+          },
+          {
+            "formula": "total_revenue / time_shift(total_revenue, -1, 'year') - 1",
+            "name": "yoy"
+          }
+        ],
+        "dimensions": [
+          "stores.name"
+        ],
+        "time_dimensions": [
+          {
+            "dimension": "ordered_at",
+            "granularity": "quarter",
+            "date_range": [
+              "2026-01-01",
+              "2026-09-30"
+            ]
+          }
+        ],
+        "filters": [],
+        "limit": 20
+      },
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "tool",
+      "text": "Building level 3: Trend",
+      "tool": "submit_level",
+      "input": {
+        "title": "Trend",
+        "panels": 5
+      },
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "level",
+      "text": "Trend",
+      "tool": null,
+      "input": null,
+      "level": 2,
+      "error": null
+    },
+    {
+      "kind": "tool",
+      "text": "Building level 4: Why",
+      "tool": "submit_level",
+      "input": {
+        "title": "Why",
+        "panels": 8
+      },
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "level",
+      "text": "Why",
+      "tool": null,
+      "input": null,
+      "level": 3,
+      "error": null
+    },
+    {
+      "kind": "note",
+      "text": "Testing a jaffle-share formula for the product lever.",
+      "tool": null,
+      "input": null,
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "tool",
+      "text": "Checking a query on the data",
+      "tool": "probe_query",
+      "input": {
+        "source_model": "items",
+        "measures": [
+          {
+            "formula": "units_sold",
+            "name": "units"
+          },
+          {
+            "formula": "units_sold / sum(units_sold, partition_by=[orders.stores.name])",
+            "name": "share"
+          }
+        ],
+        "dimensions": [
+          "orders.stores.name",
+          "products.type"
+        ],
+        "time_dimensions": [
+          {
+            "dimension": "orders.ordered_at",
+            "granularity": "quarter",
+            "date_range": [
+              "2026-07-01",
+              "2026-09-30"
+            ]
+          }
+        ],
+        "filters": [],
+        "limit": 20
+      },
+      "level": null,
+      "error": "{\"errors\": [\"UnknownReferenceError: Cannot resolve reference 'units_sold'.\\n  scope: ModelScope: model 'items'\\n  suggestion: 'units_sold' is a saved measure on 'items', not a column, so it takes no aggregation. saved measures may be referenced only in a measure formula or a computed dimension expression; reference it there as 'units_sold'.\"]}"
+    },
+    {
+      "kind": "tool",
+      "text": "Checking a query on the data",
+      "tool": "probe_query",
+      "input": {
+        "source_model": "items",
+        "measures": [
+          {
+            "formula": "units_sold",
+            "name": "units"
+          },
+          {
+            "formula": "units_sold / count(id, partition_by=[orders.stores.name])",
+            "name": "share"
+          }
+        ],
+        "dimensions": [
+          "orders.stores.name",
+          "products.type"
+        ],
+        "time_dimensions": [
+          {
+            "dimension": "orders.ordered_at",
+            "granularity": "quarter",
+            "date_range": [
+              "2026-07-01",
+              "2026-09-30"
+            ]
+          }
+        ],
+        "filters": [],
+        "limit": 20
+      },
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "note",
+      "text": "Submitting the Actions level that sizes the basket, frequency and product-mix levers.",
+      "tool": null,
+      "input": null,
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "tool",
+      "text": "Building level 5: Actions",
+      "tool": "submit_level",
+      "input": {
+        "title": "Actions",
+        "panels": 11
+      },
+      "level": null,
+      "error": null
+    },
+    {
+      "kind": "level",
+      "text": "Actions",
+      "tool": null,
+      "input": null,
+      "level": 4,
+      "error": null
+    },
+    {
+      "kind": "tool",
+      "text": "Finishing",
+      "tool": "finish",
+      "input": null,
+      "level": null,
+      "error": null
+    }
+  ],
+  "summary": "From last complete quarter's gross revenue, the ladder splits it by café, follows each café's quarterly and monthly trend, separates visit frequency, customers and basket size for established versus new cafés, and ends by sizing three levers: basket, visit frequency and jaffle mix.",
+  "usage": {
+    "input_tokens": 40,
+    "output_tokens": 13721,
+    "cache_read_input_tokens": 383676,
+    "cache_creation_input_tokens": 33225
+  },
+  "narration": [
+    {
+      "id": "baseline_revenue",
+      "level": 0,
+      "text": "Gross revenue in the last complete quarter, Q3 2026, was $649.1K, and that is the baseline next quarter has to beat.",
+      "panel": "q_revenue"
+    },
+    {
+      "id": "store_split",
+      "level": 1,
+      "text": "Brooklyn brought in $318.1K of that, well ahead of Philadelphia at $195.4K, Chicago at $79.5K and San Francisco at $56.1K.",
+      "panel": "q_by_store"
+    },
+    {
+      "id": "monthly_moves",
+      "level": 1,
+      "text": "Month by month, Brooklyn fell from $115.8K in July to $93.0K in September and Philadelphia slipped from $71.0K to $57.3K, while Chicago rose from $12.8K to $32.0K and San Francisco from $1.0K to $25.9K.",
+      "panel": "q_monthly_store"
+    },
+    {
+      "id": "qoq_established",
+      "level": 2,
+      "text": "Quarter on quarter, Brooklyn grew 57.2% in Q2 before slipping 6.1% in Q3, while Philadelphia was flat in Q2 at 0.2% and then fell 7.7%.",
+      "panel": "store_qoq"
+    },
+    {
+      "id": "monthly_trend_view",
+      "level": 2,
+      "text": "The monthly view shows the decline continuing into October, with Brooklyn down to $84.7K and Philadelphia to $55.3K.",
+      "panel": "store_monthly_trend"
+    },
+    {
+      "id": "new_openings_trend",
+      "level": 2,
+      "text": "The newer cafés moved the other way in October, with Chicago reaching $36.5K and San Francisco $32.0K.",
+      "panel": null
+    },
+    {
+      "id": "driver_store_table",
+      "level": 3,
+      "text": "To see what moves revenue, the Q3 drivers by store show that Brooklyn's 29,787 orders came from 699 customers, about 42.6 orders each at an average order of $10.68.",
+      "panel": "q_store_drivers"
+    },
+    {
+      "id": "established_drivers",
+      "level": 3,
+      "text": "For the established cafés, customer numbers held near 1,147 through September, so the decline came from fewer visits per customer, which fell from 14.9 in July to 12.3 in September, while the average order stayed near $11.",
+      "panel": "lfl_monthly_drivers"
+    },
+    {
+      "id": "new_store_drivers",
+      "level": 3,
+      "text": "The newer cafés are growing through reach, with Chicago customers rising from 208 in July to 257 in October and San Francisco from 111 to 228, at average orders of about $11.",
+      "panel": "new_store_ramp"
+    },
+    {
+      "id": "basket_action",
+      "level": 4,
+      "text": "Lift Brooklyn's average order from $10.68 to the chain average of $10.99, which the basket gap table sizes at about $9.3K for Q3, the largest of any store.",
+      "panel": "basket_gap"
+    },
+    {
+      "id": "frequency_action",
+      "level": 4,
+      "text": "Win back visits at Brooklyn and Philadelphia first, since orders per customer fell from 15.6 to 12.8 at Brooklyn and from 14.0 to 11.4 at Philadelphia between July and September.",
+      "panel": "frequency_lever"
+    },
+    {
+      "id": "mix_action",
+      "level": 4,
+      "text": "Push jaffles in every café, because they make up only 21.8% to 24.0% of units sold, with San Francisco lowest at 21.8% and Brooklyn at 22.5%.",
+      "panel": "jaffle_mix"
+    }
+  ],
+  "digests": [
+    {
+      "level": 0,
+      "question": "Where should we focus for revenue?",
+      "headline": "$649.1K baseline",
+      "summary": "Gross revenue in Q3 2026, the last complete quarter, was $649.1K, which is the baseline next quarter has to beat."
+    },
+    {
+      "level": 1,
+      "question": "Which cafés drive the revenue?",
+      "headline": "Brooklyn $318.1K",
+      "summary": "Q3 2026 gross revenue was $649.1K, the baseline next quarter has to beat. Brooklyn contributed $318.1K and Philadelphia $195.4K, but both declined through the quarter while Chicago and San Francisco grew."
+    },
+    {
+      "level": 2,
+      "question": "How is each café trending?",
+      "headline": "Core cafés fading",
+      "summary": "Q3 2026 gross revenue was $649.1K, the baseline next quarter has to beat, led by Brooklyn at $318.1K and Philadelphia at $195.4K. Those two established cafés fell 6.1% and 7.7% in Q3 and kept falling in October, while Chicago and San Francisco kept growing."
+    },
+    {
+      "level": 3,
+      "question": "Why is revenue moving?",
+      "headline": "visits, not customers",
+      "summary": "Q3 2026 gross revenue was $649.1K, the baseline next quarter has to beat, led by Brooklyn at $318.1K and Philadelphia at $195.4K. Those two cafés fell because customers visited less often, not because customers left or spent less per order, while Chicago and San Francisco grew by adding customers."
+    },
+    {
+      "level": 4,
+      "question": "What should we do?",
+      "headline": "Basket, visits, jaffles",
+      "summary": "Q3 2026 gross revenue was $649.1K, led by Brooklyn at $318.1K and Philadelphia at $195.4K, and those two fell because customers visited less often, while Chicago and San Francisco grew by adding customers. Next quarter, win back visit frequency at the established cafés, lift Brooklyn's basket to the chain average, and raise the jaffle share of units."
+    }
+  ]
+}

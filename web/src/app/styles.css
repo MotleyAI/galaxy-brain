@@ -149,4 +149,30 @@ header h1 { margin: 0 0 24px; font-size: 22px; letter-spacing: -0.01em; }
 }
 @keyframes caret { 50% { opacity: 0; } }
 .stream[data-writing] .brain-cue .brain-body { animation-duration: 600ms; }
+/* What SLayer and the business context did, one tap away. */
+.query-card { margin: 4px 2px 0; }
+.query-toggle {
+  border: 0; background: none; padding: 2px 0; font: inherit; font-size: 11.5px; color: var(--muted); cursor: pointer;
+}
+.query-toggle::before { content: "{ } "; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--accent); }
+.query-toggle:hover, .query-card[data-open] .query-toggle { color: var(--accent); }
+.query-lines {
+  margin: 4px 0 2px; padding: 10px 12px; border-radius: 10px; background: var(--accent-soft);
+  font: 12px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; animation: word-in 240ms ease-out both;
+}
+.query-lines > div { display: grid; grid-template-columns: 72px 1fr; gap: 8px; }
+.query-lines dt { color: var(--muted); }
+.query-lines dd { margin: 0; display: flex; flex-direction: column; gap: 1px; color: var(--ink); overflow-wrap: anywhere; }
+.query-lines .q-formula, .query-lines .q-join { color: var(--accent); font-weight: 600; }
+.query-foot { margin: 6px 0 0; font-family: system-ui, sans-serif; font-size: 11px; color: var(--muted); }
+.context-note {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin: -2px 0 10px; font-size: 12.5px;
+  color: var(--muted); animation: word-in 360ms ease-out both;
+}
+.context-tag {
+  font-size: 10.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--accent);
+  padding: 1px 7px; border: 1px solid var(--accent-soft); border-radius: 999px;
+}
+.context-note q { font-style: italic; }
+@media (prefers-reduced-motion: reduce) { .query-lines, .context-note { animation: none; } }
 @media (prefers-reduced-motion: reduce) { .caret { animation: none; } }

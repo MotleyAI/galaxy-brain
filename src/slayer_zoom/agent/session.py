@@ -5,6 +5,7 @@ rationales. Every number the reader sees comes from running those queries.
 """
 
 import json
+import re
 from collections.abc import Callable
 from typing import Literal
 
@@ -34,7 +35,7 @@ Emit = Callable[[EventKind, object], None]
 class Budget(BaseModel):
     """Caps on one run. When a cap is hit the levels already submitted stand."""
 
-    max_tool_calls: int = 40
+    max_tool_calls: int = 60
     min_levels: int = 2
     max_levels: int = 6
 
@@ -149,7 +150,9 @@ class LadderSession:
         self._explored.update(_dimensions(capped))
         return _json({"columns": [c.key for c in data.columns], "rows": data.rows})
 
-    def submit_level(self, title: str, panels: list[Panel], rationale: str) -> str:
+    def submit_level(
+        self, title: str, panels: list[Panel], rationale: str, context: list[str] | None = None
+    ) -> str:
         index = len(self.levels)
         self._call(
             "submit_level", f"Building level {index + 1}: {title}", {"title": title, "panels": len(panels)}
@@ -157,10 +160,13 @@ class LadderSession:
         if index >= self.budget.max_levels:
             raise ToolFailure(f"The ladder already has {index} levels, the most allowed. Call finish.")
         try:
-            level = Level(index=index, title=title, panels=panels, rationale=rationale)
+            level = Level(index=index, title=title, panels=panels, rationale=rationale, context=context or [])
         except ValidationError as error:
             raise ToolFailure(str(error)) from error
         problems = monotonic_violations(Ladder(question=self.question, levels=[*self.levels, level]))
+        problems += [
+            f"not in the business context word for word: {q!r}" for q in self._unquoted(level.context)
+        ]
         for panel in level.panels:
             problems += [f"panel {panel.id}: {e}" for e in self._catalog.validate(panel.query)]
         if problems:
@@ -178,6 +184,11 @@ class LadderSession:
         return _json(
             {"accepted": index, "preview": self._preview(resolved), "unexplored": self._unexplored(level)}
         )
+
+    def _unquoted(self, quotes: list[str]) -> list[str]:
+        """Context quotes that do not appear in the business context (ignoring markdown and spacing)."""
+        source = _flat(self.context)
+        return [q for q in quotes if not _flat(q) or _flat(q) not in source]
 
     def finish(self, summary: str) -> str:
         if len(self.levels) < self.budget.min_levels:
@@ -200,3 +211,8 @@ class LadderSession:
     @staticmethod
     def _preview(level: ResolvedLevel) -> dict[str, object]:
         return {p.id: {"rows": len(p.data.rows), "first": p.data.rows[:PREVIEW_ROWS]} for p in level.panels}
+
+
+def _flat(text: str) -> str:
+    """Text as compared for quoting: no markdown emphasis or backticks, single spaces, lower case."""
+    return " ".join(re.sub(r"[*`_]", "", text).split()).lower().strip(" .")

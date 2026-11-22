@@ -3,7 +3,7 @@ import { ResizableAnswer } from "../slider";
 import { createAnswerStore, useAnswer } from "../state";
 import "./styles.css";
 
-const DEMO_QUESTION = "What is our revenue year to date?";
+const DEMO_QUESTION = "Where should we focus to grow revenue next quarter?";
 
 export function App() {
   const store = useMemo(() => createAnswerStore(), []);

@@ -108,3 +108,14 @@ def test_every_tool_call_is_a_step_and_a_note(session: LadderSession, events: li
     tools = [s.tool for s in session.steps if s.kind == StepKind.TOOL]
     assert tools == ["read_context", "describe_model"]
     assert [kind for kind, _ in events] == ["note", "note"]
+
+
+def test_context_quotes_must_come_from_the_business_context_word_for_word() -> None:
+    session = LadderSession.__new__(LadderSession)
+    session.context = (
+        "## Caveats\n\n- **The chain grew** during the data. Year-on-year growth mixes new stores."
+    )
+    assert (
+        session._unquoted(["The chain grew during the data", "year-on-year growth mixes new stores."]) == []
+    )
+    assert session._unquoted(["The chain shrank", ""]) == ["The chain shrank", ""]

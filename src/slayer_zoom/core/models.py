@@ -40,6 +40,8 @@ class Level(BaseModel):
     title: str
     panels: list[Panel] = Field(min_length=1)
     rationale: str = ""
+    context: list[str] = Field(default_factory=list)
+    """Facts from the business context that shaped this level, quoted word for word."""
 
 
 class Ladder(BaseModel):
@@ -84,6 +86,7 @@ class ResolvedLevel(BaseModel):
     title: str
     rationale: str
     panels: list[ResolvedPanel]
+    context: list[str] = Field(default_factory=list)
 
 
 class StepKind(StrEnum):

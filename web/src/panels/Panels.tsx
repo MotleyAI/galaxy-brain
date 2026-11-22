@@ -98,11 +98,30 @@ function Table({ data, drawn, signed = false }: { data: PanelData; drawn: Drawn;
 }
 
 /** A trend opens its frame, then draws through time from left to right. */
+const DATE = /^\d{4}-\d{2}/;
+
+/** A time series split by a second dimension (a store, say): one line per value, months along the axis. */
+function pivot(data: PanelData, x: Column, series: Column, measure: Column) {
+  const byX = new Map<string, Record<string, string | number>>();
+  const sorted = [...data.rows].sort((a, b) => String(a[x.key] ?? "").localeCompare(String(b[x.key] ?? "")));
+  for (const row of sorted) {
+    const category = formatCell(row[x.key] ?? null, x);
+    const point = byX.get(category) ?? { category };
+    point[String(row[series.key] ?? "")] = chartValue(row[measure.key] ?? null, measure) as number;
+    byX.set(category, point);
+  }
+  // Every point names every series (null before a store opens), so each store gets its own line.
+  const names = [...new Set(data.rows.map((row) => String(row[series.key] ?? "")))];
+  return [...byX.values()].map((point) => Object.fromEntries([["category", point.category], ...names.map((n) => [n, point[n] ?? null])]));
+}
+
 function Line({ data, drawn }: { data: PanelData; drawn: Drawn }) {
   const [measure, ...others] = measures(data);
-  const [x] = data.columns.filter((c) => c.role === "dimension");
+  const dims = data.columns.filter((c) => c.role === "dimension");
+  const x = dims.find((c) => DATE.test(String(data.rows[0]?.[c.key] ?? ""))) ?? dims[0];
+  const series = dims.find((c) => c !== x);
   if (!measure || !x) return null;
-  const rows = chartRows(data, (row) => formatCell(row[x.key] ?? null, x), measure);
+  const rows = series ? pivot(data, x, series, measure) : chartRows(data, (row) => formatCell(row[x.key] ?? null, x), measure);
   const last = data.rows[data.rows.length - 1];
   const done = drawn.progress >= 1;
   const through = Math.min(1, drawn.rows / rows.length);
@@ -114,7 +133,7 @@ function Line({ data, drawn }: { data: PanelData; drawn: Drawn }) {
       >
         <LineChartCondensed data={rows} categoryKey="category" height={CHART_HEIGHT} showDots />
       </div>
-      {done && last && others.length > 0 && (
+      {done && last && !series && others.length > 0 && (
         <figcaption>
           {others.map((c) => (
             <span key={c.key}>
