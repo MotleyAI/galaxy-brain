@@ -1260,44 +1260,68 @@
     {
       "id": "store_split",
       "level": 1,
-      "text": "Brooklyn leads with $1.09M, followed by Philadelphia at $708.2K, while Chicago contributes $148.1K and San Francisco $113.7K.",
+      "text": "Brooklyn is the largest store at $1.09M, followed by Philadelphia at $708.2K.",
       "panel": "by_store"
     },
     {
-      "id": "monthly_sentence",
-      "level": 3,
-      "text": "Monthly revenue held between $158.0K and $211.2K through October, peaking at $245.5K in August, and November's $143.2K is the lowest month.",
-      "panel": "monthly"
-    },
-    {
-      "id": "yoy_sentence",
-      "level": 4,
-      "text": "Every complete month ran well ahead of last year, from 553.4% above in January to a low of 96.9% above in June.",
-      "panel": "monthly_change"
-    },
-    {
-      "id": "mom_sentence",
-      "level": 4,
-      "text": "Month to month, August's 23.3% jump was the biggest gain and September's 17.2% drop the biggest fall.",
+      "id": "store_small",
+      "level": 1,
+      "text": "Chicago contributes $148.1K and San Francisco $113.7K, so the smaller two stores are a minor part of the total.",
       "panel": null
     },
     {
-      "id": "mix_sentence",
+      "id": "mix_intro",
       "level": 2,
-      "text": "Beverages dominate units in every store, with Brooklyn selling 114,987 beverages against 33,530 jaffles.",
+      "text": "Beverages outsell jaffles in every store, and Brooklyn leads with 114,987 beverage units against 33,530 jaffle units.",
       "panel": "store_mix"
     },
     {
-      "id": "top_products_sentence",
+      "id": "mix_products",
       "level": 2,
-      "text": "Top products are closely bunched, led by adele-ade at 43,019 units, then tangaroo at 42,927 and for richer or pourover at 42,904.",
+      "text": "No single product dominates, since the top five each sold between 42,244 and 43,019 units, led by adele-ade at 43,019.",
       "panel": "top_products"
     },
     {
-      "id": "drivers_sentence",
+      "id": "trend_intro",
       "level": 3,
-      "text": "Brooklyn's 52.9% share comes from volume, with 102,137 orders from 701 customers, while Philadelphia earns the highest average order at $11.55 against Brooklyn's $10.66.",
+      "text": "Revenue held between $157,998.93 and $245,523.36 a month, rising from $164,573.88 in January to a peak of $245,523.36 in August.",
+      "panel": "monthly"
+    },
+    {
+      "id": "trend_nov",
+      "level": 3,
+      "text": "November came in lower at $143,154.44, though that figure may reflect an incomplete month.",
+      "panel": null
+    },
+    {
+      "id": "driver_intro",
+      "level": 3,
+      "text": "Brooklyn's lead comes from volume, with 102,137 orders from 701 customers, against 61,320 orders from 450 customers in Philadelphia.",
       "panel": "store_drivers"
+    },
+    {
+      "id": "driver_aov",
+      "level": 3,
+      "text": "Order value is similar across stores, from $10.66 in Brooklyn to $11.55 in Philadelphia, so order count rather than basket size explains the gap.",
+      "panel": null
+    },
+    {
+      "id": "yoy_intro",
+      "level": 4,
+      "text": "Every complete month is well above the same month last year, from 553.4% higher in January to 96.9% higher in June.",
+      "panel": "monthly_change"
+    },
+    {
+      "id": "yoy_trend",
+      "level": 4,
+      "text": "The year-on-year gap has narrowed since early in the year, settling near 107.1% in September and October.",
+      "panel": null
+    },
+    {
+      "id": "mom_note",
+      "level": 4,
+      "text": "Against the previous month, August was the strongest at 23.3% growth, and September gave most of it back with a 17.2% drop before October rose 3.9%.",
+      "panel": null
     }
   ],
   "digests": [
@@ -1309,27 +1333,27 @@
     },
     {
       "level": 1,
-      "question": "Which stores drive revenue?",
+      "question": "Where is it coming from?",
       "headline": "Brooklyn $1.09M",
-      "summary": "Revenue year to date is $2.06M, led by Brooklyn at $1.09M and Philadelphia at $708.2K, with Chicago and San Francisco much smaller."
+      "summary": "Revenue year to date stands at $2.06M. Brooklyn is the largest store at $1.09M and Philadelphia is next at $708.2K, while Chicago and San Francisco contribute much less."
     },
     {
       "level": 2,
-      "question": "What are stores selling?",
-      "headline": "beverages lead units",
-      "summary": "Revenue year to date is $2.06M, led by Brooklyn at $1.09M and Philadelphia at $708.2K. Beverages outsell jaffles in every store, and the top products are closely bunched, with adele-ade first at 43,019 units."
+      "question": "What does each store sell?",
+      "headline": "beverages lead everywhere",
+      "summary": "Revenue year to date is $2.06M, with Brooklyn the largest store at $1.09M and Philadelphia next at $708.2K, while Chicago and San Francisco contribute much less. Beverages outsell jaffles in every store, and the top five products are closely matched in units."
     },
     {
       "level": 3,
-      "question": "What drives the revenue trend?",
+      "question": "How did the year build up?",
       "headline": "volume, not price",
-      "summary": "Revenue year to date is $2.06M, led by Brooklyn at $1.09M (52.9%) and Philadelphia at $708.2K. Monthly revenue was steady, peaking in August at $245.5K, and Brooklyn leads on order volume rather than order value, since Philadelphia's average order is higher at $11.55."
+      "summary": "Revenue year to date is $2.06M, led by Brooklyn at $1.09M and Philadelphia at $708.2K, with Chicago and San Francisco much smaller. Monthly revenue grew steadily to an August peak of $245.5K, and store differences come from order volume, since average orders stay near $10.66 to $11.55."
     },
     {
       "level": 4,
-      "question": "How do months compare with last year?",
-      "headline": "well above last year",
-      "summary": "Revenue year to date is $2.06M, led by Brooklyn at $1.09M (52.9%) and Philadelphia at $708.2K. Every complete month beat last year, with growth easing from 553.4% in January to 96.9% in June, and August peaked at $245.5K. Brooklyn leads on order volume rather than order value, since Philadelphia's average order is higher at $11.55.}"
+      "question": "How do months compare over time?",
+      "headline": "August peak, gains narrowing",
+      "summary": "Revenue year to date is $2.06M, led by Brooklyn at $1.09M and Philadelphia at $708.2K, and store gaps come from order volume rather than order value. Every complete month is well above last year, though the growth rate has slowed, and August's 23.3% jump to $245.5K remains the peak."
     }
   ]
 }

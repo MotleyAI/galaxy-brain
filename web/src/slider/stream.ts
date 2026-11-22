@@ -108,8 +108,8 @@ export function depthAt(stream: Placed[], units: number): { depth: number; fill:
   return { depth, fill: to > from ? Math.max(0, Math.min(1, (units - from) / (to - from))) : 1 };
 }
 
-/** Human speed: about nine words a second at most, close to reading pace, however hard the reader pulls. */
-export const MAX_UNITS_PER_S = 9;
+/** Human speed: about eleven words a second at most, close to reading pace, however hard the reader pulls. */
+export const MAX_UNITS_PER_S = 11;
 /** How far below the press point the finger must go before anything is written, and where full speed is reached. */
 export const DEAD_ZONE = 12;
 export const FULL_SPEED_AT = 140;

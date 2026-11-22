@@ -87,7 +87,7 @@ def test_a_refusal_falls_back_to_panel_titles(levels: list[ResolvedLevel]) -> No
     assert segments[0].text == "Revenue year to date."
 
 
-def test_later_levels_only_insert(levels: list[ResolvedLevel]) -> None:
+def test_later_levels_only_add_a_paragraph_after_the_text_so_far(levels: list[ResolvedLevel]) -> None:
     client = _Client(
         [
             _d(
@@ -96,9 +96,8 @@ def test_later_levels_only_insert(levels: list[ResolvedLevel]) -> None:
                 )
             ),
             _d(
-                DraftInsertion(
-                    id="stores", text="Brooklyn leads the stores.", after="answer", panel="by_store"
-                )
+                DraftInsertion(id="stores", text="Brooklyn leads the stores.", panel="by_store"),
+                DraftInsertion(id="stores_more", text="The others follow."),
             ),
         ]
     )
@@ -106,8 +105,8 @@ def test_later_levels_only_insert(levels: list[ResolvedLevel]) -> None:
     first = list(narrator.narrate(levels[0]))
     second = narrator.narrate(levels[1])
     assert expansion_violations(first, second) == []
-    assert [s.id for s in second] == ["answer", "stores"]
-    assert second[1].level == 1
+    assert [s.id for s in second] == ["answer", "stores", "stores_more"]
+    assert [s.level for s in second] == [0, 1, 1]
 
 
 def test_each_level_gets_a_grounded_digest(levels: list[ResolvedLevel]) -> None:
