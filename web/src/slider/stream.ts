@@ -9,7 +9,7 @@ import { withFallbacks } from "./stretch";
 export type Item =
   | { kind: "question"; id: string; level: number; words: string[] }
   | { kind: "text"; id: string; level: number; words: string[] }
-  | { kind: "panel"; id: string; level: number; panel: ResolvedPanel };
+  | { kind: "panel"; id: string; level: number; panel: ResolvedPanel; evidence?: boolean };
 
 export interface Placed {
   item: Item;
@@ -24,6 +24,11 @@ export interface Shown {
   words: number;
   progress: number;
 }
+
+/** A depth's further charts fold into a one-line "Evidence" link, which costs about as much as a few words. */
+export const EVIDENCE_UNITS = 3;
+/** From depth 3 on, the writing runs this much faster: the reader is deep in and wants the point. */
+export const DEEP_BOOST = 1.5;
 
 /** Units per chart row or table row, plus a fixed part for the chart's frame. */
 export const ROW_UNITS = 3;
@@ -63,13 +68,17 @@ export function buildStream(narration: Segment[], levels: ResolvedLevel[], diges
       const list = words(question);
       push({ kind: "question", id: `q-${level.index}`, level: level.index, words: list }, list.length);
     }
+    let mainShown = false;
     for (const segment of own) {
       const list = words(segment.text);
       if (list.length) push({ kind: "text", id: segment.id, level: level.index, words: list }, list.length);
       const panel = segment.panel ? panels.get(segment.panel) : undefined;
       if (panel && !seen.has(panel.id)) {
         seen.add(panel.id);
-        push({ kind: "panel", id: panel.id, level: level.index, panel }, panelCost(panel));
+        // Each depth keeps its first new chart in view; the rest are evidence, one tap away.
+        const evidence = mainShown;
+        mainShown = true;
+        push({ kind: "panel", id: panel.id, level: level.index, panel, evidence }, evidence ? EVIDENCE_UNITS : panelCost(panel));
       }
     }
   }
@@ -132,9 +141,9 @@ export function prevStop(stream: Placed[], at: number): number {
   return before.length ? before[before.length - 1]! : depthEnd(stream, 0);
 }
 
-/** The units after `ms` of writing toward `target` (or unwriting, faster, when it is behind). */
-export function toward(units: number, target: number, ms: number): number {
-  const rate = target < units ? MAX_UNITS_PER_S * UNWRITE_FACTOR : MAX_UNITS_PER_S;
+/** The units after `ms` of writing toward `target` (or unwriting, faster, when it is behind), `boost` times faster. */
+export function toward(units: number, target: number, ms: number, boost = 1): number {
+  const rate = (target < units ? MAX_UNITS_PER_S * UNWRITE_FACTOR : MAX_UNITS_PER_S) * boost;
   const step = (rate * ms) / 1000;
   return target > units ? Math.min(target, units + step) : Math.max(target, units - step);
 }

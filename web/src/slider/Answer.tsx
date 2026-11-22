@@ -12,10 +12,12 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNod
 import { PanelView } from "../panels";
 import { useAnswer, type AnswerStore } from "../state";
 import { Brain } from "./Brain";
+import { exploration } from "./explored";
 import { QueryCard } from "./QueryCard";
 import { stage } from "./pull";
 import {
   buildStream,
+  DEEP_BOOST,
   depthAt,
   depthEnd,
   drawnOf,
@@ -65,7 +67,8 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
   const tick = (now: number) => {
     const ms = Math.min(64, now - last.current);
     last.current = now;
-    const next = toward(unitsRef.current, targetRef.current, ms);
+    const deep = depthAt(streamRef.current, unitsRef.current).depth >= 2;
+    const next = toward(unitsRef.current, targetRef.current, ms, deep ? DEEP_BOOST : 1);
     setShown(next);
     frame.current = next === targetRef.current ? 0 : requestAnimationFrame(tick);
   };
@@ -113,6 +116,12 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
       startFollowing();
       aim(next);
     } else wanted.current = true;
+  };
+  // Go straight to a depth from the rail: write on through the depths before it, or unwrite back to it.
+  const goTo = (level: number) => {
+    wanted.current = false;
+    startFollowing();
+    aim(depthEnd(streamRef.current, level));
   };
   const back = () => {
     wanted.current = false;
@@ -213,12 +222,61 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
   const label = `Depth ${depth + 1} of ${depths}`;
   const band = room(dy);
   const contextOf = (level: number) => state.levels.find((l) => l.index === level)?.context ?? [];
+  // The answer so far: the summary of the last depth written in full, replaced as each depth completes.
+  const completed = fill >= 1 && !writing ? depth : Math.max(0, depth - 1);
+  const soFar = state.digests.find((d) => d.level === completed);
+  const nextDepth = depthAt(stream, nextStop(stream, goal)).depth;
+  const nextQuestion = state.digests.find((d) => d.level === nextDepth)?.question ?? state.levels[nextDepth]?.title;
+  const whyLevel = state.levels.find((l) => /why/i.test(l.title))?.index ?? Math.max(1, state.levels.length - 2);
+  const explored = exploration(state.explored);
   const charge = dy > 0 && more ? Math.min(1, dy / STEP_PULL) : dy < 0 && depth > 0 ? -Math.min(1, -dy / STEP_PULL) : fill >= 1 && more ? 0 : fill;
 
   return (
     <ThemeProvider mode={mode}>
       <Card variant="card" width="full" className="answer-card stream" data-writing={writing || unwriting || undefined}>
-        <article className="answer">{blocks(written(stream, shown), writing, contextOf)}</article>
+        <header className="research-head">
+          {soFar && (
+            <p className="so-far" aria-live="polite">
+              <span className="so-far-tag">Answer so far</span>
+              <span className="so-far-text" key={completed}>
+                {soFar.summary || soFar.headline}
+              </span>
+            </p>
+          )}
+          <ol className="rail" aria-label="Depths of the analysis">
+            {Array.from({ length: depths }, (_, i) => {
+              const level = state.levels[i];
+              const status =
+                i < depth || (i === depth && fill >= 1 && !writing) ? "done" : i === depth ? "current" : i === nextDepth && more && !writing ? "next" : "ahead";
+              return (
+                <li key={i} data-status={status}>
+                  <button type="button" disabled={!level || (status === "done" && i === depth)} onClick={() => goTo(i)}>
+                    <span className="rail-dot" aria-hidden />
+                    <span className="rail-label">{level?.title ?? "…"}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+        </header>
+        <article className="answer">
+          {blocks(written(stream, shown), writing, {
+            contextOf,
+            exploredOn: whyLevel,
+            explored:
+              explored.queries > 0 ? (
+                <p className="explored" key="explored">
+                  <span className="context-tag">How the agent got here</span>
+                  <span>
+                    {explored.queries} exploratory {explored.queries === 1 ? "query" : "queries"}
+                    {explored.profiles ? ` and ${explored.profiles} dimension ${explored.profiles === 1 ? "profile" : "profiles"}` : ""}, on{" "}
+                    {explored.measures.slice(0, 8).join(" · ")}
+                    {explored.across.length ? `, across ${explored.across.slice(0, 5).join(" · ")}` : ""}.
+                  </span>
+                </p>
+              ) : null,
+          })}
+        </article>
         <div className="pull-room" style={{ height: band }} aria-hidden />
         <div
           ref={handle}
@@ -258,20 +316,36 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
           }}
         >
           <Brain stage={stage(depth, depths)} charge={charge} depth={depth} />
-          {shown <= floor && more && dy === 0 && <span className="hint">Pull to expand</span>}
         </div>
-        {building && !more && !writing && dy === 0 && (
-          <p className="progress" aria-live="polite">
-            Thinking deeper…
-          </p>
-        )}
+        <div className="next-step">
+          {writing ? (
+            <button type="button" className="skip" onClick={forward}>
+              Skip to the end of this depth
+            </button>
+          ) : more ? (
+            <button type="button" className="go-deeper" onClick={forward}>
+              <span>Go deeper</span> {nextQuestion} <span aria-hidden>→</span>
+            </button>
+          ) : (
+            <span className="done-note" aria-live="polite">
+              {building ? "Thinking deeper…" : "That's the full analysis"}
+            </span>
+          )}
+        </div>
       </Card>
     </ThemeProvider>
   );
 }
 
 /** The stream as written so far: each depth's question, its paragraph, and its panels as far as they have drawn. */
-function blocks(items: Shown[], writing: boolean, contextOf: (level: number) => string[]): ReactNode[] {
+interface Extras {
+  contextOf: (level: number) => string[];
+  /** The depth that shows how the agent got here, and the note itself. */
+  exploredOn: number;
+  explored: ReactNode;
+}
+
+function blocks(items: Shown[], writing: boolean, { contextOf, exploredOn, explored }: Extras): ReactNode[] {
   const result: ReactNode[] = [];
   let paragraph: Shown[] = [];
   const end = items[items.length - 1];
@@ -306,12 +380,25 @@ function blocks(items: Shown[], writing: boolean, contextOf: (level: number) => 
             ))}
           </p>,
         );
+      if (shown.progress >= 1 && item.level === exploredOn && explored) result.push(explored);
     } else {
       result.push(
-        <div className="inline-panel" key={item.id}>
-          <PanelView panel={item.panel} drawn={shown.progress >= 1 ? undefined : drawnOf(shown)} />
-          {shown.progress >= 1 && item.panel.query && <QueryCard query={item.panel.query} />}
-        </div>,
+        item.evidence ? (
+          <details className="evidence" key={item.id} style={shown.progress < 1 ? { opacity: shown.progress } : undefined}>
+            <summary>
+              <span className="evidence-tag">Evidence</span> {item.panel.title}
+            </summary>
+            <div className="inline-panel">
+              <PanelView panel={item.panel} />
+              {item.panel.query && <QueryCard query={item.panel.query} />}
+            </div>
+          </details>
+        ) : (
+          <div className="inline-panel" key={item.id}>
+            <PanelView panel={item.panel} drawn={shown.progress >= 1 ? undefined : drawnOf(shown)} />
+            {shown.progress >= 1 && item.panel.query && <QueryCard query={item.panel.query} />}
+          </div>
+        ),
       );
     }
   }

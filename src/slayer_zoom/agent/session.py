@@ -100,7 +100,7 @@ class LadderSession:
             raise ToolFailure("Tool-call budget exhausted. The levels already submitted stand; stop now.")
         self.tool_calls += 1
         self.steps.append(AgentStep(kind=StepKind.TOOL, text=label, tool=tool, input=payload))
-        self._emit("note", {"text": label})
+        self._emit("note", _note(label, tool, payload))
 
     # Tools
 
@@ -216,3 +216,13 @@ class LadderSession:
 def _flat(text: str) -> str:
     """Text as compared for quoting: no markdown emphasis or backticks, single spaces, lower case."""
     return " ".join(re.sub(r"[*`_]", "", text).split()).lower().strip(" .")
+
+
+EXPLORING = ("probe_query", "profile_dimension")
+
+
+def _note(text: str, tool: str | None, payload: JsonValue) -> dict[str, JsonValue]:
+    """A progress note; for an exploring tool it also carries what was explored, so the reader can see it."""
+    if tool in EXPLORING:
+        return {"text": text, "tool": tool, "input": payload}
+    return {"text": text}

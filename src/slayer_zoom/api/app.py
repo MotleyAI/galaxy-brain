@@ -7,10 +7,11 @@ from typing import Any
 
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, JsonValue
 
-from slayer_zoom.agent import Emit, EventKind, answer_live
+from slayer_zoom.agent import EXPLORING, Emit, EventKind, answer_live
 from slayer_zoom.core import (
+    AgentStep,
     Digest,
     Ladder,
     ResolvedLevel,
@@ -64,6 +65,13 @@ def _narration(level: int, segments: list[Segment], digests: list[Digest]) -> st
     )
 
 
+def note_of(step: AgentStep) -> dict[str, JsonValue]:
+    """A recorded step as the note a live run sent, with what an exploring tool explored."""
+    if step.tool in EXPLORING:
+        return {"text": step.text, "tool": step.tool, "input": step.input}
+    return {"text": step.text}
+
+
 def replay(trace: Trace) -> Iterator[str]:
     """A stored trace as the event stream a live run produces: notes, levels and text in recorded order.
 
@@ -80,7 +88,7 @@ def replay(trace: Trace) -> Iterator[str]:
         while pending and not (pending[0].kind == StepKind.LEVEL and pending[0].level == index):
             step = pending.pop(0)
             if step.kind != StepKind.LEVEL and step.text:
-                yield _sse("note", {"text": step.text})
+                yield _sse("note", note_of(step))
         if pending:
             pending.pop(0)
         yield _sse("level", resolve_level(levels[index], runner))
@@ -88,7 +96,7 @@ def replay(trace: Trace) -> Iterator[str]:
             yield _narration(index, text_at(trace.narration, index), digest_at(trace.digests, index))
     for step in pending:
         if step.kind != StepKind.LEVEL and step.text:
-            yield _sse("note", {"text": step.text})
+            yield _sse("note", note_of(step))
     yield _sse("done", {"summary": trace.summary})
 
 
