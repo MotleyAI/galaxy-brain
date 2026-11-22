@@ -1,13 +1,32 @@
+/*
+ * The answer's design system. Two type sizes, two weights, three inks, one spacing scale.
+ *   --text  (16px) is for reading: the answer's prose, each depth's question, the question box.
+ *   --small (13px) is for everything about the reading: the summary, the rail, chart titles and labels, captions,
+ *                   tables, context, evidence and the bar. Weight 600 marks a title; ink and muted mark importance.
+ * The accent marks only what can be clicked and where the reader is. No uppercase, no pills, no frames inside the
+ * answer: structure comes from space.
+ */
 :root {
   --bg: #f7f6f2;
   --surface: #ffffff;
   --ink: #1d1d1b;
   --muted: #6b6a64;
-  --line: #e4e2da;
+  --line: #e7e5de;
   --accent: #3c5bd6;
   --accent-soft: #e3e8fb;
   --up: #1f7a4d;
   --down: #b4382f;
+  --font: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --text: 16px;
+  --text-lh: 1.65;
+  --small: 13px;
+  --small-lh: 1.5;
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 16px;
+  --s4: 24px;
+  --s5: 40px;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -25,73 +44,146 @@
   }
 }
 * { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--ink);
-  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
-}
-main { max-width: 860px; margin: 0 auto; padding: 40px 16px 50vh; }
-header h1 { margin: 0 0 24px; font-size: 22px; letter-spacing: -0.01em; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: var(--text)/var(--text-lh) var(--font); }
+main { max-width: 820px; margin: 0 auto; padding: var(--s5) var(--s3) 50vh; }
+header h1 { margin: 0 0 var(--s4); font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
 
-.ask { display: flex; gap: 8px; }
+.ask { display: flex; gap: var(--s2); }
 .ask input {
-  flex: 1; min-width: 0; padding: 12px 14px; font: inherit; font-size: 17px;
+  flex: 1; min-width: 0; padding: 12px 14px; font: inherit;
   border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink);
 }
-.ask button { font: inherit; cursor: pointer; }
 .ask button {
-  padding: 0 20px; border: 0; border-radius: 10px; background: var(--accent); color: var(--surface); font-weight: 600;
+  padding: 0 20px; border: 0; border-radius: 10px; background: var(--accent); color: var(--surface);
+  font: inherit; font-weight: 600; cursor: pointer;
 }
 .ask button:disabled { opacity: 0.6; cursor: progress; }
 .error { color: var(--down); }
+.progress { margin: 0; color: var(--muted); font-size: var(--small); }
 
-.progress { color: var(--muted); font-size: 13px; }
-
-.rationale { color: var(--muted); margin: 20px 0 12px; }
-.panels { display: grid; gap: 12px; }
-.panel {
-  background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px;
-  min-width: 0;
-}
-.panel h3 { margin: 0 0 10px; font-size: 13px; font-weight: 600; color: var(--muted); }
-
+/* Panels, wherever they appear: a title and the data under it, nothing around them. */
+.panels { display: grid; gap: var(--s3); }
+.panel { min-width: 0; }
+.panel h3 { margin: 0 0 var(--s2); font-size: var(--small); font-weight: 600; color: var(--ink); }
 .panel .up { color: var(--up); }
 .panel .down { color: var(--down); }
 .chart { margin: 0; }
-.chart figcaption { display: flex; flex-wrap: wrap; gap: 4px 16px; color: var(--muted); font-size: 12px; margin-top: 8px; }
-.chart figcaption strong { color: var(--ink); font-variant-numeric: tabular-nums; }
-.empty { color: var(--muted); }
+.chart figcaption {
+  display: flex; flex-wrap: wrap; gap: var(--s1) var(--s3); margin-top: var(--s2);
+  font-size: var(--small); color: var(--muted); font-variant-numeric: tabular-nums;
+}
+.chart figcaption strong { color: var(--ink); font-weight: 600; }
+.empty { color: var(--muted); font-size: var(--small); }
+/* OpenUI's charts and tables speak the same small size, without grid, stripes or boxes. */
+.panel, .panel svg text, .panel [class*="label"], .panel [class*="tick"], .panel [class*="legend"],
+.panel .openui-table-cell, .panel .openui-table-head { font-family: var(--font); font-size: var(--small); }
+.panel svg text { fill: var(--muted); }
+.panel [class*="chart-grid"], .panel [class*="internal-line"] { display: none; }
+.panel-bar [class*="x-axis"], .panel-bar .openui-chart-legend-container { display: none; }
+.panel .openui-table-container { border: 0; border-radius: 0; }
+.panel .openui-table-row { background: none; }
+.panel .openui-table-cell, .panel .openui-table-head {
+  padding: 6px var(--s3) 6px 0; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums;
+}
+.panel .openui-table-head { color: var(--muted); font-weight: 400; }
+/* A single number: the one place a figure is larger than the prose, because it is the answer. */
+.panel-kpi [class*="value"] { font-size: 28px; font-weight: 600; letter-spacing: -0.01em; }
+.panel-kpi [class*="subtext"] { font-size: var(--small); color: var(--muted); }
 
+/* The card. */
 .answer-card.answer-card {
-  margin-top: 24px; padding: 0; gap: 0; overflow: visible; background: var(--surface);
+  margin-top: var(--s4); padding: 0; gap: 0; overflow: visible; background: var(--surface);
   border: 1px solid var(--line); border-radius: 14px;
 }
-.answer { padding: 22px 24px 4px; display: flow-root; }
-.stretch { font-size: 18px; line-height: 1.65; margin: 0 0 14px; max-width: 64ch; text-wrap: pretty; }
+.answer { padding: var(--s4) var(--s4) var(--s1); display: flow-root; }
+
+/* The head: what the answer says so far, and the path of depths with what each found. Stays in view. */
+.research-head {
+  position: sticky; top: 0; z-index: 2; padding: var(--s3) var(--s4); background: var(--surface);
+  border-bottom: 1px solid var(--line); border-radius: 14px 14px 0 0;
+}
+.so-far { margin: 0 0 var(--s3); display: grid; gap: 2px; font-size: var(--small); line-height: var(--small-lh); }
+.so-far-tag { color: var(--muted); }
+.so-far-text {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;
+  animation: so-far-in 520ms ease-out both; text-wrap: pretty;
+}
+.research-head:hover .so-far-text { -webkit-line-clamp: unset; }
+@keyframes so-far-in { from { opacity: 0; transform: translateY(3px); } }
+.rail { list-style: none; margin: 0; padding: 0; display: flex; }
+.rail li { flex: 1; position: relative; min-width: 0; }
+.rail li + li::before { content: ""; position: absolute; top: 4px; right: 50%; width: 100%; height: 1px; background: var(--line); }
+.rail li[data-status="done"] + li::before, .rail li[data-status="current"]::before { background: var(--accent); }
+.rail button {
+  position: relative; z-index: 1; width: 100%; display: grid; justify-items: center; gap: 2px; padding: 0 var(--s1);
+  border: 0; background: none; font: inherit; font-size: var(--small); line-height: var(--small-lh);
+  color: var(--muted); text-align: center; cursor: pointer;
+}
+.rail button:disabled { cursor: default; }
+.rail-dot {
+  width: 9px; height: 9px; margin-bottom: var(--s1); border-radius: 50%; border: 1.5px solid var(--line);
+  background: var(--surface); transition: background 300ms, border-color 300ms, box-shadow 300ms;
+}
+.rail-finding { color: var(--ink); text-wrap: balance; }
+.rail li[data-status="done"] .rail-dot { background: var(--accent); border-color: var(--accent); }
+.rail li[data-status="current"] .rail-dot { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.rail li[data-status="current"] .rail-label { color: var(--accent); }
+.rail button:not(:disabled):hover .rail-label { color: var(--accent); }
+
+/* The prose: one size, one measure. Each depth opens with its question in the same size, set in bold. */
+.stretch { font-size: var(--text); line-height: var(--text-lh); margin: 0 0 var(--s3); max-width: 62ch; text-wrap: pretty; }
 .stretch .word { animation: word-in 260ms ease-out both; }
 @keyframes word-in { from { opacity: 0; filter: blur(2px); } }
-.stretch .segment.level-0 { font-weight: 550; }
-.inline-panel { margin: 4px 0 18px; animation: unfold 520ms cubic-bezier(.2,.7,.2,1) both; transform-origin: top; }
-@keyframes unfold { from { opacity: 0; transform: translateY(-6px) scaleY(.92); clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
-
-.depth-question {
-  display: block; font-size: 11px; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; color: var(--accent);
-}
-.depth-question { margin: 18px 0 6px; animation: word-in 360ms ease-out both; }
-/* Text a depth just added stays marked for a few seconds, so a reader back at the top can spot what is new. */
 .stretch .segment { border-radius: 3px; transition: background-color 1.4s ease-out, box-shadow 1.4s ease-out; }
 .stretch .segment.fresh { background-color: var(--accent-soft); box-shadow: 0 0 0 2px var(--accent-soft); transition: none; }
-.depth-question.fresh { color: var(--ink); }
+.depth-question { display: block; margin: var(--s5) 0 var(--s2); font-size: var(--text); font-weight: 600; color: var(--ink); }
+.inline-panel { margin: var(--s2) 0 var(--s4); }
+.unroll { overflow: hidden; }
+.caret {
+  display: inline-block; width: 2px; height: 1.05em; margin-left: 1px; vertical-align: -0.15em;
+  background: var(--accent); border-radius: 1px; animation: caret 900ms steps(2, jump-none) infinite;
+}
+@keyframes caret { 50% { opacity: 0; } }
 
-/* The room a pull opens under the answer, and the handle with the brain. */
+/* Notes about the reading: the business context, how the agent got here, the SLayer query, further evidence.
+   All small and muted, each led by a plain word in ink. */
+.context-note, .explored {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s1) var(--s2); margin: 0 0 var(--s3);
+  font-size: var(--small); line-height: var(--small-lh); color: var(--muted); animation: word-in 360ms ease-out both;
+}
+.context-tag, .evidence-tag { color: var(--ink); }
+.context-note q { font-style: normal; }
+.evidence { margin: 0 0 var(--s3); }
+.evidence summary {
+  cursor: pointer; list-style: none; padding: 2px 0; font-size: var(--small); color: var(--muted);
+}
+.evidence summary::-webkit-details-marker { display: none; }
+.evidence summary::before { content: "+ "; color: var(--accent); }
+.evidence[open] summary::before { content: "− "; }
+.evidence summary:hover { color: var(--ink); }
+.query-card { margin: var(--s2) 0 0; }
+.query-toggle {
+  border: 0; background: none; padding: 0; font: inherit; font-size: var(--small); color: var(--muted); cursor: pointer;
+}
+.query-toggle::before { content: "{ } "; font-family: var(--mono); }
+.query-toggle:hover, .query-card[data-open] .query-toggle { color: var(--accent); }
+.query-lines {
+  margin: var(--s2) 0 0; padding: var(--s2) var(--s3); border-left: 2px solid var(--accent-soft);
+  font: var(--small)/var(--small-lh) var(--mono); animation: word-in 240ms ease-out both;
+}
+.query-lines > div { display: grid; grid-template-columns: 72px 1fr; gap: var(--s2); }
+.query-lines dt { color: var(--muted); }
+.query-lines dd { margin: 0; display: flex; flex-direction: column; gap: 1px; color: var(--ink); overflow-wrap: anywhere; }
+.query-lines .q-formula, .query-lines .q-join { color: var(--accent); }
+.query-foot { margin: var(--s2) 0 0; font-family: var(--font); color: var(--muted); }
+
+/* The one control under the answer: tap it or pull it down for the next depth, pull it up to go back. */
 .pull-room { transition: height 260ms cubic-bezier(.3,1.4,.5,1); }
 .pull-room:has(+ .depth-bar[data-pulling]) { transition: none; }
-/* One control under the answer: tap it or pull it down for the next depth, pull it up to go back. */
 .depth-bar {
-  display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px 16px 14px;
+  display: flex; flex-direction: column; align-items: center; gap: var(--s1); padding: var(--s2) var(--s3) var(--s3);
   border-top: 1px solid var(--line); cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none;
-  color: var(--accent); transition: background 200ms;
+  font-size: var(--small); color: var(--accent); transition: background 200ms;
 }
 .depth-bar:hover { background: color-mix(in oklab, var(--accent-soft) 45%, transparent); }
 .depth-bar[data-pulling] { cursor: grabbing; background: color-mix(in oklab, var(--accent-soft) 60%, transparent); }
@@ -101,11 +193,13 @@ header h1 { margin: 0 0 24px; font-size: 22px; letter-spacing: -0.01em; }
 .grip { width: 32px; height: 4px; border-radius: 2px; background: var(--line); transition: background 200ms; }
 .depth-bar:hover .grip, .depth-bar[data-pulling] .grip { background: var(--accent); }
 .depth-bar[data-idle] .grip { visibility: hidden; }
-.bar-row { display: flex; align-items: center; gap: 8px; min-height: 28px; }
-.bar-label { font-size: 14px; }
-.bar-arrow { font-size: 13px; opacity: .7; transition: translate 200ms; }
+.bar-row { display: flex; align-items: center; gap: var(--s2); min-height: 28px; }
+.bar-arrow { opacity: .7; transition: translate 200ms; }
 .depth-bar:hover .bar-arrow { translate: 0 2px; }
-.depth-bar .brain-cue { --size: 28px; margin: 0; flex: none; }
+.answer-card .progress { padding: 0 var(--s3) var(--s3); text-align: center; }
+
+/* The brain. In the bar it keeps one small size at every depth: only its colour and ring show the depth. */
+.brain-cue { --size: 28px; margin: 0; flex: none; }
 /* In the bar the brain keeps one small size at every depth: only its colour and ring show the depth. */
 .depth-bar .brain-cue { filter: none; }
 .depth-bar .brain-cue .brain-body { transform: scale(.9); }
@@ -144,135 +238,12 @@ header h1 { margin: 0 0 24px; font-size: 22px; letter-spacing: -0.01em; }
 @keyframes level-up { 0% { opacity: .4; scale: .7; } 60% { scale: 1.18; } 100% { scale: 1; } }
 .brain-cue.radiant .rays line { animation-duration: 1.6s; animation-delay: calc(var(--i) / var(--n) * -1.6s); stroke-width: 2; }
 .brain-cue.radiant .lobes { fill: color-mix(in oklab, #ff7ad9 35%, var(--glow)); }
+.depth-bar .brain-cue { --size: 28px; margin: 0; flex: none; filter: none; }
+.depth-bar .brain-cue .brain-body { transform: scale(.9); }
+.depth-bar .brain-cue .rays { display: none; }
 .depth-bar:hover .brain-cue .ring-track, .depth-bar[data-pulling] .brain-cue .ring-track { stroke: var(--accent-soft); }
 
 @media (prefers-reduced-motion: reduce) {
-  .stretch .word, .inline-panel, .brain-cue .brain-body, .brain-cue .rays line, .depth-question { animation: none; }
+  .stretch .word, .brain-cue .brain-body, .brain-cue .rays line, .query-lines, .context-note, .explored,
+  .so-far-text, .caret { animation: none; }
 }
-
-/* Continuous expansion: the answer unrolls out of the handle while it is held. Charts draw as the pull goes, so
-   they have no entrance animation of their own. */
-.stream .stretch.level-0 { font-weight: 550; }
-.stream .inline-panel { animation: none; }
-.stream .depth-question { animation: none; }
-.unroll { overflow: hidden; }
-.caret {
-  display: inline-block; width: 2px; height: 1.05em; margin-left: 1px; vertical-align: -0.15em;
-  background: var(--accent); border-radius: 1px; animation: caret 900ms steps(2, jump-none) infinite;
-}
-@keyframes caret { 50% { opacity: 0; } }
-.stream[data-writing] .brain-cue .brain-body { animation-duration: 600ms; }
-/* What SLayer and the business context did, one tap away. */
-.query-card { margin: 4px 2px 0; }
-.query-toggle {
-  border: 0; background: none; padding: 2px 0; font: inherit; font-size: 11.5px; color: var(--muted); cursor: pointer;
-}
-.query-toggle::before { content: "{ } "; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--accent); }
-.query-toggle:hover, .query-card[data-open] .query-toggle { color: var(--accent); }
-.query-lines {
-  margin: 4px 0 2px; padding: 10px 12px; border-radius: 10px; background: var(--accent-soft);
-  font: 12px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; animation: word-in 240ms ease-out both;
-}
-.query-lines > div { display: grid; grid-template-columns: 72px 1fr; gap: 8px; }
-.query-lines dt { color: var(--muted); }
-.query-lines dd { margin: 0; display: flex; flex-direction: column; gap: 1px; color: var(--ink); overflow-wrap: anywhere; }
-.query-lines .q-formula, .query-lines .q-join { color: var(--accent); font-weight: 600; }
-.query-foot { margin: 6px 0 0; font-family: system-ui, sans-serif; font-size: 11px; color: var(--muted); }
-.context-note {
-  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin: -2px 0 10px; font-size: 12.5px;
-  color: var(--muted); animation: word-in 360ms ease-out both;
-}
-.context-tag {
-  font-size: 10.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--accent);
-  padding: 1px 7px; border: 1px solid var(--accent-soft); border-radius: 999px;
-}
-.context-note q { font-style: italic; }
-@media (prefers-reduced-motion: reduce) { .query-lines, .context-note { animation: none; } }
-/* The research head: the answer so far, and the path of depths. Stays in view while reading. */
-.research-head {
-  position: sticky; top: 0; z-index: 2; padding: 14px 24px 10px; background: var(--surface);
-  border-bottom: 1px solid var(--line); border-radius: 14px 14px 0 0;
-}
-.so-far { margin: 0 0 10px; display: grid; gap: 3px; font-size: 14px; line-height: 1.45; color: var(--ink); }
-.so-far-tag { font-size: 10.5px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
-.so-far-text {
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;
-  animation: so-far-in 520ms ease-out both; text-wrap: pretty;
-}
-.research-head:hover .so-far-text { -webkit-line-clamp: unset; }
-@keyframes so-far-in { from { opacity: 0; transform: translateY(3px); } }
-.rail { list-style: none; margin: 0; padding: 0; display: flex; gap: 0; }
-.rail li { flex: 1; position: relative; }
-.rail li + li::before {
-  content: ""; position: absolute; top: 9px; right: 50%; width: 100%; height: 2px; background: var(--line);
-}
-.rail li[data-status="done"] + li::before, .rail li[data-status="current"]::before { background: var(--accent); }
-.rail button {
-  position: relative; z-index: 1; width: 100%; display: grid; justify-items: center; gap: 4px; padding: 2px 0;
-  border: 0; background: none; font: inherit; color: var(--muted); cursor: pointer;
-}
-.rail button:disabled { cursor: default; }
-.rail-dot {
-  width: 12px; height: 12px; margin-top: 3px; border-radius: 50%; border: 2px solid var(--line); background: var(--surface);
-  transition: background 300ms, border-color 300ms, transform 300ms;
-}
-.rail-label { font-size: 11.5px; }
-.rail li[data-status="done"] .rail-dot { background: var(--accent); border-color: var(--accent); }
-.rail li[data-status="done"] button { color: var(--ink); }
-.rail li[data-status="current"] .rail-dot { border-color: var(--accent); animation: rail-pulse 1.2s ease-in-out infinite; }
-.rail li[data-status="current"] button { color: var(--accent); font-weight: 600; }
-.rail li[data-status="next"] .rail-dot { border-color: var(--accent); }
-.rail li[data-status="next"] button { color: var(--accent); }
-.rail button:not(:disabled):hover .rail-dot { transform: scale(1.25); }
-@keyframes rail-pulse { 50% { box-shadow: 0 0 0 5px var(--accent-soft); } }
-/* The next step, named. */
-/* Further charts of a depth, one tap away. */
-.evidence { margin: 0 0 14px; }
-.evidence summary { cursor: pointer; color: var(--muted); font-size: 13.5px; list-style: none; padding: 4px 0; }
-.evidence summary::-webkit-details-marker { display: none; }
-.evidence summary::before { content: "▸ "; color: var(--accent); }
-.evidence[open] summary::before { content: "▾ "; }
-.evidence summary:hover { color: var(--ink); }
-.evidence-tag { font-size: 10.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--accent); margin-right: 4px; }
-.explored {
-  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin: -4px 0 12px; font-size: 12.5px; color: var(--muted);
-  animation: word-in 360ms ease-out both;
-}
-@media (prefers-reduced-motion: reduce) { .so-far-text, .explored { animation: none; } .rail li[data-status="current"] .rail-dot { animation: none; } }
-@media (prefers-reduced-motion: reduce) { .caret { animation: none; } }
-
-/* Lean pass: one accent, sentence case, no pills, no frames inside the answer; hierarchy from size and space. */
-.stretch .segment.level-0, .stream .stretch.level-0 { font-weight: 500; }
-.depth-question {
-  font-size: 15px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--ink); margin: 30px 0 6px;
-}
-.depth-question.fresh { color: var(--ink); }
-.so-far { gap: 2px; font-size: 13.5px; color: var(--muted); }
-.so-far-tag, .context-tag, .evidence-tag {
-  font-size: inherit; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--ink);
-  padding: 0; border: 0; border-radius: 0;
-}
-.so-far-tag { font-size: 12px; color: var(--muted); }
-.context-note, .explored { gap: 6px; font-size: 13px; margin: 0 0 12px; }
-.context-note q { font-style: normal; }
-.research-head { padding: 14px 24px 12px; }
-.rail li + li::before { top: 7px; height: 1px; }
-.rail-dot { width: 8px; height: 8px; margin-top: 3px; border-width: 1.5px; }
-.rail-label { font-size: 11.5px; }
-.rail li[data-status="current"] .rail-dot { animation: none; background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-.rail li[data-status="current"] button { font-weight: 500; }
-.rail li[data-status="next"] .rail-dot { border-color: var(--line); }
-.rail li[data-status="next"] button { color: var(--muted); }
-.answer .panel { border: 0; border-radius: 0; padding: 0; background: none; }
-.answer .panel h3 { font-size: 12.5px; font-weight: 500; margin-bottom: 6px; }
-.answer .inline-panel { margin: 8px 0 22px; }
-.answer [class*="chart-grid"], .answer [class*="internal-line"], .answer .recharts-cartesian-grid { display: none; }
-/* Bars carry their values in the caption under them: no axis or one-item legend to read twice. */
-.answer .panel-bar [class*="x-axis"], .answer .panel-bar .openui-chart-legend-container { display: none; }
-.query-toggle::before { color: inherit; }
-.evidence summary { font-size: 13px; }
-.evidence summary::before { color: var(--muted); }
-.answer .openui-table-container { border: 0; border-radius: 0; }
-.answer .openui-table-row { background: none; }
-.answer .openui-table-cell, .answer .openui-table-head { padding-left: 0; font-size: 13.5px; border-bottom: 1px solid var(--line); }
-.answer .openui-table-head { color: var(--muted); font-weight: 500; }

@@ -242,6 +242,8 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
             : building
               ? "Thinking deeper…"
               : "That's the full analysis";
+  // What each depth found, in the narrator's few words, under its name on the rail once it is written.
+  const finding = (level: number) => state.digests.find((d) => d.level === level)?.headline;
   const charge = dy > 0 && more ? Math.min(1, dy / STEP_PULL) : dy < 0 && depth > 0 ? -Math.min(1, -dy / STEP_PULL) : fill >= 1 && more ? 0 : fill;
 
   return (
@@ -266,6 +268,7 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
                   <button type="button" disabled={!level || (status === "done" && i === depth)} onClick={() => goTo(i)}>
                     <span className="rail-dot" aria-hidden />
                     <span className="rail-label">{level?.title ?? "…"}</span>
+                    {status === "done" && finding(i) && <span className="rail-finding">{finding(i)}</span>}
                   </button>
                 </li>
               );
