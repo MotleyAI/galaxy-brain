@@ -229,6 +229,19 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
   const nextQuestion = state.digests.find((d) => d.level === nextDepth)?.question ?? state.levels[nextDepth]?.title;
   const whyLevel = state.levels.find((l) => /why/i.test(l.title))?.index ?? Math.max(1, state.levels.length - 2);
   const explored = exploration(state.explored);
+  // The bar says one thing: what a tap or a pull does now.
+  const bar =
+    dy >= STEP_PULL && more
+      ? "Release to go deeper"
+      : dy <= -STEP_PULL && depth > 0
+        ? "Release to go back"
+        : writing
+          ? "Tap to finish this depth"
+          : more
+            ? (nextQuestion ?? "Go deeper")
+            : building
+              ? "Thinking deeper…"
+              : "That's the full analysis";
   const charge = dy > 0 && more ? Math.min(1, dy / STEP_PULL) : dy < 0 && depth > 0 ? -Math.min(1, -dy / STEP_PULL) : fill >= 1 && more ? 0 : fill;
 
   return (
@@ -280,23 +293,21 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
         <div className="pull-room" style={{ height: band }} aria-hidden />
         <div
           ref={handle}
-          className="pull-handle"
-          role="slider"
+          className="depth-bar"
+          role="button"
           tabIndex={0}
-          title={`${label}. ${more ? "Pull or press Down for the next depth" : "That's the full depth"}.`}
-          aria-label="Depth of the answer: pull down or press Down for the next depth, Up to go back"
-          aria-valuemin={Math.round(floor)}
-          aria-valuemax={Math.round(total)}
-          aria-valuenow={Math.round(goal)}
-          aria-valuetext={label}
+          aria-label={`${label}. ${bar}. Pull down or press Down for the next depth, Up to go back.`}
           data-pulling={dy !== 0 || undefined}
+          data-idle={(!more && !writing) || undefined}
           onKeyDown={onKey}
           onPointerDown={(event) => {
             try {
               event.currentTarget.setPointerCapture(event.pointerId);
             } catch {
-              // A synthetic pointer: the pull still works while it stays on the handle.
+              // A synthetic pointer: the pull still works while it stays on the bar.
             }
+            // Holding the bar stops the page following, so the bar stays under the finger.
+            follow.current = null;
             drag.current = { originY: event.clientY };
           }}
           onPointerMove={(event) => {
@@ -315,22 +326,18 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
             setDy(0);
           }}
         >
-          <Brain stage={stage(depth, depths)} charge={charge} depth={depth} />
-        </div>
-        <div className="next-step">
-          {writing ? (
-            <button type="button" className="skip" onClick={forward}>
-              Skip to the end of this depth
-            </button>
-          ) : more ? (
-            <button type="button" className="go-deeper" onClick={forward}>
-              <span>Go deeper</span> {nextQuestion} <span aria-hidden>→</span>
-            </button>
-          ) : (
-            <span className="done-note" aria-live="polite">
-              {building ? "Thinking deeper…" : "That's the full analysis"}
+          <span className="grip" aria-hidden />
+          <span className="bar-row">
+            <Brain stage={stage(depth, depths)} charge={charge} depth={depth} />
+            <span className="bar-label" aria-live="polite">
+              {bar}
             </span>
-          )}
+            {(more || writing) && dy === 0 && (
+              <span className="bar-arrow" aria-hidden>
+                ↓
+              </span>
+            )}
+          </span>
         </div>
       </Card>
     </ThemeProvider>
