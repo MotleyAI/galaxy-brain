@@ -16,6 +16,12 @@ export interface PanelData {
 
 export type PanelKind = "kpi" | "bar" | "table" | "line" | "delta";
 
+/** Something the agent explored before planning: a probe query or a dimension profile. */
+export interface Probe {
+  tool: string;
+  input: unknown;
+}
+
 /** A SLayer query as the agent wrote it: data, not SQL. */
 export interface SlayerQuery {
   source_model: string;

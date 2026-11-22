@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { takeEvents } from "./sse";
-import type { Digest, ResolvedLevel, Segment } from "./types";
+import type { Digest, Probe, ResolvedLevel, Segment } from "./types";
 
 export type Status = "idle" | "loading" | "streaming" | "done" | "error";
 
@@ -11,6 +11,8 @@ export interface AnswerState {
   expectedLevels: number | null;
   /** The agent's progress notes, oldest first. */
   notes: string[];
+  /** What the agent explored on the way: its probe queries and dimension profiles, in order. */
+  explored: Probe[];
   summary: string;
   levels: ResolvedLevel[];
   /** The answer's text so far, in reading order. */
@@ -38,6 +40,7 @@ const INITIAL: AnswerState = {
   status: "idle",
   expectedLevels: 0,
   notes: [],
+  explored: [],
   summary: "",
   levels: [],
   narration: [],
@@ -59,7 +62,9 @@ export function createAnswerStore(fetchImpl: typeof fetch = (...args) => fetch(.
     if (event === "ladder") {
       set({ status: "streaming", expectedLevels: (data as { levels: number | null }).levels });
     } else if (event === "note") {
-      set({ notes: [...state.notes, (data as { text: string }).text] });
+      const note = data as { text: string; tool?: string; input?: unknown };
+      const explored = note.tool ? [...state.explored, { tool: note.tool, input: note.input }] : state.explored;
+      set({ notes: [...state.notes, note.text], explored });
     } else if (event === "level") {
       set({ levels: [...state.levels, data as ResolvedLevel] });
     } else if (event === "narration") {

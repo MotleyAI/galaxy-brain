@@ -12,10 +12,13 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNod
 import { PanelView } from "../panels";
 import { useAnswer, type AnswerStore } from "../state";
 import { Brain } from "./Brain";
+import { exploration } from "./explored";
+import { Note } from "./Note";
 import { QueryCard } from "./QueryCard";
 import { stage } from "./pull";
 import {
   buildStream,
+  DEEP_BOOST,
   depthAt,
   depthEnd,
   drawnOf,
@@ -44,6 +47,8 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
   const [units, setUnits] = useState(0);
   const [target, setTarget] = useState(0);
   const [dy, setDy] = useState(0);
+  // The head with the answer so far can fold to one line, leaving the screen to the analysis.
+  const [headOpen, setHeadOpen] = useState(true);
   const unitsRef = useRef(0);
   const targetRef = useRef(0);
   const streamRef = useRef(stream);
@@ -65,7 +70,8 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
   const tick = (now: number) => {
     const ms = Math.min(64, now - last.current);
     last.current = now;
-    const next = toward(unitsRef.current, targetRef.current, ms);
+    const deep = depthAt(streamRef.current, unitsRef.current).depth >= 2;
+    const next = toward(unitsRef.current, targetRef.current, ms, deep ? DEEP_BOOST : 1);
     setShown(next);
     frame.current = next === targetRef.current ? 0 : requestAnimationFrame(tick);
   };
@@ -213,32 +219,80 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
   const label = `Depth ${depth + 1} of ${depths}`;
   const band = room(dy);
   const contextOf = (level: number) => state.levels.find((l) => l.index === level)?.context ?? [];
+  // The answer so far: the summary of the last depth written in full, replaced as each depth completes.
+  const completed = fill >= 1 && !writing ? depth : Math.max(0, depth - 1);
+  const soFar = state.digests.find((d) => d.level === completed);
+  const nextDepth = depthAt(stream, nextStop(stream, goal)).depth;
+  const nextQuestion = state.digests.find((d) => d.level === nextDepth)?.question ?? state.levels[nextDepth]?.title;
+  const whyLevel = state.levels.find((l) => /why/i.test(l.title))?.index ?? Math.max(1, state.levels.length - 2);
+  const explored = exploration(state.explored);
+  // The bar says one thing: what a tap or a pull does now.
+  const bar =
+    dy >= STEP_PULL && more
+      ? "Release to go deeper"
+      : dy <= -STEP_PULL && depth > 0
+        ? "Release to go back"
+        : writing
+          ? "Tap to finish this depth"
+          : more
+            ? (nextQuestion ?? "Go deeper")
+            : building
+              ? "Thinking deeper…"
+              : "That's the full analysis";
   const charge = dy > 0 && more ? Math.min(1, dy / STEP_PULL) : dy < 0 && depth > 0 ? -Math.min(1, -dy / STEP_PULL) : fill >= 1 && more ? 0 : fill;
 
   return (
     <ThemeProvider mode={mode}>
       <Card variant="card" width="full" className="answer-card stream" data-writing={writing || unwriting || undefined}>
-        <article className="answer">{blocks(written(stream, shown), writing, contextOf)}</article>
+        {soFar && (
+          <header className="research-head" data-open={headOpen || undefined}>
+            <button type="button" className="head-toggle" aria-expanded={headOpen} onClick={() => setHeadOpen(!headOpen)}>
+              <span className="so-far-tag">So far</span>
+              {!headOpen && <span className="so-far-peek">{soFar.headline || soFar.summary}</span>}
+              <span className="head-action">{headOpen ? "Hide" : "Show"}</span>
+            </button>
+            {headOpen && (
+              <p className="so-far-text" key={completed} aria-live="polite">
+                {soFar.summary || soFar.headline}
+              </p>
+            )}
+          </header>
+        )}
+        <article className="answer">
+          {blocks(written(stream, shown), writing, {
+            contextOf,
+            exploredOn: whyLevel,
+            explored:
+              explored.queries > 0 ? (
+                <>
+                  <Note title="How the agent got here">
+                    {explored.queries} exploratory {explored.queries === 1 ? "query" : "queries"}
+                    {explored.profiles ? ` and ${explored.profiles} dimension ${explored.profiles === 1 ? "profile" : "profiles"}` : ""}, on{" "}
+                    {explored.measures.slice(0, 8).join(" · ")}
+                    {explored.across.length ? `, across ${explored.across.slice(0, 5).join(" · ")}` : ""}.
+                  </Note>
+                </>
+              ) : null,
+          })}
+        </article>
         <div className="pull-room" style={{ height: band }} aria-hidden />
         <div
           ref={handle}
-          className="pull-handle"
-          role="slider"
+          className="depth-bar"
+          role="button"
           tabIndex={0}
-          title={`${label}. ${more ? "Pull or press Down for the next depth" : "That's the full depth"}.`}
-          aria-label="Depth of the answer: pull down or press Down for the next depth, Up to go back"
-          aria-valuemin={Math.round(floor)}
-          aria-valuemax={Math.round(total)}
-          aria-valuenow={Math.round(goal)}
-          aria-valuetext={label}
+          aria-label={`${label}. ${bar}. Pull down or press Down for the next depth, Up to go back.`}
           data-pulling={dy !== 0 || undefined}
+          data-idle={(!more && !writing) || undefined}
           onKeyDown={onKey}
           onPointerDown={(event) => {
             try {
               event.currentTarget.setPointerCapture(event.pointerId);
             } catch {
-              // A synthetic pointer: the pull still works while it stays on the handle.
+              // A synthetic pointer: the pull still works while it stays on the bar.
             }
+            // Holding the bar stops the page following, so the bar stays under the finger.
+            follow.current = null;
             drag.current = { originY: event.clientY };
           }}
           onPointerMove={(event) => {
@@ -257,21 +311,33 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
             setDy(0);
           }}
         >
-          <Brain stage={stage(depth, depths)} charge={charge} depth={depth} />
-          {shown <= floor && more && dy === 0 && <span className="hint">Pull to expand</span>}
+          <span className="grip" aria-hidden />
+          <span className="bar-row">
+            <Brain stage={stage(depth, depths)} charge={charge} depth={depth} />
+            <span className="bar-label" aria-live="polite">
+              {bar}
+            </span>
+            {(more || writing) && dy === 0 && (
+              <span className="bar-arrow" aria-hidden>
+                ↓
+              </span>
+            )}
+          </span>
         </div>
-        {building && !more && !writing && dy === 0 && (
-          <p className="progress" aria-live="polite">
-            Thinking deeper…
-          </p>
-        )}
       </Card>
     </ThemeProvider>
   );
 }
 
 /** The stream as written so far: each depth's question, its paragraph, and its panels as far as they have drawn. */
-function blocks(items: Shown[], writing: boolean, contextOf: (level: number) => string[]): ReactNode[] {
+interface Extras {
+  contextOf: (level: number) => string[];
+  /** The depth that shows how the agent got here, and the note itself. */
+  exploredOn: number;
+  explored: ReactNode;
+}
+
+function blocks(items: Shown[], writing: boolean, { contextOf, exploredOn, explored }: Extras): ReactNode[] {
   const result: ReactNode[] = [];
   let paragraph: Shown[] = [];
   const end = items[items.length - 1];
@@ -289,29 +355,47 @@ function blocks(items: Shown[], writing: boolean, contextOf: (level: number) => 
     }
     flush();
     if (item.kind === "question") {
+      // Once its question is written, a depth notes, on the same line, the business facts that shaped it and, on the
+      // Why depth, how the agent got there: each folded to its title, opening as an overlay.
+      const facts = shown.progress >= 1 ? contextOf(item.level) : [];
+      const showExplored = shown.progress >= 1 && item.level === exploredOn && explored;
       result.push(
         <h4 className="depth-question" key={item.id}>
           {item.words.slice(0, shown.words).join(" ")}
           {writing && shown === end && <span className="caret" />}
+          {(facts.length > 0 || showExplored) && (
+            <span className="depth-notes">
+              {facts.length > 0 && (
+                <Note title="Context">
+                  From your business context:
+                  {facts.map((fact, i) => (
+                    <q key={i}>{fact.replace(/[`*]/g, "")}</q>
+                  ))}
+                </Note>
+              )}
+              {showExplored && explored}
+            </span>
+          )}
         </h4>,
       );
-      // Once its question is written, a depth notes the business facts that shaped it.
-      const facts = shown.progress >= 1 ? contextOf(item.level) : [];
-      if (facts.length)
-        result.push(
-          <p className="context-note" key={`ctx-${item.level}`}>
-            <span className="context-tag">From your business context</span>
-            {facts.map((fact, i) => (
-              <q key={i}>{fact.replace(/[`*]/g, "")}</q>
-            ))}
-          </p>,
-        );
     } else {
       result.push(
-        <div className="inline-panel" key={item.id}>
-          <PanelView panel={item.panel} drawn={shown.progress >= 1 ? undefined : drawnOf(shown)} />
-          {shown.progress >= 1 && item.panel.query && <QueryCard query={item.panel.query} />}
-        </div>,
+        item.evidence ? (
+          <details className="evidence" key={item.id} style={shown.progress < 1 ? { opacity: shown.progress } : undefined}>
+            <summary>
+              <span className="evidence-tag">Evidence</span> {item.panel.title}
+            </summary>
+            <div className="inline-panel">
+              <PanelView panel={item.panel} />
+              {item.panel.query && <QueryCard query={item.panel.query} />}
+            </div>
+          </details>
+        ) : (
+          <div className="inline-panel" key={item.id}>
+            <PanelView panel={item.panel} drawn={shown.progress >= 1 ? undefined : drawnOf(shown)} />
+            {shown.progress >= 1 && item.panel.query && <QueryCard query={item.panel.query} />}
+          </div>
+        ),
       );
     }
   }

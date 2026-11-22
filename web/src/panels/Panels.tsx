@@ -16,6 +16,8 @@ export interface Drawn {
 const FULL: Drawn = { progress: 1, frame: 1, rows: Infinity };
 const BAR_ROW = 60;
 const BAR_TOP = 18;
+/** The room the chart keeps under its bars for an axis; the values are in the caption, so it is clipped away. */
+const AXIS_ROOM = 44;
 
 const CHART_HEIGHT = 220;
 
@@ -44,11 +46,11 @@ function Bars({ data, drawn }: { data: PanelData; drawn: Drawn }) {
   if (!measure) return null;
   const dims = visibleColumns(data).filter((c) => c.role === "dimension");
   const rows = chartRows(data, (row) => labelOf(row, dims), measure);
-  const height = rows.length * BAR_ROW + 80;
+  const height = rows.length * BAR_ROW + 24;
   const done = drawn.rows >= rows.length;
   return (
     <figure className="chart">
-      <div className="unroll" style={done ? undefined : { height: BAR_TOP + drawn.rows * BAR_ROW }}>
+      <div className="unroll" style={{ height: done ? height - AXIS_ROOM : Math.min(height - AXIS_ROOM, BAR_TOP + drawn.rows * BAR_ROW) }}>
         <HorizontalBarChart data={rows} categoryKey="category" height={height} />
       </div>
       <figcaption>

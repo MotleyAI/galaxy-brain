@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 
 from slayer_zoom.agent import Emit
 from slayer_zoom.api import create_app
-from slayer_zoom.api.app import NarratorFactory
+from slayer_zoom.api.app import NarratorFactory, note_of
 from slayer_zoom.core import AgentStep, Digest, ResolvedLevel, Segment, StepKind, resolve_level
 from slayer_zoom.traces import QUESTION, ReplayRunner, Trace, load_trace
 
@@ -154,3 +154,12 @@ def test_a_live_run_narrates_each_level_before_it_is_done() -> None:
         "segments": [{"id": "s0", "level": 0, "text": "Text.", "panel": None}],
         "digests": [{"level": 0, "question": "Why?", "headline": "Up", "summary": "Up."}],
     }
+
+
+def test_a_replay_shows_what_each_probe_explored() -> None:
+    probe = AgentStep(
+        kind=StepKind.TOOL, text="Checking", tool="probe_query", input={"source_model": "orders"}
+    )
+    plain = AgentStep(kind=StepKind.TOOL, text="Reading", tool="read_context")
+    assert note_of(probe) == {"text": "Checking", "tool": "probe_query", "input": {"source_model": "orders"}}
+    assert note_of(plain) == {"text": "Reading"}

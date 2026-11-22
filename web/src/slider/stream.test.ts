@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Digest, ResolvedLevel, ResolvedPanel, Segment } from "../state";
 import {
   buildStream,
+  DEEP_BOOST,
   depthAt,
   depthEnd,
   drawnOf,
@@ -90,6 +91,7 @@ describe("the pull", () => {
     expect(toward(99, 100, 1000)).toBe(100);
     expect(toward(100, 9, 1000)).toBe(100 - MAX_UNITS_PER_S * UNWRITE_FACTOR);
     expect(toward(10, 9, 1000)).toBe(9);
+    expect(toward(10, 100, 1000, DEEP_BOOST)).toBe(10 + MAX_UNITS_PER_S * 1.5);
   });
 
   it("opens a slim room that follows the finger to a step, then resists", () => {
