@@ -48,6 +48,10 @@ Rules for levels:
 - Give each computed measure a short `label`, and a `format` when it is money or a percentage, because SLayer drops
   formats on computed measures: {"type": "currency", "symbol": "$", "precision": 0} or {"type": "percent",
   "precision": 1}.
+- Context: when a fact from the business context shaped a level (a caveat that changed the comparison, a glossary
+  entry that picked the measure, the calendar rule that picked the window), quote it word for word in the level's
+  `context`, one or two short quotes at most. The reader sees them as notes on where the analysis used what the
+  business knows.
 - Before each group of tool calls, write one short sentence for the reader saying what you are checking, for
   example "Checking whether last year's data exists." These sentences appear as progress notes. Say only what you are
   checking or doing next, never what you found, and never put a number or quantity in them.

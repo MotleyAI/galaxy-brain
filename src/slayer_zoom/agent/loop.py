@@ -104,7 +104,9 @@ def build_tools(session: LadderSession) -> list[BetaFunctionTool[Any]]:
         return _guard(session, session.probe_query)(query)
 
     @beta_tool
-    def submit_level(title: str, panels: list[Panel], rationale: str) -> str:
+    def submit_level(
+        title: str, panels: list[Panel], rationale: str, context: list[str] | None = None
+    ) -> str:
         """Submit the next level of the ladder. It is validated against the semantic layer and the monotonic
         rule, then run and shown to the reader at once. On errors nothing is shown; fix them and submit again.
 
@@ -112,8 +114,11 @@ def build_tools(session: LadderSession) -> list[BetaFunctionTool[Any]]:
             title: One or two words naming the level, for example "Split".
             panels: Every panel of the level, including the previous level's panels that it keeps.
             rationale: One sentence on what this level adds, with no numbers in it.
+            context: One or two facts from the business context that shaped this level, each quoted word
+                for word (a phrase or a sentence), for example "Year-on-year growth mixes new stores with
+                like-for-like growth". Leave it empty when no context fact shaped the level.
         """
-        return _guard(session, session.submit_level)(title, panels, rationale)
+        return _guard(session, session.submit_level)(title, panels, rationale, context)
 
     @beta_tool
     def finish(summary: str) -> str:

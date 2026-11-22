@@ -55,7 +55,8 @@ def test_the_tool_surface_has_no_sql_and_no_way_to_emit_numbers(session: LadderS
     assert tuple(tools) == TOOL_NAMES
     assert not any("sql" in name for name in tools)
     submit = cast(dict[str, Any], tools["submit_level"]["input_schema"])
-    assert set(submit["properties"]) == {"title", "panels", "rationale"}
+    # `context` only takes quotes that must appear word for word in the business context (checked on submit).
+    assert set(submit["properties"]) == {"title", "panels", "rationale", "context"}
     panel = submit["$defs"]["Panel"]["properties"]
     assert set(panel) == {"id", "kind", "title", "query", "parent"}
 
