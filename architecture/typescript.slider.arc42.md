@@ -14,11 +14,13 @@ once a pull has gone far enough, and "That's the full analysis" at the end. A ta
 it, or Down, Enter or Space asks for the next depth. The pull opens a slim, empty band above the bar, which closes on
 release, and holding the bar stops the page following so it stays under the finger. The depth then writes itself below what is there, word by word at about eleven
 words a second (half as fast again from depth 3 on), and a caret marks the writing point. Each depth is a paragraph
-after the one before, opening with its question and the business-context facts that shaped it, with its first new
+after the one before, opening with its question, with its first new
 chart right after the sentence that introduces it; its further charts fold into one-line "Evidence" links that open
 in place. Charts draw as part of the same stream: a single number rises into focus, bar charts and tables unroll a
-row at a time, and a line chart opens its frame, then draws left to right through time. The Why depth also notes how
-the agent got there: how many exploratory queries and profiles it ran, on which measures and splits. The page follows
+row at a time, and a line chart opens its frame, then draws left to right through time. On the question's line sit
+small titles that open as an overlay on a tap and close on a tap elsewhere or Escape: "Context", the business-context
+facts that shaped the depth, and on the Why depth "How the agent got here", how many exploratory queries and profiles
+it ran, on which measures and splits. The page follows
 the writing point: whenever the bar under it leaves the middle of the screen, the page eases toward it a little
 each frame, until the reader scrolls; the writing carries on either way. While a depth writes, a tap skips to its
 end; pulling up, or Up, goes back a depth, unwriting from the end at three times the pace. A depth asked for
@@ -55,5 +57,7 @@ nothing the reader has read ever moves. One main chart per depth keeps each dept
 is one tap away, so nothing is hidden and nothing crowds the point. Drawing each chart a row at a time makes charts
 part of the writing; each animation follows the data's own shape and only clips or fades what is there, so no number
 is ever shown that SLayer did not return. The exploration note shows that the agent searched before it concluded,
-while saying only what it queried, never what it found. Every panel the text never introduces still gets a place,
+while saying only what it queried, never what it found. Context and exploration fold to titles on the question's
+line because they explain the analysis rather than carry it: one tap away for the reader who asks, never in the way
+of the one who reads on. Every panel the text never introduces still gets a place,
 so no data is lost to a missing sentence.
