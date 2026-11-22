@@ -124,8 +124,16 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
   const more = shown < total;
   const writing = dy > DEAD_ZONE && more;
   const label = `Depth ${depth + 1} of ${depths}`;
-  // Generic on purpose: what comes next stays a surprise.
-  const invite = writing ? "Writing…" : more ? "Pull to expand" : building ? "Thinking deeper…" : "That's the full depth";
+  // While writing, the room shows the reasoning behind the section being built: why the agent added this depth.
+  // Before that, the handle stays generic, so what comes next is a surprise.
+  const reasoning = state.levels[depth]?.rationale;
+  const invite = writing
+    ? reasoning || "Writing…"
+    : more
+      ? "Pull to expand"
+      : building
+        ? "Thinking deeper…"
+        : "That's the full depth";
   const pulledRoom = room(dy);
 
   return (
@@ -133,7 +141,11 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
       <Card variant="card" width="full" className="answer-card stream" data-writing={writing || undefined}>
         <article className="answer">{blocks(written(stream, shown), writing)}</article>
         <div className="pull-room" style={{ height: pulledRoom }} aria-hidden>
-          {pulledRoom > 24 && <span>{invite}</span>}
+          {pulledRoom > 14 && (
+            <span className={writing && reasoning ? "reasoning" : undefined} key={writing ? depth : "idle"}>
+              {invite}
+            </span>
+          )}
         </div>
         <div
           ref={handle}

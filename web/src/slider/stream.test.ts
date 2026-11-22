@@ -84,9 +84,10 @@ describe("the pull", () => {
     expect(advance(99, 1000, 1000, 9, 100)).toBe(100);
   });
 
-  it("opens room that follows the finger, then resists past full speed", () => {
+  it("opens a slim room that follows the finger a little, then resists past full speed", () => {
     expect(room(-10)).toBe(0);
-    expect(room(100)).toBeCloseTo(70);
+    expect(room(100)).toBeCloseTo(28);
+    expect(room(140)).toBeLessThan(40);
     expect(room(500) - room(400)).toBeLessThan(10);
   });
 });

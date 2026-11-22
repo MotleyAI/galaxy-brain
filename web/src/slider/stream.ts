@@ -129,10 +129,13 @@ export function advance(units: number, dy: number, ms: number, floor: number, to
   return Math.max(floor, Math.min(total, units + (speed(dy) * ms) / 1000));
 }
 
-/** The room the pull opens under the answer: it follows the finger, then resists past full speed. */
+/**
+ * The room the pull opens under the answer: a slim band, just tall enough for a line of reasoning, that follows the
+ * finger a little and resists past full speed.
+ */
 export function room(dy: number): number {
   if (dy <= 0) return 0;
-  return dy <= FULL_SPEED_AT ? dy * 0.7 : FULL_SPEED_AT * 0.7 + Math.sqrt(dy - FULL_SPEED_AT) * 3;
+  return dy <= FULL_SPEED_AT ? dy * 0.28 : FULL_SPEED_AT * 0.28 + Math.sqrt(dy - FULL_SPEED_AT) * 1.5;
 }
 
 /** How many of a chart's rows are drawn, as a fraction (2.4 = two rows and 40% of the third), after its frame. */
