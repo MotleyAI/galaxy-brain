@@ -149,11 +149,4 @@ header h1 { margin: 0 0 24px; font-size: 22px; letter-spacing: -0.01em; }
 }
 @keyframes caret { 50% { opacity: 0; } }
 .stream[data-writing] .brain-cue .brain-body { animation-duration: 600ms; }
-.stream .pull-room { font-size: 11.5px; line-height: 1.3; padding: 0 24px; }
-.stream .pull-room span {
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
-  max-width: 90ch; text-align: center; text-wrap: balance; animation: word-in 360ms ease-out both;
-}
-.stream .pull-room:has(+ .pull-handle[data-pulling]) span { color: var(--accent); }
-.stream .pull-room .reasoning { font-style: italic; }
 @media (prefers-reduced-motion: reduce) { .caret { animation: none; } }

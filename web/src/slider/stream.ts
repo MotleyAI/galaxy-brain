@@ -114,8 +114,6 @@ export const MAX_UNITS_PER_S = 11;
 export const UNWRITE_FACTOR = 3;
 /** How far the reader pulls the handle, in pixels, to ask for the next depth (or, pulling up, to go back one). */
 export const STEP_PULL = 56;
-/** The band under the answer while a depth writes itself: two lines of the agent's reasoning for it. */
-export const BAND = 40;
 
 /** Where each depth ends in the stream, in order: the stops a pull moves between. */
 export function stops(stream: Placed[]): number[] {
@@ -143,7 +141,7 @@ export function toward(units: number, target: number, ms: number): number {
 
 /**
  * The room a pull opens under the answer: it follows the finger by half until the pull is enough for the next depth,
- * then resists, so it never grows much past a line or two.
+ * then resists, so it stays a slim, empty band.
  */
 export function room(dy: number): number {
   if (dy <= 0) return 0;

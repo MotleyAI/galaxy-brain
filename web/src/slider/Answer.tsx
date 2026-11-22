@@ -8,13 +8,12 @@ import "@openuidev/react-ui/styles/tooltipWrapper.css";
 import { Card } from "@openuidev/react-ui/parts/Card/Card";
 import { ThemeProvider } from "@openuidev/react-ui/parts/ThemeProvider/ThemeProvider";
 import { useSystemThemeMode } from "@openuidev/react-ui/parts/ThemeProvider/useSystemThemeMode";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { PanelView } from "../panels";
 import { useAnswer, type AnswerStore } from "../state";
 import { Brain } from "./Brain";
 import { stage } from "./pull";
 import {
-  BAND,
   buildStream,
   depthAt,
   depthEnd,
@@ -31,9 +30,9 @@ import {
 
 /**
  * The answer, a depth at a time, written live. A short pull on the handle (or a tap, or the Down arrow) asks for the
- * next depth; it then writes itself below what is there at reading pace, charts drawing row by row, while a slim band
- * shows the agent's reasoning for it. The page follows the writing point until the reader scrolls themselves. Pulling
- * again while a depth writes skips to its end; pulling up goes back a depth.
+ * next depth; it then writes itself below what is there at reading pace, charts drawing row by row. The page eases
+ * along to keep the writing point in view until the reader scrolls themselves. Pulling again while a depth writes
+ * skips to its end; pulling up goes back a depth.
  */
 export function ResizableAnswer({ store }: { store: AnswerStore }) {
   const state = useAnswer(store);
@@ -50,12 +49,12 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
   streamRef.current = stream;
   // A deeper depth was asked for before it arrived: write it as soon as it does.
   const wanted = useRef(false);
-  // While following, where the end of the answer stays on screen as it grows or shrinks.
+  // While following: when it started, so the tail of a scroll gesture from before does not count as taking over.
   const follow = useRef<number | null>(null);
+  const followFrame = useRef(0);
   const drag = useRef<{ originY: number } | null>(null);
   const frame = useRef(0);
   const last = useRef(0);
-  const article = useRef<HTMLElement>(null);
   const handle = useRef<HTMLDivElement>(null);
 
   const setShown = (next: number) => {
@@ -77,9 +76,29 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
       frame.current = requestAnimationFrame(tick);
     }
   };
+  // Follow the writing point: whenever the handle under it drifts out of the comfortable middle of the screen, the
+  // page eases toward it a little each frame, so lines and charts arriving never jolt the page.
+  const ease = () => {
+    const el = handle.current;
+    if (follow.current === null || !el) {
+      followFrame.current = 0;
+      return;
+    }
+    const { top, bottom } = el.getBoundingClientRect();
+    const low = window.innerHeight * 0.75;
+    const high = window.innerHeight * 0.25;
+    const off = bottom > low ? bottom - low : top < high ? top - high : 0;
+    if (Math.abs(off) >= 1) window.scrollBy(0, off * 0.16 + Math.sign(off));
+    else if (unitsRef.current === targetRef.current) {
+      follow.current = null;
+      followFrame.current = 0;
+      return;
+    }
+    followFrame.current = requestAnimationFrame(ease);
+  };
   const startFollowing = () => {
-    const bottom = article.current?.getBoundingClientRect().bottom;
-    if (bottom !== undefined) follow.current = Math.min(bottom, window.innerHeight - 120);
+    follow.current = performance.now();
+    if (!followFrame.current) followFrame.current = requestAnimationFrame(ease);
   };
   const forward = () => {
     const at = targetRef.current;
@@ -127,20 +146,18 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
       aim(nextStop(stream, targetRef.current));
     }
   });
-  useEffect(() => () => cancelAnimationFrame(frame.current), []);
+  useEffect(
+    () => () => {
+      cancelAnimationFrame(frame.current);
+      cancelAnimationFrame(followFrame.current);
+    },
+    [],
+  );
 
-  // Follow the writing point: as the answer grows (or shrinks), the page scrolls by as much, so its end stays put.
-  useLayoutEffect(() => {
-    const el = article.current;
-    if (follow.current === null || !el) return;
-    const off = el.getBoundingClientRect().bottom - follow.current;
-    if (Math.abs(off) > 0.5) window.scrollBy(0, off);
-    if (unitsRef.current === targetRef.current) follow.current = null;
-  });
   // The reader scrolling takes over from the follow; the writing carries on.
   useEffect(() => {
     const takeOver = () => {
-      follow.current = null;
+      if (follow.current !== null && performance.now() - follow.current > 300) follow.current = null;
     };
     const onKey = (event: globalThis.KeyboardEvent) => {
       if (event.target !== handle.current && ["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "].includes(event.key)) takeOver();
@@ -193,41 +210,14 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
   const writing = goal > shown + 1e-9;
   const unwriting = goal < shown - 1e-9;
   const label = `Depth ${depth + 1} of ${depths}`;
-  // While a depth writes itself, the band shows the reasoning behind it: why the agent added this depth.
-  const reasoning = state.levels[depth]?.rationale;
-  const nextDepth = depthAt(stream, nextStop(stream, goal)).depth;
-  const invite =
-    dy > 0
-      ? more
-        ? dy >= STEP_PULL
-          ? `Release for depth ${nextDepth + 1}`
-          : "Pull to expand"
-        : building
-          ? "Thinking deeper…"
-          : "That's the full depth"
-      : dy < 0
-        ? dy <= -STEP_PULL && depth > 0
-          ? "Release to go back a depth"
-          : ""
-        : writing
-          ? reasoning || ""
-          : "";
-  const band = dy > 0 ? room(dy) : writing ? BAND : 0;
+  const band = room(dy);
   const charge = dy > 0 && more ? Math.min(1, dy / STEP_PULL) : dy < 0 && depth > 0 ? -Math.min(1, -dy / STEP_PULL) : fill >= 1 && more ? 0 : fill;
 
   return (
     <ThemeProvider mode={mode}>
       <Card variant="card" width="full" className="answer-card stream" data-writing={writing || unwriting || undefined}>
-        <article className="answer" ref={article}>
-          {blocks(written(stream, shown), writing)}
-        </article>
-        <div className="pull-room" style={{ height: band }} aria-hidden>
-          {band > 14 && invite && (
-            <span className={writing && dy === 0 ? "reasoning" : undefined} key={writing && dy === 0 ? depth : "pull"}>
-              {invite}
-            </span>
-          )}
-        </div>
+        <article className="answer">{blocks(written(stream, shown), writing)}</article>
+        <div className="pull-room" style={{ height: band }} aria-hidden />
         <div
           ref={handle}
           className="pull-handle"
