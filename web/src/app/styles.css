@@ -106,6 +106,10 @@ header h1 { margin: 0 0 24px; font-size: 22px; letter-spacing: -0.01em; }
 .bar-arrow { font-size: 13px; opacity: .7; transition: translate 200ms; }
 .depth-bar:hover .bar-arrow { translate: 0 2px; }
 .depth-bar .brain-cue { --size: 28px; margin: 0; flex: none; }
+/* In the bar the brain keeps one small size at every depth: only its colour and ring show the depth. */
+.depth-bar .brain-cue { filter: none; }
+.depth-bar .brain-cue .brain-body { transform: scale(.9); }
+.depth-bar .brain-cue .rays { display: none; }
 .answer-card .progress { margin: 0; padding: 0 16px 12px; text-align: center; }
 
 .brain-cue {
