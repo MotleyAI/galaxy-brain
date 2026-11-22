@@ -145,14 +145,23 @@ header h1 { margin: 0 0 var(--s4); font-size: 22px; font-weight: 600; letter-spa
 }
 @keyframes caret { 50% { opacity: 0; } }
 
-/* Notes about the reading: the business context, how the agent got here, the SLayer query, further evidence.
-   All small and muted, each led by a plain word in ink. */
-.context-note, .explored {
-  display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s1) var(--s2); margin: 0 0 var(--s3);
-  font-size: var(--small); line-height: var(--small-lh); color: var(--muted); animation: word-in 360ms ease-out both;
+/* Notes about the reading: the business context, how the agent got here, the SLayer query, further evidence. */
+.evidence-tag { color: var(--ink); }
+/* Context and the agent's exploration fold to a title; a tap opens them as an overlay over the analysis. */
+.depth-notes { display: inline-flex; gap: var(--s3); margin-left: var(--s3); font-size: var(--small); font-weight: 400; }
+.note { position: relative; }
+.note-title {
+  border: 0; background: none; padding: 0; font: inherit; color: var(--muted); cursor: pointer;
+  text-decoration: underline dotted; text-underline-offset: 3px; text-decoration-color: var(--line);
 }
-.context-tag, .evidence-tag { color: var(--ink); }
-.context-note q { font-style: normal; }
+.note-title:hover, .note[data-open] .note-title { color: var(--accent); text-decoration-color: currentColor; }
+.note-body {
+  position: absolute; z-index: 3; left: 0; top: calc(100% + var(--s2)); width: min(440px, 80vw);
+  display: grid; gap: var(--s2); padding: var(--s3); border-radius: 10px; background: var(--surface);
+  border: 1px solid var(--line); box-shadow: 0 8px 28px rgba(0, 0, 0, .1);
+  font-size: var(--small); line-height: var(--small-lh); color: var(--ink); animation: word-in 160ms ease-out both;
+}
+.note-body q { color: var(--muted); font-style: normal; }
 .evidence { margin: 0 0 var(--s3); }
 .evidence summary {
   cursor: pointer; list-style: none; padding: 2px 0; font-size: var(--small); color: var(--muted);
@@ -244,6 +253,6 @@ header h1 { margin: 0 0 var(--s4); font-size: 22px; font-weight: 600; letter-spa
 .depth-bar:hover .brain-cue .ring-track, .depth-bar[data-pulling] .brain-cue .ring-track { stroke: var(--accent-soft); }
 
 @media (prefers-reduced-motion: reduce) {
-  .stretch .word, .brain-cue .brain-body, .brain-cue .rays line, .query-lines, .context-note, .explored,
+  .stretch .word, .brain-cue .brain-body, .brain-cue .rays line, .query-lines, .note-body,
   .so-far-text, .caret { animation: none; }
 }

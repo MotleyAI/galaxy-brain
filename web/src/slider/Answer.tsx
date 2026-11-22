@@ -13,6 +13,7 @@ import { PanelView } from "../panels";
 import { useAnswer, type AnswerStore } from "../state";
 import { Brain } from "./Brain";
 import { exploration } from "./explored";
+import { Note } from "./Note";
 import { QueryCard } from "./QueryCard";
 import { stage } from "./pull";
 import {
@@ -281,15 +282,14 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
             exploredOn: whyLevel,
             explored:
               explored.queries > 0 ? (
-                <p className="explored" key="explored">
-                  <span className="context-tag">How the agent got here</span>
-                  <span>
+                <>
+                  <Note title="How the agent got here">
                     {explored.queries} exploratory {explored.queries === 1 ? "query" : "queries"}
                     {explored.profiles ? ` and ${explored.profiles} dimension ${explored.profiles === 1 ? "profile" : "profiles"}` : ""}, on{" "}
                     {explored.measures.slice(0, 8).join(" · ")}
                     {explored.across.length ? `, across ${explored.across.slice(0, 5).join(" · ")}` : ""}.
-                  </span>
-                </p>
+                  </Note>
+                </>
               ) : null,
           })}
         </article>
@@ -373,24 +373,29 @@ function blocks(items: Shown[], writing: boolean, { contextOf, exploredOn, explo
     }
     flush();
     if (item.kind === "question") {
+      // Once its question is written, a depth notes, on the same line, the business facts that shaped it and, on the
+      // Why depth, how the agent got there: each folded to its title, opening as an overlay.
+      const facts = shown.progress >= 1 ? contextOf(item.level) : [];
+      const showExplored = shown.progress >= 1 && item.level === exploredOn && explored;
       result.push(
         <h4 className="depth-question" key={item.id}>
           {item.words.slice(0, shown.words).join(" ")}
           {writing && shown === end && <span className="caret" />}
+          {(facts.length > 0 || showExplored) && (
+            <span className="depth-notes">
+              {facts.length > 0 && (
+                <Note title="Context">
+                  From your business context:
+                  {facts.map((fact, i) => (
+                    <q key={i}>{fact.replace(/[`*]/g, "")}</q>
+                  ))}
+                </Note>
+              )}
+              {showExplored && explored}
+            </span>
+          )}
         </h4>,
       );
-      // Once its question is written, a depth notes the business facts that shaped it.
-      const facts = shown.progress >= 1 ? contextOf(item.level) : [];
-      if (facts.length)
-        result.push(
-          <p className="context-note" key={`ctx-${item.level}`}>
-            <span className="context-tag">Context</span>
-            {facts.map((fact, i) => (
-              <q key={i}>{fact.replace(/[`*]/g, "")}</q>
-            ))}
-          </p>,
-        );
-      if (shown.progress >= 1 && item.level === exploredOn && explored) result.push(explored);
     } else {
       result.push(
         item.evidence ? (
