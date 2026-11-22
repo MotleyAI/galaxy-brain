@@ -250,7 +250,7 @@ export function ResizableAnswer({ store }: { store: AnswerStore }) {
         <header className="research-head">
           {soFar && (
             <p className="so-far" aria-live="polite">
-              <span className="so-far-tag">Answer so far</span>
+              <span className="so-far-tag">So far</span>
               <span className="so-far-text" key={completed}>
                 {soFar.summary || soFar.headline}
               </span>
@@ -381,7 +381,7 @@ function blocks(items: Shown[], writing: boolean, { contextOf, exploredOn, explo
       if (facts.length)
         result.push(
           <p className="context-note" key={`ctx-${item.level}`}>
-            <span className="context-tag">From your business context</span>
+            <span className="context-tag">Context</span>
             {facts.map((fact, i) => (
               <q key={i}>{fact.replace(/[`*]/g, "")}</q>
             ))}

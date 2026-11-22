@@ -240,3 +240,39 @@ header h1 { margin: 0 0 24px; font-size: 22px; letter-spacing: -0.01em; }
 }
 @media (prefers-reduced-motion: reduce) { .so-far-text, .explored { animation: none; } .rail li[data-status="current"] .rail-dot { animation: none; } }
 @media (prefers-reduced-motion: reduce) { .caret { animation: none; } }
+
+/* Lean pass: one accent, sentence case, no pills, no frames inside the answer; hierarchy from size and space. */
+.stretch .segment.level-0, .stream .stretch.level-0 { font-weight: 500; }
+.depth-question {
+  font-size: 15px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--ink); margin: 30px 0 6px;
+}
+.depth-question.fresh { color: var(--ink); }
+.so-far { gap: 2px; font-size: 13.5px; color: var(--muted); }
+.so-far-tag, .context-tag, .evidence-tag {
+  font-size: inherit; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--ink);
+  padding: 0; border: 0; border-radius: 0;
+}
+.so-far-tag { font-size: 12px; color: var(--muted); }
+.context-note, .explored { gap: 6px; font-size: 13px; margin: 0 0 12px; }
+.context-note q { font-style: normal; }
+.research-head { padding: 14px 24px 12px; }
+.rail li + li::before { top: 7px; height: 1px; }
+.rail-dot { width: 8px; height: 8px; margin-top: 3px; border-width: 1.5px; }
+.rail-label { font-size: 11.5px; }
+.rail li[data-status="current"] .rail-dot { animation: none; background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.rail li[data-status="current"] button { font-weight: 500; }
+.rail li[data-status="next"] .rail-dot { border-color: var(--line); }
+.rail li[data-status="next"] button { color: var(--muted); }
+.answer .panel { border: 0; border-radius: 0; padding: 0; background: none; }
+.answer .panel h3 { font-size: 12.5px; font-weight: 500; margin-bottom: 6px; }
+.answer .inline-panel { margin: 8px 0 22px; }
+.answer [class*="chart-grid"], .answer [class*="internal-line"], .answer .recharts-cartesian-grid { display: none; }
+/* Bars carry their values in the caption under them: no axis or one-item legend to read twice. */
+.answer .panel-bar [class*="x-axis"], .answer .panel-bar .openui-chart-legend-container { display: none; }
+.query-toggle::before { color: inherit; }
+.evidence summary { font-size: 13px; }
+.evidence summary::before { color: var(--muted); }
+.answer .openui-table-container { border: 0; border-radius: 0; }
+.answer .openui-table-row { background: none; }
+.answer .openui-table-cell, .answer .openui-table-head { padding-left: 0; font-size: 13.5px; border-bottom: 1px solid var(--line); }
+.answer .openui-table-head { color: var(--muted); font-weight: 500; }
