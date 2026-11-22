@@ -12,8 +12,9 @@ introduces it. As the answer grows, the page scrolls by as much, so the handle s
 seems to unroll out of it; a caret marks the writing point. Panels draw as part of the same stream: a single number
 rises into focus, bar charts and tables unroll a row at a time, and a line chart opens its frame, then draws left to
 right through time. A brain on the handle grows and glows brighter with the depth being written, with rays shining
-out of it, and its ring fills as that depth is written. What comes next stays hidden: the handle only says "Pull to
-expand", and its tooltip and accessible value give the depth number, never its name. Holding the arrow keys on the
+out of it, and its ring fills as that depth is written. Before a pull the handle only says "Pull to expand"; while the
+reader writes, a slim band between the answer and the handle shows the agent's reasoning for the depth being written,
+in up to two lines, changing as each new depth starts. The tooltip and accessible value give the depth number. Holding the arrow keys on the
 handle writes or unwrites; Home and End jump to depth 1 or to everything.
 
 ## Building blocks
@@ -34,6 +35,7 @@ cap keeps the writing at a pace a person can follow, so more content never arriv
 Appending only, depth after depth, means nothing the reader has read ever moves. Drawing each chart a row at a time,
 at the same steady pace as the words, makes charts part of the writing rather than interruptions; each animation
 follows the data's own shape (rows arrive one by one, time runs left to right), and only clips or fades what is
-there, so no number is ever shown that SLayer did not return. Keeping the next depth unnamed makes each depth a
-small surprise; the question headings show the analysis's structure as it is written, not before. Every panel the
+there, so no number is ever shown that SLayer did not return. Showing a depth's reasoning only once it is being written
+keeps each depth a small surprise while telling the reader why the analysis is going there; the question headings
+show its structure as it is written, not before. Every panel the
 text never introduces still gets a place, so no data is lost to a missing sentence.
